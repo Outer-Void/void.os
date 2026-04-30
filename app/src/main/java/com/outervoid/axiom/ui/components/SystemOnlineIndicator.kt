@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.ui.theme.Amber
-import com.outervoid.axiom.ui.theme.AxiomStatusStyle
 import com.outervoid.axiom.ui.theme.TextPrimary
 
 @Composable
@@ -37,6 +37,6 @@ fun SystemOnlineIndicator(modifier: Modifier = Modifier) {
                 .background(Amber.copy(alpha = pulse), CircleShape)
         )
         Spacer(Modifier.size(9.dp))
-        Text("SYSTEM ONLINE.", color = TextPrimary, style = AxiomStatusStyle)
+        Text("SYSTEM ONLINE.", color = TextPrimary, style = MaterialTheme.typography.labelLarge)
     }
 }

@@ -24,15 +24,28 @@ import com.outervoid.axiom.ui.theme.Border
 import com.outervoid.axiom.ui.theme.Surface
 
 @Composable
-fun DockBar(onSearch: () -> Unit) {
+fun DockBar(
+    onSettings: () -> Unit,
+    onSearch: () -> Unit,
+    onSystem: () -> Unit = {},
+    compactMode: Boolean = false,
+    accentColor: Color = Amber
+) {
+    val buttonSize = if (compactMode) 48.dp else 54.dp
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        DockButton(onClick = {}, contentDescription = "Power") { color -> PowerDialIcon(color) }
-        DockButton(onClick = onSearch, contentDescription = "Search apps") { color -> GridDotsIcon(color) }
-        DockButton(onClick = {}, contentDescription = "System") { color -> RingIndicatorIcon(color) }
+        DockButton(onClick = onSettings, contentDescription = "Settings", size = buttonSize, accentColor = accentColor) {
+            PowerDialIcon(it)
+        }
+        DockButton(onClick = onSearch, contentDescription = "Search apps", size = buttonSize, accentColor = accentColor) {
+            GridDotsIcon(it)
+        }
+        DockButton(onClick = onSystem, contentDescription = "System", size = buttonSize, accentColor = accentColor) {
+            RingIndicatorIcon(it)
+        }
     }
 }
 
@@ -40,17 +53,19 @@ fun DockBar(onSearch: () -> Unit) {
 private fun DockButton(
     onClick: () -> Unit,
     contentDescription: String,
+    size: androidx.compose.ui.unit.Dp,
+    accentColor: Color,
     icon: @Composable (Color) -> Unit
 ) {
     Box(
         modifier = Modifier
-            .size(54.dp)
+            .size(size)
             .background(Surface, RoundedCornerShape(16.dp))
             .border(1.dp, Border, RoundedCornerShape(16.dp))
             .clickable(onClickLabel = contentDescription, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        icon(Amber)
+        icon(accentColor)
     }
 }
 

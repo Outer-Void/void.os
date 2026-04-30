@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
@@ -26,8 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.outervoid.axiom.ui.components.CornerBrackets
 import com.outervoid.axiom.ui.components.SystemOnlineIndicator
 import com.outervoid.axiom.ui.theme.Amber
-import com.outervoid.axiom.ui.theme.AxiomClockStyle
-import com.outervoid.axiom.ui.theme.AxiomDateStyle
 import com.outervoid.axiom.ui.theme.Background
 import com.outervoid.axiom.ui.theme.TextPrimary
 import kotlinx.coroutines.delay
@@ -93,14 +92,14 @@ fun AmbientScreen(date: String, onComplete: () -> Unit) {
                 .fillMaxSize()
                 .padding(top = 110.dp),
             color = TextPrimary.copy(alpha = 0.045f * watermarkAlpha.value),
-            style = AxiomClockStyle.copy(fontSize = 240.sp, lineHeight = 240.sp),
+            style = MaterialTheme.typography.displayLarge.copy(fontSize = 240.sp, lineHeight = 240.sp),
             textAlign = TextAlign.Center
         )
         Text(
             text = date,
             modifier = Modifier.offset(x = 0.dp, y = 64.dp),
             color = TextPrimary.copy(alpha = dateAlpha.value),
-            style = AxiomDateStyle
+            style = MaterialTheme.typography.titleSmall
         )
         SystemOnlineIndicator(
             modifier = Modifier

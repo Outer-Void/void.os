@@ -18,6 +18,6 @@ private val AxiomScheme = darkColorScheme(
 )
 
 @Composable
-fun AxiomTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = AxiomScheme, typography = AxiomType, content = content)
+fun AxiomTheme(fontKey: String = com.outervoid.axiom.settings.AxiomSettings.DEFAULT_FONT_KEY, content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = AxiomScheme, typography = axiomTypography(fontKey), content = content)
 }

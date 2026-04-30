@@ -12,15 +12,22 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.outervoid.axiom.data.AppInfo
+import com.outervoid.axiom.icon.VoidSysIconProvider
+import com.outervoid.axiom.settings.AxiomSettings
+import com.outervoid.axiom.settings.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class LauncherViewModel(app: Application) : AndroidViewModel(app) {
+    private val settingsRepository = SettingsRepository(app)
+
     private val _apps = MutableStateFlow<List<AppInfo>>(emptyList())
     val apps: StateFlow<List<AppInfo>> = _apps.asStateFlow()
 
@@ -33,11 +40,16 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
                 app.packageName.contains(normalized, ignoreCase = true)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val settings: StateFlow<AxiomSettings> = settingsRepository.settings
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AxiomSettings.Defaults)
+    private val _voidSysInstalled = MutableStateFlow(settingsRepository.isVoidSysInstalled())
+    val voidSysInstalled: StateFlow<Boolean> = _voidSysInstalled.asStateFlow()
 
     private var receiverRegistered = false
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            _voidSysInstalled.value = settingsRepository.isVoidSysInstalled()
             loadApps()
         }
     }
@@ -52,6 +64,12 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         ContextCompat.registerReceiver(app, receiver, filter, ContextCompat.RECEIVER_EXPORTED)
         receiverRegistered = true
         loadApps()
+        viewModelScope.launch {
+            settings
+                .map { it.selectedIconPackPackage }
+                .distinctUntilChanged()
+                .collect { loadApps() }
+        }
     }
 
     override fun onCleared() {
@@ -65,6 +83,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun loadApps() = viewModelScope.launch {
         val application = getApplication<Application>()
         val pm = application.packageManager
+        val iconProvider = VoidSysIconProvider(application, settings.value.selectedIconPackPackage)
         val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
         _apps.value = pm.queryIntentActivities(intent, 0)
             .mapNotNull { resolveInfo ->
@@ -73,7 +92,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
                     packageName = activityInfo.packageName,
                     activityName = activityInfo.name,
                     label = resolveInfo.loadLabel(pm).toString(),
-                    icon = resolveInfo.loadIcon(pm)
+                    icon = iconProvider.iconFor(activityInfo.packageName, resolveInfo.loadIcon(pm))
                 )
             }
             .filter { it.packageName != application.packageName }
@@ -83,6 +102,22 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun setQuery(q: String) {
         _query.value = q
     }
+
+    fun setFont(key: String) = viewModelScope.launch { settingsRepository.updateFont(key) }
+    fun setIconPack(packageName: String) = viewModelScope.launch { settingsRepository.updateIconPack(packageName) }
+    fun setShowAppLabels(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowAppLabels(enabled) }
+    fun setGridColumns(columns: Int) = viewModelScope.launch { settingsRepository.updateGridColumns(columns) }
+    fun setIconScale(scale: Float) = viewModelScope.launch { settingsRepository.updateIconScale(scale) }
+    fun setShowSystemOnline(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowSystemOnline(enabled) }
+    fun setAmbientBoot(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateAmbientBoot(enabled) }
+    fun setAmberAccent(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateAmberAccent(enabled) }
+    fun setCompactMode(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateCompactMode(enabled) }
+    fun setHideStatusBar(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateHideStatusBar(enabled) }
+    fun setHideNavigationBar(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateHideNavigationBar(enabled) }
+    fun setSearchOnSwipeUp(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateSearchOnSwipeUp(enabled) }
+    fun setSystemPanel(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateSystemPanel(enabled) }
+    fun setHapticFeedback(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateHapticFeedback(enabled) }
+    fun resetSettings() = viewModelScope.launch { settingsRepository.reset() }
 
     fun launchApp(context: Context, app: AppInfo) {
         val intent = Intent(Intent.ACTION_MAIN).apply {
