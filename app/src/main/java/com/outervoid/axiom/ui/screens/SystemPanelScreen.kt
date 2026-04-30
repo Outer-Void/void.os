@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -41,6 +43,7 @@ fun SystemPanelScreen(
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
     val controller = remember(context) { SystemActionController(context.applicationContext) }
+    val flashlightEnabled by controller.flashlightEnabled.collectAsState()
     val accent = if (settings.amberAccentEnabled) Amber else TextSecondary
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -81,7 +84,8 @@ fun SystemPanelScreen(
                             controller.perform(action)
                         },
                         compactMode = settings.compactMode,
-                        accentColor = accent
+                        accentColor = accent,
+                        active = action == SystemAction.Flashlight && flashlightEnabled
                     )
                 }
             }

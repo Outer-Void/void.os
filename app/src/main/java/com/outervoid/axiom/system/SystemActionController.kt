@@ -5,14 +5,22 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.provider.Settings
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class SystemActionController(private val context: Context) {
+    private val cameraManager = context.getSystemService(CameraManager::class.java)
+    private val _flashlightEnabled = MutableStateFlow(false)
+    val flashlightEnabled: StateFlow<Boolean> = _flashlightEnabled.asStateFlow()
+
     fun perform(action: SystemAction) {
         when (action) {
-            SystemAction.Flashlight -> toggleFlashlightOrOpenSettings()
+            SystemAction.Flashlight -> toggleFlashlight()
             SystemAction.Wifi -> open(Settings.ACTION_WIFI_SETTINGS)
             SystemAction.Bluetooth -> open(Settings.ACTION_BLUETOOTH_SETTINGS)
             SystemAction.Battery -> open(Settings.ACTION_BATTERY_SAVER_SETTINGS)
@@ -31,20 +39,26 @@ class SystemActionController(private val context: Context) {
         }
     }
 
-    private fun toggleFlashlightOrOpenSettings() {
+    private fun toggleFlashlight() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             open(Settings.ACTION_SETTINGS)
             return
         }
 
-        runCatching {
-            val cameraManager = context.getSystemService(CameraManager::class.java)
+        try {
             val cameraId = cameraManager.cameraIdList.firstOrNull { id ->
                 cameraManager.getCameraCharacteristics(id)
-                    .get(android.hardware.camera2.CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
-            } ?: return@runCatching
-            cameraManager.setTorchMode(cameraId, true)
-        }.getOrElse {
+                    .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
+            } ?: run {
+                open(Settings.ACTION_SETTINGS)
+                return
+            }
+            val nextState = !_flashlightEnabled.value
+            cameraManager.setTorchMode(cameraId, nextState)
+            _flashlightEnabled.value = nextState
+        } catch (_: SecurityException) {
+            open(Settings.ACTION_SETTINGS)
+        } catch (_: Exception) {
             open(Settings.ACTION_SETTINGS)
         }
     }

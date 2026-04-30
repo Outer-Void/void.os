@@ -2,6 +2,10 @@
 
 System-focused Android launcher built by Outer-Void.
 
+## Status
+
+AXIOM Launcher A4 — System Panel + VOID.SYS Integration Foundation
+
 ## Philosophy
 
 Stripped to function.  
@@ -10,37 +14,30 @@ Made for control.
 Nothing extra.  
 Everything intentional.
 
-## Features
+## Implemented Foundations
 
-- Custom home launcher
-- App grid
-- Search system
-- Settings system
-- Font customization
-- Icon pack selection
-- System-aware UI
-- VOID.SYS integration ready
-- VOID.SYS intended icon pack integration
+- A1 launcher foundation: Home launcher, app grid, search, app launching
+- A2 System Panel foundation: AXIOM internal control panel with safe system action routing
+- A3 visual baseline: matte black VOID.SYS-aligned interface, corner framing, controlled amber accents
+- A4 VOID.SYS integration foundation: native icon lookup through `com.outervoid.voidsys`
+- A5 Settings foundation: persistent font, icon pack, layout, interface, and control preferences
 
-## Status
+## VOID.SYS Integration
 
-A3 — Visual Transformation Baseline
+AXIOM defaults to the intended VOID.SYS icon pack package:
 
-## Visual Language
+`com.outervoid.voidsys`
 
-- Matte black launcher environment
-- Thin cockpit corner framing
-- Rounded dark icon cells
-- Monospace/system typography
-- Controlled amber accents
-- Subtle VOID.SYS-aligned depth
+When installed, AXIOM loads `assets/icon_map.json` from VOID.SYS using Android package context access and resolves drawable names from the remote package. Missing packages, malformed JSON, missing mappings, or missing resources fall back to system app icons.
 
 ## Roadmap
 
-- A2 System Panel
-- A4 VOID.SYS icon mapping and integration
+- Full VOID.SYS package completion
+- Native icon mapping expansion
 - A5 Settings polish
 - A6 Terminal/Termux panel
+- Notification badges
+- Store/release packaging
 
 ## Build
 

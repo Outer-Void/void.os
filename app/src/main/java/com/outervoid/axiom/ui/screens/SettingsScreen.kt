@@ -164,7 +164,7 @@ fun SettingsScreen(
                 SettingsRow("Swipe up opens search", trailing = {
                     SettingsToggle(checked = settings.searchOnSwipeUp, onCheckedChange = { toggle { onSearchOnSwipeUpChanged(it) } })
                 })
-                SettingsRow("System panel enabled", subtitle = "Reserved until the A2 system panel is implemented.", trailing = {
+                SettingsRow("System panel enabled", subtitle = "Enable access to the AXIOM system control panel.", trailing = {
                     SettingsToggle(checked = settings.systemPanelEnabled, onCheckedChange = { toggle { onSystemPanelChanged(it) } })
                 })
                 SettingsRow("Haptic feedback", trailing = {

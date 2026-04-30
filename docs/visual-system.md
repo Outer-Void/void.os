@@ -40,3 +40,7 @@ Amber is reserved for active system signals: header rules, corner highlights, do
 ## Mockup Alignment Notes
 
 A3 screens use sparse matte fields, thin corner brackets, short amber underlines, muted app labels, and subtle layered depth. Ambient keeps the dock absent and focuses on the ghost `A`, vertical line, lower-left date, and `SYSTEM ONLINE.` status.
+
+## A2 System Panel
+
+The A2 panel follows the same AXIOM visual language: matte black background, controlled amber accent, corner brackets, 4-column rounded action tiles, and DockBar continuity with Home, Search, and Settings.

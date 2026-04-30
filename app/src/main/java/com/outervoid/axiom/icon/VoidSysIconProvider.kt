@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import com.outervoid.axiom.settings.IconPackOptions
 import org.json.JSONObject
+import java.util.Locale
 
 class VoidSysIconProvider(
     private val context: Context,
@@ -16,21 +17,45 @@ class VoidSysIconProvider(
     private val iconMap: Map<String, String> by lazy { loadIconMap(voidSysContext) }
 
     override fun iconFor(packageName: String, activityName: String?, fallback: Drawable): Drawable {
+        return findIcon(packageName, activityName) ?: fallbackProvider.iconFor(packageName, activityName, fallback)
+    }
+
+    fun findIcon(packageName: String, activityName: String?): Drawable? {
         if (selectedIconPackPackage != IconPackOptions.VoidSysPackage) {
-            return fallbackProvider.iconFor(packageName, activityName, fallback)
+            return null
         }
 
-        val remoteContext = voidSysContext ?: return fallbackProvider.iconFor(packageName, activityName, fallback)
-        val drawableName = resolveDrawableName(packageName, activityName)
-            ?: return fallbackProvider.iconFor(packageName, activityName, fallback)
+        val remoteContext = voidSysContext ?: return null
+        val drawableName = resolveDrawableName(packageName, activityName) ?: return null
 
         return loadDrawable(remoteContext, drawableName)
-            ?: fallbackProvider.iconFor(packageName, activityName, fallback)
     }
 
     private fun resolveDrawableName(packageName: String, activityName: String?): String? {
-        val componentKey = if (activityName != null) "$packageName/$activityName" else null
-        return componentKey?.let { iconMap[it] } ?: iconMap[packageName]
+        return candidateKeys(packageName, activityName)
+            .firstNotNullOfOrNull { key -> iconMap[key] }
+    }
+
+    private fun candidateKeys(packageName: String, activityName: String?): List<String> {
+        val normalizedPackage = packageName.trim()
+        val normalizedActivity = activityName?.trim()?.takeIf { it.isNotBlank() }
+        val relativeActivity = normalizedActivity
+            ?.takeIf { it.startsWith(normalizedPackage) }
+            ?.removePrefix(normalizedPackage)
+            ?.takeIf { it.startsWith(".") }
+
+        return buildList {
+            add(normalizedPackage)
+            if (normalizedActivity != null) {
+                add("$normalizedPackage/$normalizedActivity")
+                add("ComponentInfo{$normalizedPackage/$normalizedActivity}")
+            }
+            if (relativeActivity != null) {
+                add("$normalizedPackage/$relativeActivity")
+                add("ComponentInfo{$normalizedPackage/$relativeActivity}")
+            }
+            add(normalizedPackage.lowercase(Locale.US))
+        }.distinct()
     }
 
     private fun loadVoidSysContext(): Context? = try {
@@ -56,11 +81,12 @@ class VoidSysIconProvider(
         val keys = json.keys()
         while (keys.hasNext()) {
             val key = keys.next()
+            val normalizedKey = key.trim()
             when (val value = json.opt(key)) {
-                is String -> mappings[key] = value
+                is String -> mappings[normalizedKey] = value
                 is JSONObject -> value.optString("drawable")
                     .takeIf { it.isNotBlank() }
-                    ?.let { mappings[key] = it }
+                    ?.let { mappings[normalizedKey] = it }
             }
         }
         return mappings

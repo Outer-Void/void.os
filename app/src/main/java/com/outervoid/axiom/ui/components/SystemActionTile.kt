@@ -36,7 +36,8 @@ fun SystemActionTile(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     compactMode: Boolean = false,
-    accentColor: Color = Amber
+    accentColor: Color = Amber,
+    active: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -49,10 +50,10 @@ fun SystemActionTile(
             modifier = Modifier
                 .size(if (compactMode) 50.dp else 60.dp)
                 .background(IconBackground, RoundedCornerShape(15.dp))
-                .border(1.dp, IconBorder, RoundedCornerShape(15.dp)),
+                .border(1.dp, if (active) accentColor else IconBorder, RoundedCornerShape(15.dp)),
             contentAlignment = Alignment.Center
         ) {
-            SystemActionGlyph(action = action, color = accentColor)
+            SystemActionGlyph(action = action, color = if (active) accentColor else TextSecondary)
         }
         Spacer(Modifier.size(if (compactMode) 4.dp else 7.dp))
         Text(

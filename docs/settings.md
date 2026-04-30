@@ -25,7 +25,7 @@ AXIOM Launcher settings are stored with AndroidX DataStore Preferences. The app 
 - Compact mode: disabled
 - Status/navigation hiding: disabled
 - Swipe-up search: enabled
-- System panel: disabled
+- System panel: disabled by default; when enabled, dock access opens the AXIOM internal control panel
 - Haptics: enabled
 
 ## Fonts
@@ -34,7 +34,7 @@ The settings catalog includes Core AXIOM mono fonts, Nerd Font variants, popular
 
 ## Icon Pack Logic
 
-VOID.SYS is the intended default icon system:
+VOID.SYS is the intended and default icon system:
 
 - Default package: `com.outervoid.voidsys`
 - If VOID.SYS is installed, AXIOM reports it as `ACTIVE / INSTALLED`.
@@ -44,6 +44,10 @@ VOID.SYS is the intended default icon system:
 ## Known Limitations
 
 Generic third-party icon pack parsing is not implemented in A5. The `Installed Icon Pack` option exists as architecture for a later phase, but appfilter parsing and user-selected package scanning remain future work.
+
+## System Panel Access
+
+System Panel access controls whether the AXIOM internal control panel is available from the dock.
 
 ## Future Icon Pack Plan
 

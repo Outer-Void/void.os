@@ -1,5 +1,13 @@
 # Changelog
 
+## A4 Stabilization Pass
+
+- Updated stale docs.
+- Hardened VOID.SYS icon lookup keys.
+- Added real flashlight toggle state.
+- Confirmed A2 System Panel routing.
+- Confirmed proprietary licensing.
+
 ## A3 Visual Transformation Baseline
 
 - Rebuilt visual components around the AXIOM / VOID.SYS matte black system.
