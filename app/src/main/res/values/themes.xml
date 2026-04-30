@@ -1,3 +1,12 @@
 <resources>
-    <style name="Theme.Axiom" parent="Theme.Material3.DayNight.NoActionBar" />
+    <style name="Theme.Axiom" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">#0B0B0B</item>
+        <item name="android:colorAccent">#FFD000</item>
+        <item name="android:navigationBarColor">#0B0B0B</item>
+        <item name="android:statusBarColor">#0B0B0B</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
 </resources>

@@ -5,13 +5,16 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 
 private val AxiomScheme = darkColorScheme(
-    background = AxiomBackground,
-    surface = AxiomSurface,
-    onBackground = AxiomTextPrimary,
-    onSurface = AxiomTextPrimary,
-    primary = AxiomAmber,
-    error = AxiomDanger,
-    outline = AxiomBorder
+    background = Background,
+    surface = Surface,
+    surfaceVariant = SurfaceAlt,
+    onBackground = TextPrimary,
+    onSurface = TextPrimary,
+    onSurfaceVariant = TextSecondary,
+    primary = Amber,
+    secondary = BrandBlue,
+    error = Danger,
+    outline = Border
 )
 
 @Composable
