@@ -16,6 +16,7 @@ import com.outervoid.axiom.ui.screens.AmbientScreen
 import com.outervoid.axiom.ui.screens.HomeScreen
 import com.outervoid.axiom.ui.screens.SearchScreen
 import com.outervoid.axiom.ui.screens.SettingsScreen
+import com.outervoid.axiom.ui.screens.SystemPanelScreen
 import com.outervoid.axiom.ui.state.LauncherState
 import com.outervoid.axiom.ui.theme.AxiomTheme
 import com.outervoid.axiom.vm.LauncherViewModel
@@ -76,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 BackHandler(enabled = state == LauncherState.Home) {}
-                BackHandler(enabled = state == LauncherState.Search || state == LauncherState.Settings) {
+                BackHandler(enabled = state == LauncherState.Search || state == LauncherState.Settings || state == LauncherState.SystemPanel) {
                     state = LauncherState.Home
                 }
                 when (state) {
@@ -88,7 +89,8 @@ class MainActivity : ComponentActivity() {
                         settings = settings,
                         vm = vm,
                         onOpenSearch = { state = LauncherState.Search },
-                        onOpenSettings = { state = LauncherState.Settings }
+                        onOpenSettings = { state = LauncherState.Settings },
+                        onOpenSystemPanel = { state = LauncherState.SystemPanel }
                     )
                     LauncherState.Search -> SearchScreen(
                         query = query,
@@ -120,6 +122,12 @@ class MainActivity : ComponentActivity() {
                         onHapticFeedbackChanged = vm::setHapticFeedback,
                         onReloadApps = vm::loadApps,
                         onResetSettings = vm::resetSettings
+                    )
+                    LauncherState.SystemPanel -> SystemPanelScreen(
+                        settings = settings,
+                        onOpenSettings = { state = LauncherState.Settings },
+                        onOpenSearch = { state = LauncherState.Search },
+                        onReturnHome = { state = LauncherState.Home }
                     )
                 }
             }

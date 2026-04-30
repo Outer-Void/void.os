@@ -48,7 +48,8 @@ fun HomeScreen(
     settings: AxiomSettings,
     vm: LauncherViewModel,
     onOpenSearch: () -> Unit,
-    onOpenSettings: () -> Unit
+    onOpenSettings: () -> Unit,
+    onOpenSystemPanel: () -> Unit
 ) {
     val ctx = LocalContext.current
     val haptics = LocalHapticFeedback.current
@@ -118,6 +119,7 @@ fun HomeScreen(
             DockBar(
                 onSettings = { haptic(); onOpenSettings() },
                 onSearch = { haptic(); onOpenSearch() },
+                onSystem = { haptic(); onOpenSystemPanel() },
                 compactMode = settings.compactMode,
                 accentColor = accent
             )
