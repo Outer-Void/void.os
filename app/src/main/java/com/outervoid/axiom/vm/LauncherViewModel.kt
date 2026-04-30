@@ -92,7 +92,11 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
                     packageName = activityInfo.packageName,
                     activityName = activityInfo.name,
                     label = resolveInfo.loadLabel(pm).toString(),
-                    icon = iconProvider.iconFor(activityInfo.packageName, resolveInfo.loadIcon(pm))
+                    icon = iconProvider.iconFor(
+                        packageName = activityInfo.packageName,
+                        activityName = activityInfo.name,
+                        fallback = resolveInfo.loadIcon(pm)
+                    )
                 )
             }
             .filter { it.packageName != application.packageName }
