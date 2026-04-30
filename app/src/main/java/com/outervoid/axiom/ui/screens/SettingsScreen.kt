@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -197,16 +198,22 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { resetConfirmVisible = false },
             confirmButton = {
-                TextButton(onClick = {
-                    resetConfirmVisible = false
-                    haptic()
-                    onResetSettings()
-                }) {
+                TextButton(
+                    onClick = {
+                        resetConfirmVisible = false
+                        haptic()
+                        onResetSettings()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Danger)
+                ) {
                     Text("RESET", color = Danger, style = MaterialTheme.typography.labelLarge)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { resetConfirmVisible = false }) {
+                TextButton(
+                    onClick = { resetConfirmVisible = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = TextSecondary)
+                ) {
                     Text("CANCEL", color = TextSecondary, style = MaterialTheme.typography.labelLarge)
                 }
             },

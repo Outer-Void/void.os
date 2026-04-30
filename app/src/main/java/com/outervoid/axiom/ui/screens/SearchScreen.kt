@@ -5,11 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -21,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
@@ -79,14 +84,22 @@ fun SearchScreen(
                         onClose()
                     }
                 }
-            }
+        }
     ) {
         Column(Modifier.fillMaxSize()) {
-            Text("SEARCH APPS •", color = accent, style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("SEARCH APPS", color = accent, style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.width(8.dp))
+                Spacer(
+                    Modifier
+                        .size(5.dp)
+                        .background(accent, CircleShape)
+                )
+            }
             Spacer(
                 Modifier
                     .padding(top = 12.dp, bottom = 18.dp)
-                    .fillMaxWidth()
+                    .width(104.dp)
                     .height(1.dp)
                     .background(accent)
             )

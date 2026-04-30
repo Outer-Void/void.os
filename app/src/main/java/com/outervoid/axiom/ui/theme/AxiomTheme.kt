@@ -6,14 +6,18 @@ import androidx.compose.runtime.Composable
 
 private val AxiomScheme = darkColorScheme(
     background = Background,
+    inverseSurface = BackgroundAlt,
     surface = Surface,
     surfaceVariant = SurfaceAlt,
     onBackground = TextPrimary,
     onSurface = TextPrimary,
     onSurfaceVariant = TextSecondary,
     primary = Amber,
+    onPrimary = Background,
     secondary = BrandBlue,
+    onSecondary = Background,
     error = Danger,
+    onError = TextPrimary,
     outline = Border
 )
 

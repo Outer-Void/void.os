@@ -10,13 +10,13 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -97,13 +97,16 @@ fun AmbientScreen(date: String, onComplete: () -> Unit) {
         )
         Text(
             text = date,
-            modifier = Modifier.offset(x = 0.dp, y = 64.dp),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = 78.dp),
             color = TextPrimary.copy(alpha = dateAlpha.value),
             style = MaterialTheme.typography.titleSmall
         )
         SystemOnlineIndicator(
             modifier = Modifier
-                .offset(x = 0.dp, y = 92.dp)
+                .align(Alignment.BottomStart)
+                .padding(bottom = 48.dp)
                 .graphicsLayer { alpha = statusAlpha.value }
         )
         CornerBrackets()

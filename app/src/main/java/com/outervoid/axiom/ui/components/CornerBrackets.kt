@@ -8,14 +8,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.ui.theme.Amber
-import com.outervoid.axiom.ui.theme.BorderAlt
+import com.outervoid.axiom.ui.theme.BorderDim
 
 @Composable
-fun CornerBrackets(modifier: Modifier = Modifier) {
+fun CornerBrackets(modifier: Modifier = Modifier, insetDp: androidx.compose.ui.unit.Dp = 18.dp) {
     Canvas(modifier = modifier.fillMaxSize()) {
-        val inset = 18.dp.toPx()
-        val length = 28.dp.toPx()
-        val stroke = 1.5.dp.toPx()
+        val inset = insetDp.toPx()
+        val length = 30.dp.toPx()
+        val stroke = 1.dp.toPx()
         val right = size.width - inset
         val bottom = size.height - inset
 
@@ -38,7 +38,7 @@ fun CornerBrackets(modifier: Modifier = Modifier) {
 
         bracket(Offset(inset, inset), 1f, 1f, Amber)
         bracket(Offset(right, inset), -1f, 1f, Amber)
-        bracket(Offset(inset, bottom), 1f, -1f, BorderAlt)
-        bracket(Offset(right, bottom), -1f, -1f, BorderAlt)
+        bracket(Offset(inset, bottom), 1f, -1f, BorderDim)
+        bracket(Offset(right, bottom), -1f, -1f, BorderDim)
     }
 }

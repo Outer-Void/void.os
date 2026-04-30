@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.ui.theme.Amber
-import com.outervoid.axiom.ui.theme.TextPrimary
+import com.outervoid.axiom.ui.theme.TextSecondary
 
 @Composable
 fun SystemOnlineIndicator(modifier: Modifier = Modifier) {
@@ -31,12 +31,12 @@ fun SystemOnlineIndicator(modifier: Modifier = Modifier) {
         )
 
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        Text("SYSTEM ONLINE.", color = TextSecondary, style = MaterialTheme.typography.labelLarge)
+        Spacer(Modifier.size(9.dp))
         Spacer(
             Modifier
                 .size(8.dp)
                 .background(Amber.copy(alpha = pulse), CircleShape)
         )
-        Spacer(Modifier.size(9.dp))
-        Text("SYSTEM ONLINE.", color = TextPrimary, style = MaterialTheme.typography.labelLarge)
     }
 }

@@ -28,7 +28,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.ui.theme.IconBackground
 import com.outervoid.axiom.ui.theme.IconBorder
-import com.outervoid.axiom.ui.theme.TextPrimary
+import com.outervoid.axiom.ui.theme.TextSecondary
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -48,14 +48,14 @@ fun AppIconCell(
         modifier = Modifier
             .aspectRatio(if (compactMode) 0.86f else 0.74f)
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
-            .padding(horizontal = if (compactMode) 2.dp else 4.dp, vertical = if (compactMode) 3.dp else 6.dp),
+            .padding(horizontal = if (compactMode) 2.dp else 5.dp, vertical = if (compactMode) 3.dp else 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .size(if (compactMode) 50.dp else 58.dp)
-                .background(IconBackground, RoundedCornerShape(14.dp))
-                .border(1.dp, IconBorder, RoundedCornerShape(14.dp)),
+                .size(if (compactMode) 50.dp else 60.dp)
+                .background(IconBackground, RoundedCornerShape(15.dp))
+                .border(1.dp, IconBorder, RoundedCornerShape(15.dp)),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -69,7 +69,7 @@ fun AppIconCell(
             Spacer(Modifier.size(if (compactMode) 4.dp else 7.dp))
             Text(
                 text = app.label,
-                color = TextPrimary,
+                color = TextSecondary,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

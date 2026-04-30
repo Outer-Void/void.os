@@ -11,8 +11,9 @@ import com.outervoid.axiom.ui.theme.TextPrimary
 @Composable
 fun AxiomWordmark() {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("AXI", color = TextPrimary, style = MaterialTheme.typography.titleLarge)
-        Text("O", color = Amber, style = MaterialTheme.typography.titleLarge)
+        Text("A X I", color = TextPrimary, style = MaterialTheme.typography.titleLarge)
+        Text(" O ", color = Amber, style = MaterialTheme.typography.titleLarge)
         Text("M", color = TextPrimary, style = MaterialTheme.typography.titleLarge)
+        Text(" •", color = Amber, style = MaterialTheme.typography.titleLarge)
     }
 }

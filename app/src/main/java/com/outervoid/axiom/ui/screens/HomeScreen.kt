@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -84,7 +86,7 @@ fun HomeScreen(
             Spacer(
                 Modifier
                     .padding(top = if (settings.compactMode) 10.dp else 14.dp, bottom = if (settings.compactMode) 12.dp else 18.dp)
-                    .fillMaxWidth()
+                    .width(104.dp)
                     .height(1.dp)
                     .background(accent)
             )
@@ -127,12 +129,18 @@ fun HomeScreen(
         AlertDialog(
             onDismissRequest = { selected = null },
             confirmButton = {
-                TextButton(onClick = { vm.openAppInfo(ctx, app); selected = null }) {
+                TextButton(
+                    onClick = { vm.openAppInfo(ctx, app); selected = null },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Amber)
+                ) {
                     Text("APP INFO", style = MaterialTheme.typography.labelLarge)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { vm.uninstallApp(ctx, app); selected = null }) {
+                TextButton(
+                    onClick = { vm.uninstallApp(ctx, app); selected = null },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Danger)
+                ) {
                     Text("UNINSTALL", color = Danger, style = MaterialTheme.typography.labelLarge)
                 }
             },

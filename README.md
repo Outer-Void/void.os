@@ -24,14 +24,23 @@ Everything intentional.
 
 ## Status
 
-A5 — Settings foundation added on top of the A1 core launcher
+A3 — Visual Transformation Baseline
+
+## Visual Language
+
+- Matte black launcher environment
+- Thin cockpit corner framing
+- Rounded dark icon cells
+- Monospace/system typography
+- Controlled amber accents
+- Subtle VOID.SYS-aligned depth
 
 ## Roadmap
 
 - A2 System Panel
 - A4 VOID.SYS icon mapping and integration
-- A5 Settings polish and expanded controls
-- Third-party icon pack parsing
+- A5 Settings polish
+- A6 Terminal/Termux panel
 
 ## Build
 
