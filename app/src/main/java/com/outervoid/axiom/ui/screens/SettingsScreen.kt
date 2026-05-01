@@ -58,7 +58,8 @@ fun SettingsScreen(
     onSystemPanelChanged: (Boolean) -> Unit,
     onHapticFeedbackChanged: (Boolean) -> Unit,
     onReloadApps: () -> Unit,
-    onResetSettings: () -> Unit
+    onResetSettings: () -> Unit,
+    axiomShooterInstalled: Boolean = false
 ) {
     var resetConfirmVisible by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
@@ -175,7 +176,20 @@ fun SettingsScreen(
             SettingsSection("System") {
                 SettingsRow("Reload apps", value = "RUN", onClick = { haptic(); onReloadApps() })
                 SettingsRow("Reset settings", value = "RESET", onClick = { haptic(); resetConfirmVisible = true })
-                SettingsRow("About AXIOM", subtitle = "A5 Settings Foundation. System-focused Android launcher by Outer-Void.")
+                SettingsRow("About AXIOM", subtitle = "Proprietary paid Android launcher by Outer-Void.")
+            }
+
+            SettingsSection("Modules") {
+                SettingsRow(
+                    title = "AXIOM SHOOTER",
+                    value = if (axiomShooterInstalled) "INSTALLED" else "NOT INSTALLED",
+                    subtitle = "Included with AXIOM."
+                )
+                SettingsRow(
+                    title = "VOID.SYS",
+                    value = if (voidSysInstalled) "INSTALLED" else "NOT INSTALLED",
+                    subtitle = "Default icon system."
+                )
             }
 
             SettingsSection("VOID.SYS") {
@@ -184,7 +198,8 @@ fun SettingsScreen(
                     value = if (voidSysInstalled) "ACTIVE / INSTALLED" else "NOT INSTALLED"
                 )
                 SettingsRow("Package", value = IconPackOptions.VoidSysPackage)
-                SettingsRow("Icon system", subtitle = "Intended icon system for AXIOM.")
+                SettingsRow("Icon system", subtitle = "Intended/default icon system for AXIOM.")
+                SettingsRow("Standalone product", value = "$1.99")
                 if (!voidSysInstalled) {
                     SettingsRow("Fallback", subtitle = "VOID.SYS not installed. Using system icons.")
                 }

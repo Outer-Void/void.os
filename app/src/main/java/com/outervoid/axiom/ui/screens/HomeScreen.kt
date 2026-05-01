@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.settings.AxiomSettings
 import com.outervoid.axiom.ui.components.AppIconCell
+import com.outervoid.axiom.ui.components.AxiomWordmark
 import com.outervoid.axiom.ui.components.CornerBrackets
 import com.outervoid.axiom.ui.components.DockBar
 import com.outervoid.axiom.ui.components.SystemOnlineIndicator
@@ -80,6 +81,11 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(horizontal = outerPadding, vertical = if (settings.compactMode) 14.dp else 20.dp)
         ) {
+            AxiomWordmark(onLongPress = {
+                haptic()
+                onLaunchShooter()
+            })
+            Spacer(Modifier.height(if (settings.compactMode) 8.dp else 12.dp))
             Text(date, color = TextSecondary, style = MaterialTheme.typography.titleSmall)
             Text(time, color = accent, style = MaterialTheme.typography.displayLarge)
             if (settings.showSystemOnline) {

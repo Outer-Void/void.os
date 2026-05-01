@@ -1,46 +1,33 @@
 # AXIOM Launcher
 
-System-focused Android launcher built by Outer-Void.
+Package: `com.outervoid.axiom`
 
-## Status
+AXIOM Launcher is proprietary paid Android launcher software by Outer-Void. Planned price: `$4.99`.
 
-AXIOM Launcher A4 — System Panel + VOID.SYS Integration Foundation
+AXIOM provides a controlled Android environment, not just a launcher: a home launcher, app grid, search, settings, System Panel, VOID.SYS icon integration, and hidden Axiom Shooter activation.
 
-## Philosophy
+## Product Modules
 
-Stripped to function.  
-Built for clarity.  
-Made for control.  
-Nothing extra.  
-Everything intentional.
+- **AXIOM Launcher**: core paid product and launcher shell.
+- **VOID.SYS**: intended/default proprietary icon system for AXIOM. Also planned as a standalone `$1.99` icon pack.
+- **Axiom Shooter / VOID.GAME**: hidden protected module launched only through AXIOM by long-pressing the AXIOM wordmark/name.
 
-## Implemented Foundations
+## Security Foundation
 
-- A1 launcher foundation: Home launcher, app grid, search, app launching
-- A2 System Panel foundation: AXIOM internal control panel with safe system action routing
-- A3 visual baseline: matte black VOID.SYS-aligned interface, corner framing, controlled amber accents
-- A4 VOID.SYS integration foundation: native icon lookup through `com.outervoid.voidsys`
-- A5 Settings foundation: persistent font, icon pack, layout, interface, and control preferences
-
-## VOID.SYS Integration
-
-AXIOM defaults to the intended VOID.SYS icon pack package:
-
-`com.outervoid.voidsys`
-
-When installed, AXIOM loads `assets/icon_map.json` from VOID.SYS using Android package context access and resolves drawable names from the remote package. Missing packages, malformed JSON, missing mappings, or missing resources fall back to system app icons.
-
-## Roadmap
-
-- Full VOID.SYS package completion
-- Native icon mapping expansion
-- A5 Settings polish
-- A6 Terminal/Termux panel
-- Notification badges
-- Store/release packaging
+AXIOM includes scaffolding for paid entitlement, Play Integrity, package signature checks, a sealed product signature file, and a signed AXIOM-to-VOID.GAME launch contract. These layers are defensive controls; they are not a claim that the app is hack-proof. Release builds fail closed until real entitlement and server-side signing are connected. Debug builds use an explicit `BuildConfig.DEBUG` bypass for development.
 
 ## Build
 
 ```bash
 ./gradlew assembleDebug
 ```
+
+## Release
+
+```bash
+./gradlew assembleRelease
+```
+
+## License
+
+Proprietary and confidential. See `LICENSE`.

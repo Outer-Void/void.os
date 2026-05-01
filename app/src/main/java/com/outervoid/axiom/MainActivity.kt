@@ -1,11 +1,16 @@
 package com.outervoid.axiom
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -13,13 +18,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.outervoid.axiom.launch.SignedGameLaunchManager
+import com.outervoid.axiom.security.EntitlementManager
+import com.outervoid.axiom.security.LicenseGate
+import com.outervoid.axiom.security.SignatureGate
+import com.outervoid.axiom.ui.screens.AxiomShooterTransitionScreen
 import com.outervoid.axiom.ui.screens.AmbientScreen
 import com.outervoid.axiom.ui.screens.HomeScreen
+import com.outervoid.axiom.ui.screens.LockedScreen
 import com.outervoid.axiom.ui.screens.SearchScreen
 import com.outervoid.axiom.ui.screens.SettingsScreen
 import com.outervoid.axiom.ui.screens.SystemPanelScreen
 import com.outervoid.axiom.ui.state.LauncherState
+import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.AxiomTheme
+import com.outervoid.axiom.ui.theme.Surface
+import com.outervoid.axiom.ui.theme.TextPrimary
+import com.outervoid.axiom.ui.theme.TextSecondary
 import com.outervoid.axiom.vm.LauncherViewModel
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -34,11 +49,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val entitlementManager = remember { EntitlementManager(applicationContext).also { it.initialize() } }
+            val signatureGate = remember { SignatureGate(applicationContext) }
+            val gameLaunchManager = remember { SignedGameLaunchManager(applicationContext) }
+            val entitlementState by entitlementManager.state.collectAsState()
             val settings by vm.settings.collectAsState()
             val apps by vm.apps.collectAsState()
             val filteredApps by vm.filteredApps.collectAsState()
             val query by vm.query.collectAsState()
             val voidSysInstalled by vm.voidSysInstalled.collectAsState()
+            val gameInstalled = remember { gameLaunchManager.isGameInstalled() }
+            val productUnlocked = LicenseGate.unlocks(entitlementState) && signatureGate.unlocks(entitlementState)
+            var shooterDialog by remember { mutableStateOf<String?>(null) }
 
             DisposableEffect(settings.hideStatusBar, settings.hideNavigationBar) {
                 val controller = WindowCompat.getInsetsController(window, window.decorView)
@@ -77,8 +99,16 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                if (!productUnlocked) {
+                    LockedScreen(
+                        onCheckLicense = entitlementManager::refresh,
+                        onOpenPlayStore = ::openAxiomPlayStore
+                    )
+                    return@AxiomTheme
+                }
+
                 BackHandler(enabled = state == LauncherState.Home) {}
-                BackHandler(enabled = state == LauncherState.Search || state == LauncherState.Settings || state == LauncherState.SystemPanel) {
+                BackHandler(enabled = state == LauncherState.Search || state == LauncherState.Settings || state == LauncherState.SystemPanel || state == LauncherState.AxiomShooterTransition) {
                     state = LauncherState.Home
                 }
                 when (state) {
@@ -92,7 +122,7 @@ class MainActivity : ComponentActivity() {
                         onOpenSearch = { state = LauncherState.Search },
                         onOpenSettings = { state = LauncherState.Settings },
                         onOpenSystemPanel = { state = LauncherState.SystemPanel },
-                        onLaunchShooter = { launchVoidGame() }
+                        onLaunchShooter = { state = LauncherState.AxiomShooterTransition }
                     )
                     LauncherState.Search -> SearchScreen(
                         query = query,
@@ -123,7 +153,8 @@ class MainActivity : ComponentActivity() {
                         onSystemPanelChanged = vm::setSystemPanel,
                         onHapticFeedbackChanged = vm::setHapticFeedback,
                         onReloadApps = vm::loadApps,
-                        onResetSettings = vm::resetSettings
+                        onResetSettings = vm::resetSettings,
+                        axiomShooterInstalled = gameInstalled
                     )
                     LauncherState.SystemPanel -> SystemPanelScreen(
                         settings = settings,
@@ -131,9 +162,43 @@ class MainActivity : ComponentActivity() {
                         onOpenSearch = { state = LauncherState.Search },
                         onReturnHome = { state = LauncherState.Home }
                     )
+                    LauncherState.AxiomShooterTransition -> AxiomShooterTransitionScreen(
+                        onLaunch = {
+                            when (gameLaunchManager.launch(entitlementState)) {
+                                SignedGameLaunchManager.LaunchResult.Started -> Unit
+                                SignedGameLaunchManager.LaunchResult.Missing -> shooterDialog = "AXIOM SHOOTER not installed."
+                                SignedGameLaunchManager.LaunchResult.Locked -> shooterDialog = "AXIOM SHOOTER locked."
+                            }
+                            state = LauncherState.Home
+                        }
+                    )
+                }
+
+                shooterDialog?.let { message ->
+                    AlertDialog(
+                        onDismissRequest = { shooterDialog = null },
+                        confirmButton = {
+                            TextButton(
+                                onClick = { shooterDialog = null },
+                                colors = ButtonDefaults.textButtonColors(contentColor = Amber)
+                            ) {
+                                Text("OK")
+                            }
+                        },
+                        title = { Text("AXIOM SHOOTER", color = TextPrimary) },
+                        text = { Text(message, color = TextSecondary) },
+                        containerColor = Surface
+                    )
                 }
             }
         }
+    }
+
+    private fun openAxiomPlayStore() {
+        val uri = Uri.parse("market://details?id=$packageName")
+        val webUri = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+        runCatching { startActivity(Intent(Intent.ACTION_VIEW, uri)) }
+            .recoverCatching { startActivity(Intent(Intent.ACTION_VIEW, webUri)) }
     }
 
     private fun launchVoidGame() {

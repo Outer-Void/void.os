@@ -1,1 +1,4 @@
-# No custom rules
+-keep class com.outervoid.axiom.MainActivity { *; }
+-keep class com.outervoid.axiom.ui.screens.*ScreenKt { *; }
+-keep class com.outervoid.axiom.security.ProductSignature { *; }
+-keep class com.outervoid.axiom.launch.SignedLaunchToken { *; }
