@@ -1,12 +1,16 @@
 package com.outervoid.axiom.system
 
+import android.annotation.SuppressLint
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +19,11 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class SystemActionController(private val context: Context) {
     private val cameraManager = context.getSystemService(CameraManager::class.java)
+    private val connectivityManager = context.getSystemService(ConnectivityManager::class.java)
     private val _flashlightEnabled = MutableStateFlow(false)
     val flashlightEnabled: StateFlow<Boolean> = _flashlightEnabled.asStateFlow()
+    private val _activeStates = MutableStateFlow(readActiveStates())
+    val activeStates: StateFlow<Map<SystemAction, Boolean>> = _activeStates.asStateFlow()
 
     fun perform(action: SystemAction) {
         when (action) {
@@ -37,6 +44,11 @@ class SystemActionController(private val context: Context) {
             SystemAction.Users -> open(ACTION_USER_SETTINGS)
             SystemAction.Developer -> open(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
         }
+        refreshActiveStates()
+    }
+
+    fun refreshActiveStates() {
+        _activeStates.value = readActiveStates()
     }
 
     private fun toggleFlashlight() {
@@ -61,6 +73,28 @@ class SystemActionController(private val context: Context) {
         } catch (_: Exception) {
             open(Settings.ACTION_SETTINGS)
         }
+    }
+
+    private fun readActiveStates(): Map<SystemAction, Boolean> = mapOf(
+        SystemAction.Wifi to isWifiActive(),
+        SystemAction.Bluetooth to isBluetoothEnabled()
+    )
+
+    private fun isWifiActive(): Boolean {
+        return try {
+            val network = connectivityManager.activeNetwork ?: return false
+            connectivityManager.getNetworkCapabilities(network)
+                ?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
+        } catch (_: SecurityException) {
+            false
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun isBluetoothEnabled(): Boolean = try {
+        BluetoothAdapter.getDefaultAdapter()?.isEnabled == true
+    } catch (_: SecurityException) {
+        false
     }
 
     private fun open(action: String) {

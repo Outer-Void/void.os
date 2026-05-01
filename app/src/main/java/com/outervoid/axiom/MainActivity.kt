@@ -1,5 +1,6 @@
 package com.outervoid.axiom
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -90,7 +91,8 @@ class MainActivity : ComponentActivity() {
                         vm = vm,
                         onOpenSearch = { state = LauncherState.Search },
                         onOpenSettings = { state = LauncherState.Settings },
-                        onOpenSystemPanel = { state = LauncherState.SystemPanel }
+                        onOpenSystemPanel = { state = LauncherState.SystemPanel },
+                        onLaunchShooter = { launchVoidGame() }
                     )
                     LauncherState.Search -> SearchScreen(
                         query = query,
@@ -132,5 +134,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun launchVoidGame() {
+        val intent = Intent().apply {
+            setClassName("com.outervoid.voidgame", "com.outervoid.voidgame.VoidGameActivity")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        runCatching { startActivity(intent) }
     }
 }

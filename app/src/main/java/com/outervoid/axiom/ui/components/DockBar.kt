@@ -1,9 +1,10 @@
 package com.outervoid.axiom.ui.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -27,9 +28,11 @@ import com.outervoid.axiom.ui.theme.BorderDim
 import com.outervoid.axiom.ui.theme.Surface
 import com.outervoid.axiom.ui.theme.SurfaceAlt
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DockBar(
     onSettings: () -> Unit,
+    onLongClickSettings: () -> Unit = {},
     onSearch: () -> Unit,
     onSystem: () -> Unit = {},
     compactMode: Boolean = false,
@@ -49,7 +52,13 @@ fun DockBar(
             horizontalArrangement = Arrangement.spacedBy(if (compactMode) 14.dp else 18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            DockButton(onClick = onSettings, contentDescription = "Settings", size = buttonSize, accentColor = accentColor) {
+            DockButton(
+                onClick = onSettings,
+                onLongClick = onLongClickSettings,
+                contentDescription = "Settings",
+                size = buttonSize,
+                accentColor = accentColor
+            ) {
                 PowerDialIcon(it)
             }
             DockButton(onClick = onSearch, contentDescription = "Search apps", size = buttonSize, accentColor = accentColor, focal = true) {
@@ -62,9 +71,11 @@ fun DockBar(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun DockButton(
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
     contentDescription: String,
     size: androidx.compose.ui.unit.Dp,
     accentColor: Color,
@@ -76,7 +87,12 @@ private fun DockButton(
             .size(size)
             .background(Surface, RoundedCornerShape(16.dp))
             .border(1.dp, Border, RoundedCornerShape(16.dp))
-            .clickable(onClickLabel = contentDescription, role = Role.Button, onClick = onClick),
+            .combinedClickable(
+                onClickLabel = contentDescription,
+                role = Role.Button,
+                onLongClick = onLongClick,
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center
     ) {
         icon(accentColor)

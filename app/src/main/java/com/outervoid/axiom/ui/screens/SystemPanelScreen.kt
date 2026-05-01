@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import com.outervoid.axiom.ui.components.SystemActionTile
 import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.Background
 import com.outervoid.axiom.ui.theme.TextSecondary
+import kotlinx.coroutines.delay
 
 @Composable
 fun SystemPanelScreen(
@@ -44,9 +46,17 @@ fun SystemPanelScreen(
     val haptics = LocalHapticFeedback.current
     val controller = remember(context) { SystemActionController(context.applicationContext) }
     val flashlightEnabled by controller.flashlightEnabled.collectAsState()
+    val activeStates by controller.activeStates.collectAsState()
     val accent = if (settings.amberAccentEnabled) Amber else TextSecondary
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+    }
+
+    LaunchedEffect(controller) {
+        while (true) {
+            controller.refreshActiveStates()
+            delay(1_000)
+        }
     }
 
     Box(
@@ -85,7 +95,10 @@ fun SystemPanelScreen(
                         },
                         compactMode = settings.compactMode,
                         accentColor = accent,
-                        active = action == SystemAction.Flashlight && flashlightEnabled
+                        active = when (action) {
+                            SystemAction.Flashlight -> flashlightEnabled
+                            else -> activeStates[action] == true
+                        }
                     )
                 }
             }

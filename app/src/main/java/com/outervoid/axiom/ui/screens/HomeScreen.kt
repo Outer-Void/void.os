@@ -49,7 +49,8 @@ fun HomeScreen(
     vm: LauncherViewModel,
     onOpenSearch: () -> Unit,
     onOpenSettings: () -> Unit,
-    onOpenSystemPanel: () -> Unit
+    onOpenSystemPanel: () -> Unit,
+    onLaunchShooter: () -> Unit
 ) {
     val ctx = LocalContext.current
     val haptics = LocalHapticFeedback.current
@@ -118,6 +119,7 @@ fun HomeScreen(
             Spacer(Modifier.height(if (settings.compactMode) 10.dp else 16.dp))
             DockBar(
                 onSettings = { haptic(); onOpenSettings() },
+                onLongClickSettings = { haptic(); onLaunchShooter() },
                 onSearch = { haptic(); onOpenSearch() },
                 onSystem = { haptic(); onOpenSystemPanel() },
                 compactMode = settings.compactMode,
