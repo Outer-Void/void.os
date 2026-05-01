@@ -4,6 +4,14 @@
 
 - Added entitlement/server verification architecture plan.
 
+## Integration Hardening Pass
+
+- Enforced System Panel setting.
+- Added reactive module status.
+- Removed unmanaged game launch path.
+- Added device-test matrix.
+- Polished AXIOM dialogs/screens.
+
 ## A4 Stabilization Pass
 
 - Updated stale docs.

@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.outervoid.axiom.launch.SignedGameLaunchManager
+import com.outervoid.axiom.module.ModuleStatusManager
 import com.outervoid.axiom.security.EntitlementManager
 import com.outervoid.axiom.security.LicenseGate
 import com.outervoid.axiom.security.SignatureGate
@@ -52,15 +53,22 @@ class MainActivity : ComponentActivity() {
             val entitlementManager = remember { EntitlementManager(applicationContext).also { it.initialize() } }
             val signatureGate = remember { SignatureGate(applicationContext) }
             val gameLaunchManager = remember { SignedGameLaunchManager(applicationContext) }
+            val moduleStatusManager = remember { ModuleStatusManager(applicationContext) }
             val entitlementState by entitlementManager.state.collectAsState()
             val settings by vm.settings.collectAsState()
             val apps by vm.apps.collectAsState()
             val filteredApps by vm.filteredApps.collectAsState()
             val query by vm.query.collectAsState()
-            val voidSysInstalled by vm.voidSysInstalled.collectAsState()
-            val gameInstalled = remember { gameLaunchManager.isGameInstalled() }
+            val voidSysInstalled by moduleStatusManager.voidSysInstalled.collectAsState()
+            val gameInstalled by moduleStatusManager.voidGameInstalled.collectAsState()
             val productUnlocked = LicenseGate.unlocks(entitlementState) && signatureGate.unlocks(entitlementState)
             var shooterDialog by remember { mutableStateOf<String?>(null) }
+            var systemPanelDisabledVisible by remember { mutableStateOf(false) }
+
+            DisposableEffect(moduleStatusManager) {
+                moduleStatusManager.register()
+                onDispose { moduleStatusManager.unregister() }
+            }
 
             DisposableEffect(settings.hideStatusBar, settings.hideNavigationBar) {
                 val controller = WindowCompat.getInsetsController(window, window.decorView)
@@ -121,8 +129,20 @@ class MainActivity : ComponentActivity() {
                         vm = vm,
                         onOpenSearch = { state = LauncherState.Search },
                         onOpenSettings = { state = LauncherState.Settings },
-                        onOpenSystemPanel = { state = LauncherState.SystemPanel },
-                        onLaunchShooter = { state = LauncherState.AxiomShooterTransition }
+                        onOpenSystemPanel = {
+                            if (settings.systemPanelEnabled) {
+                                state = LauncherState.SystemPanel
+                            } else {
+                                systemPanelDisabledVisible = true
+                            }
+                        },
+                        onLaunchShooter = {
+                            if (gameInstalled) {
+                                state = LauncherState.AxiomShooterTransition
+                            } else {
+                                shooterDialog = "This module is available through AXIOM Launcher."
+                            }
+                        }
                     )
                     LauncherState.Search -> SearchScreen(
                         query = query,
@@ -175,19 +195,17 @@ class MainActivity : ComponentActivity() {
                 }
 
                 shooterDialog?.let { message ->
-                    AlertDialog(
-                        onDismissRequest = { shooterDialog = null },
-                        confirmButton = {
-                            TextButton(
-                                onClick = { shooterDialog = null },
-                                colors = ButtonDefaults.textButtonColors(contentColor = Amber)
-                            ) {
-                                Text("OK")
-                            }
-                        },
-                        title = { Text("AXIOM SHOOTER", color = TextPrimary) },
-                        text = { Text(message, color = TextSecondary) },
-                        containerColor = Surface
+                    AxiomMessageDialog(
+                        title = "AXIOM SHOOTER NOT INSTALLED",
+                        message = message,
+                        onDismiss = { shooterDialog = null }
+                    )
+                }
+                if (systemPanelDisabledVisible) {
+                    AxiomMessageDialog(
+                        title = "SYSTEM PANEL DISABLED",
+                        message = "Enable it in Settings.",
+                        onDismiss = { systemPanelDisabledVisible = false }
                     )
                 }
             }
@@ -201,11 +219,28 @@ class MainActivity : ComponentActivity() {
             .recoverCatching { startActivity(Intent(Intent.ACTION_VIEW, webUri)) }
     }
 
-    private fun launchVoidGame() {
-        val intent = Intent().apply {
-            setClassName("com.outervoid.voidgame", "com.outervoid.voidgame.VoidGameActivity")
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        runCatching { startActivity(intent) }
-    }
+}
+
+@androidx.compose.runtime.Composable
+private fun AxiomMessageDialog(
+    title: String,
+    message: String,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(contentColor = Amber)
+            ) {
+                Text("OK")
+            }
+        },
+        title = { Text(title, color = Amber) },
+        text = { Text(message, color = TextSecondary) },
+        containerColor = Surface,
+        textContentColor = TextPrimary,
+        titleContentColor = Amber
+    )
 }
