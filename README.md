@@ -16,6 +16,8 @@ AXIOM provides a controlled Android environment, not just a launcher: a home lau
 
 AXIOM includes scaffolding for paid entitlement, Play Integrity, package signature checks, a sealed product signature file, and a signed AXIOM-to-VOID.GAME launch contract. These layers are defensive controls; they are not a claim that the app is hack-proof. Release builds fail closed until real entitlement and server-side signing are connected. Debug builds use an explicit `BuildConfig.DEBUG` bypass for development.
 
+Architecture plan: [docs/licensing-backend-plan.md](docs/licensing-backend-plan.md).
+
 ## Build
 
 ```bash

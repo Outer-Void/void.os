@@ -1,5 +1,9 @@
 # Changelog
 
+## Licensing Backend Planning
+
+- Added entitlement/server verification architecture plan.
+
 ## A4 Stabilization Pass
 
 - Updated stale docs.
