@@ -3,7 +3,6 @@ package com.outervoid.axiom.system
 import android.annotation.SuppressLint
 import android.Manifest
 import android.bluetooth.BluetoothManager
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -28,7 +27,7 @@ class SystemActionController(private val context: Context) {
     fun perform(action: SystemAction) {
         when (action) {
             SystemAction.Flashlight -> toggleFlashlight()
-            SystemAction.PhoneSettings -> open(Settings.ACTION_SETTINGS)
+            SystemAction.PhoneSettings -> SystemSettingsNavigator.openPhoneSettings(context)
             SystemAction.Wifi -> open(Settings.ACTION_WIFI_SETTINGS)
             SystemAction.Bluetooth -> open(Settings.ACTION_BLUETOOTH_SETTINGS)
             SystemAction.Battery -> open(Settings.ACTION_BATTERY_SAVER_SETTINGS)
@@ -56,7 +55,7 @@ class SystemActionController(private val context: Context) {
             SystemAction.Vpn -> open(Settings.ACTION_VPN_SETTINGS)
             SystemAction.Developer -> open(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
             SystemAction.DefaultApps -> open(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
-            SystemAction.HomeSettings -> open(Settings.ACTION_HOME_SETTINGS)
+            SystemAction.HomeSettings -> SystemSettingsNavigator.openDefaultLauncherSettings(context)
             SystemAction.SystemUpdate -> open("android.settings.SYSTEM_UPDATE_SETTINGS")
         }
         refreshActiveStates()
@@ -113,14 +112,7 @@ class SystemActionController(private val context: Context) {
     }
 
     private fun open(action: String) {
-        val intent = Intent(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        try {
-            context.startActivity(intent)
-        } catch (_: ActivityNotFoundException) {
-            runCatching {
-                context.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            }
-        }
+        SystemSettingsNavigator.openSpecificSettings(context, action)
     }
 
     private companion object {

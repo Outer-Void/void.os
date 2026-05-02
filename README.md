@@ -6,7 +6,7 @@ AXIOM Launcher is proprietary paid Android launcher software by Outer-Void. Plan
 
 Status: v1 customization build + device-test ready foundation.
 
-AXIOM provides a controlled Android environment, not just a launcher: a separated home surface, app drawer/search, settings, System Panel, bundled font customization, native VOID.SYS icon integration, real favorites, widget-panel scaffolding, hidden apps, basic dock folder customization, and hidden bundled Axiom Shooter activation.
+AXIOM provides a controlled Android environment, not just a launcher: a separated home surface, app drawer/search, settings, System Panel, bundled font customization, native VOID.SYS icon integration, real favorites, widget panels, hidden apps, basic dock folder customization, lock-screen wallpaper setup, and hidden bundled Axiom Shooter activation.
 
 ## Product Modules
 
@@ -15,6 +15,9 @@ AXIOM provides a controlled Android environment, not just a launcher: a separate
 - **Customization controls**: accent color, icon shape, clock format, favorites count/lock, home panels, hidden apps, lock-screen wallpaper, default-launcher chooser, and expanded phone settings shortcuts.
 - **VOID.SYS native icon system**: bundled inside AXIOM. Users do not install the standalone VOID.SYS package for AXIOM to have native icons.
 - **Axiom Shooter / VOID.GAME**: hidden protected Easter egg bundled inside AXIOM and launched by long-pressing the AXIOM wordmark/name. Users do not install Axiom Shooter separately.
+- **Wallpaper setup**: bundled `res/drawable-nodpi/axiom_logo.png` is used to generate a matte black AXIOM lock-screen wallpaper at runtime. Devices that block direct lock-screen wallpaper writes show a clear AXIOM-styled failure message.
+- **Widget setup**: widget panels use Android `AppWidgetHost`, real installed widget providers, platform bind/configuration flows, and persisted widget IDs per panel.
+- **Seven-slot dock**: Phone, Left Folder, AXIOM Settings, App Drawer, System/Phone Settings, Right Folder, and Messages.
 - **VOID.SYS standalone**: separate proprietary `$1.99` icon pack for Nova, Lawnchair, and other compatible launchers.
 
 ## Security Foundation

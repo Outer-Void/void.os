@@ -66,20 +66,20 @@ VOID.SYS is the native default icon system:
 - Accent color options are persisted by key and applied to headers, selected controls, dock icons, SYSTEM ONLINE, clock color, and Axiom Shooter transition pulse.
 - Icon shape is applied to Home favorites and App Drawer icon tiles using Compose shape masks.
 - Favorites are real Home items. Empty favorites auto-fill from installed apps until the user pins explicit favorites; locked favorites block edit/remove actions.
-- Home panels support one Favorites panel plus up to four widget panels. Widget discovery uses Android `AppWidgetManager`; actual binding may require Android user/system permission.
+- Home panels support one Favorites panel plus up to four widget panels. Widget discovery uses Android `AppWidgetManager`, binding uses the platform approval flow when needed, configuration activities are handled, and replacement deletes the old widget host ID.
 - Hidden apps are stored as package/activity keys and filtered from App Drawer/Search only.
-- Lock-screen wallpaper uses Android `WallpaperManager.FLAG_LOCK` where supported. Restricted devices show a direct limitation message.
+- Lock-screen wallpaper uses the bundled `axiom_logo.png` resource and Android `WallpaperManager.FLAG_LOCK` where supported. Restricted devices show `WALLPAPER UNAVAILABLE`.
 - Folder customization stores left/right folder app sets and an icon style key. Folder panels launch selected apps.
 
 ## Known Limitations
 
 Generic third-party icon pack parsing is not implemented in the active settings UI. Appfilter parsing and user-selected package scanning remain future work.
 
-Widget hosting is implemented as far as Android allows for third-party launchers in this pass: the picker reads real installed widget providers, but some widgets require the platform bind-permission flow before an `AppWidgetHostView` can be attached.
+Widget hosting is implemented as far as Android allows for third-party launchers in this pass: the picker reads real installed widget providers, but some widgets require the platform bind-permission flow before an `AppWidgetHostView` can be attached. Some OEM builds block direct bind requests; AXIOM reports that state instead of crashing.
 
 ## System Panel Access
 
-System Panel access controls whether the AXIOM internal control panel is available from the dock.
+System Panel access controls whether the AXIOM internal control panel is available from dock tap. Dock long-press opens Android Phone Settings.
 
 ## Planned Features
 

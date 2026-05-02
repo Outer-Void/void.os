@@ -31,7 +31,7 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Confirm the app grid loads.
 - Confirm the center dock button opens App Drawer.
 - Confirm Home does not render the full installed app list.
-- Confirm left and right custom folder dock slots open placeholder panels.
+- Confirm left and right custom folder dock slots open custom folder panels.
 - Confirm Settings opens.
 - Change fonts in Settings and confirm Home, App Drawer, Settings, System Panel, dialogs, and transition text use visibly different bundled fonts.
 - Change Accent Color and confirm headers, active toggles, dock controls, SYSTEM ONLINE, clock, and Axiom Shooter pulse change color.
@@ -48,7 +48,7 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Use About AXIOM, GitHub links, and Email and confirm external intents open.
 - Use Phone Settings actions and confirm each opens an Android settings screen or falls back to general Settings.
 - Select apps for left/right dock folders and confirm those panels show and launch selected apps.
-- Set AXIOM Lock Screen Wallpaper and confirm success or the documented device restriction message.
+- Set AXIOM Lock Screen Wallpaper and confirm success or `WALLPAPER UNAVAILABLE`.
 - Confirm System Panel opens only when `System panel enabled` is on.
 - Turn `System panel enabled` off and confirm the dock system control shows `SYSTEM PANEL DISABLED` with `Enable it in Settings to access the AXIOM system control panel.`
 
@@ -75,9 +75,10 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 
 - Confirm dock shows 7 buttons: Phone, Left Folder, Settings (power-dial icon), App Drawer (grid dots, focal dot below), System (ring indicator), Right Folder, Messages (chat bubble).
 - Tap Phone and confirm dialer opens.
-- Tap Messages and confirm messaging app opens (Google Messages / Samsung Messages / sms: URI fallback).
+- Tap Messages and confirm messaging app opens (messaging category / `smsto:` URI / known package fallback).
 - Long-press Settings and confirm Axiom Shooter transition launches.
-- Long-press System and confirm System Panel opens (when enabled).
+- Tap System and confirm the AXIOM System Panel opens when enabled, or `SYSTEM PANEL DISABLED` appears when disabled.
+- Long-press System and confirm Android Phone Settings opens.
 - Tap Left Folder and Right Folder and confirm custom folder panels open.
 - Confirm compact mode reduces button size (36dp) and spacing (4dp).
 
@@ -87,16 +88,16 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Swipe to a widget panel and confirm "WIDGET PANEL / Long press to add widget." text.
 - Long-press the widget panel and confirm `WidgetPickerScreen` opens showing "PANEL 2" (or correct panel number).
 - Confirm the picker lists installed widget providers sorted alphabetically.
-- Select a widget. Confirm it appears on the correct panel after bind.
+- Select a widget. Confirm AXIOM shows `WIDGET PERMISSION REQUIRED` when Android requires host approval, then confirm the widget appears on the correct panel after bind/configuration.
 - Long-press the bound widget and confirm the picker re-opens for replacement.
-- If device denies bind permission, confirm the system bind dialog appears and the widget is saved on OK or discarded on Cancel.
+- If device denies bind permission, confirm the system bind dialog appears and the widget is saved on OK or discarded on Cancel. If the OEM blocks direct bind requests, confirm `WIDGET UNAVAILABLE`.
 
 ## 6. Permissions & Setup
 
 - Open Settings > Setup > Permissions & Setup.
 - Confirm Default Launcher row shows ACTIVE when AXIOM is default, NOT SET otherwise.
 - Tap NOT SET and confirm Android home/default-apps settings opens.
-- Confirm Widget Binding row shows GRANTED or REQUIRED based on runtime permission check.
+- Confirm Widget Binding row shows AVAILABLE and explains the long-press picker plus Android approval flow.
 - Confirm VOID.SYS section shows Native Icons: INCLUDED and Standalone: INSTALLED / OPTIONAL.
 - Press Back and confirm return to Settings.
 

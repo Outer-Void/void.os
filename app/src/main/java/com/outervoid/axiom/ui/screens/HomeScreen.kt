@@ -76,7 +76,8 @@ fun HomeScreen(
     onOpenClock: () -> Unit,
     onOpenCalendar: () -> Unit,
     onPhone: () -> Unit,
-    onMessages: () -> Unit
+    onMessages: () -> Unit,
+    onOpenPhoneSettings: () -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
     val accent = settings.accentColor()
@@ -243,7 +244,7 @@ fun HomeScreen(
                 onLongClickSettings = { haptic(); onLaunchShooter() },
                 onAppDrawer = { haptic(); onOpenAppDrawer() },
                 onSystem = { haptic(); onOpenSystemPanel() },
-                onLongClickSystem = { haptic(); onOpenSystemPanel() },
+                onLongClickSystem = { haptic(); onOpenPhoneSettings() },
                 onRightFolder = { haptic(); onOpenRightFolder() },
                 onMessages = { haptic(); onMessages() },
                 compactMode = settings.compactMode,

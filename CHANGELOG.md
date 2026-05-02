@@ -1,12 +1,24 @@
 # Changelog
 
+## Device-Test Repair Pass
+
+- Replaced the stale wallpaper source with the user-provided AXIOM logo at `res/drawable-nodpi/axiom_logo.png`.
+- Hardened AXIOM lock-screen wallpaper generation: dynamic wallpaper sizing, centered logo, matte black background, amber signal line, and safe logging.
+- Restricted wallpaper failures now show `WALLPAPER UNAVAILABLE` instead of silently failing.
+- Hardened widget binding: replacement deletes old widget IDs, bind denial shows `WIDGET PERMISSION REQUIRED`, OEM bind launch failure shows `WIDGET UNAVAILABLE`, and widget configuration activities are handled.
+- Corrected Settings routing so `Choose Default Launcher` uses home/default-app settings and `Open Phone Settings` opens Android settings directly.
+- Corrected dock system behavior: tap respects the AXIOM System Panel toggle; long-press opens Android Phone Settings.
+- Updated Messages fallback to use `smsto:` before known package launches.
+- Updated About licensing text and removed stale folder-placeholder language.
+- Confirmed debug build compiles with bundled `com.outervoid.voidgame.VoidGameActivity` intact.
+
 ## Device-Test Routing, Widgets, Wallpaper, 7-Slot Dock, About/Contact, Permissions
 
 - Fixed `LauncherState.Contact` routing: `ContactScreen` now exists as a separate composable with Email, Outer-Void GitHub, and Justadudeinspace GitHub rows. No longer renders `AboutScreen` for the Contact route.
 - Fixed `AboutScreen`: removed merged contact content (`onEmail` param, Email row). About is now product-only (version, product, VOID.SYS, Shooter, License, GitHub links).
 - Fixed `WidgetPickerScreen`: added `panelIndex: Int` and `onSelectProvider: (AppWidgetProviderInfo) -> Unit` — selecting a widget now triggers the bind/allocate flow.
 - Fixed `HomeScreen.onOpenWidgetPicker` type: changed from `() -> Unit` to `(Int) -> Unit` so the panel index is passed through to the picker.
-- Fixed `DockBar`: rewritten from 5 slots to 7 slots — Phone, LeftFolder, Settings (long-press = Shooter), AppDrawer (focal), System (long-press = System), RightFolder, Messages. Button size 40/36dp, spacing 5/4dp, paddings 8/6dp.
+- Fixed `DockBar`: rewritten from 5 slots — Phone, LeftFolder, Settings (long-press = Shooter), AppDrawer (focal), System, RightFolder, Messages. Button size 40/36dp, spacing 5/4dp, paddings 8/6dp.
 - Fixed `EntitlementManager`: initial state set to `DebugBypass` immediately in debug builds — no more brief `LockedScreen` flash during development.
 - Fixed `AxiomWallpaperManager.createWallpaper()`: replaced hardcoded 1080×2400 with dynamic screen-size detection via `WindowManager` (API 30+ path: `currentWindowMetrics.bounds`; legacy path: `getRealMetrics`).
 - Added `SystemSettingsNavigator`: centralised Android Settings intent dispatch with fallback chain.
@@ -18,14 +30,14 @@
 - Added `AxiomWidgetHost` lifecycle management in `MainActivity` (startListening/stopListening via DisposableEffect).
 - Added widget bind result launcher (`rememberLauncherForActivityResult`) for devices that deny `bindAppWidgetIdIfAllowed`.
 - Added `vm.openDialer()` and `vm.openMessages()` in `LauncherViewModel`; wired to Phone and Messages dock slots in `HomeScreen` and `SystemPanelScreen`.
-- Added `res/drawable-nodpi/` directory with `.gitkeep` placeholder (user adds `axiom_logo.png` manually).
+- Added `res/drawable-nodpi/axiom_logo.png` for runtime wallpaper generation.
 - Added Settings > Setup section with Permissions & Setup row.
 - Build confirmed clean.
 
 ## Debug Build Alignment — Native VOID.SYS + Bundled Shooter
 
 - Settings Modules section: AXIOM SHOOTER value → "Included", subtitle → "Hidden arcade Easter egg".
-- Settings Modules section: VOID.SYS standalone subtitle → "Standalone: Installed / Not Installed".
+- Settings Modules section: VOID.SYS standalone subtitle → "Standalone: Installed / Optional".
 - Bundled PauseScreen marked deprecated — GameScreen owns the inline pause overlay; only one pause system active.
 - void.game PauseScreen marked deprecated in sync.
 - Build confirmed clean for debug APK.

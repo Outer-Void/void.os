@@ -277,7 +277,7 @@ fun SettingsScreen(
                 SettingsRow(
                     title = "VOID.SYS",
                     value = "Native: Included",
-                    subtitle = "Standalone: ${if (voidSysInstalled) "Installed" else "Not Installed"}"
+                    subtitle = "Standalone: ${if (voidSysInstalled) "Installed" else "Optional"}"
                 )
             }
 
@@ -287,7 +287,7 @@ fun SettingsScreen(
                     value = "PLANNED",
                     subtitle = "Planned for v1.1"
                 )
-                SettingsRow("Custom dock folders", value = "PLANNED", subtitle = "Folder slots open placeholders for now.")
+                SettingsRow("Custom dock folders", value = "ACTIVE", subtitle = "Left and right dock folders use selected app sets.")
             }
 
             SettingsSection("Setup") {
@@ -304,7 +304,7 @@ fun SettingsScreen(
                     title = "VOID.SYS status",
                     value = "Native: Included"
                 )
-                SettingsRow("Standalone package", value = if (voidSysInstalled) "Installed" else "Not Installed")
+                SettingsRow("Standalone package", value = if (voidSysInstalled) "Installed" else "Optional")
                 SettingsRow("Package", value = IconPackOptions.VoidSysPackage)
                 SettingsRow("Icon system", subtitle = "Default AXIOM icon system.")
                 SettingsRow("Standalone product", value = "$1.99")

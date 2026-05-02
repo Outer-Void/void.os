@@ -89,9 +89,11 @@ class MainActivity : ComponentActivity() {
             var shooterDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
             var systemPanelDisabledVisible by remember { mutableStateOf(false) }
             var wallpaperDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
+            var widgetDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
 
             var widgetPickerPanelIndex by remember { mutableIntStateOf(0) }
             var pendingWidgetBind by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+            var pendingWidgetConfigure by remember { mutableStateOf<Pair<Int, Int>?>(null) }
             val widgetHost = remember { AxiomWidgetHost(applicationContext) }
             val appWidgetManager = remember { AppWidgetManager.getInstance(applicationContext) }
 
@@ -100,15 +102,54 @@ class MainActivity : ComponentActivity() {
                 onDispose { widgetHost.stopListening() }
             }
 
+            fun saveWidgetForPanel(panelIndex: Int, widgetId: Int) {
+                settings.widgetForPanel(panelIndex)
+                    ?.takeIf { it != widgetId }
+                    ?.let { oldWidgetId -> runCatching { widgetHost.deleteAppWidgetId(oldWidgetId) } }
+                vm.setWidgetForPanel(panelIndex, widgetId)
+            }
+
+            val widgetConfigLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                val pending = pendingWidgetConfigure
+                if (pending != null) {
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        saveWidgetForPanel(pending.first, pending.second)
+                    } else {
+                        runCatching { widgetHost.deleteAppWidgetId(pending.second) }
+                    }
+                    pendingWidgetConfigure = null
+                }
+            }
+
             val bindWidgetLauncher = rememberLauncherForActivityResult(
                 ActivityResultContracts.StartActivityForResult()
             ) { result ->
                 val pending = pendingWidgetBind
                 if (pending != null) {
                     if (result.resultCode == Activity.RESULT_OK) {
-                        vm.setWidgetForPanel(pending.first, pending.second)
+                        val provider = runCatching { appWidgetManager.getAppWidgetInfo(pending.second) }.getOrNull()
+                        if (provider?.configure != null) {
+                            pendingWidgetConfigure = pending
+                            val configureIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE).apply {
+                                component = provider.configure
+                                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, pending.second)
+                            }
+                            runCatching { widgetConfigLauncher.launch(configureIntent) }
+                                .onFailure {
+                                    saveWidgetForPanel(pending.first, pending.second)
+                                    pendingWidgetConfigure = null
+                                }
+                        } else {
+                            saveWidgetForPanel(pending.first, pending.second)
+                        }
                     } else {
                         runCatching { widgetHost.deleteAppWidgetId(pending.second) }
+                        widgetDialog = AxiomDialogState(
+                            "WIDGET PERMISSION REQUIRED",
+                            "AXIOM needs permission to host widgets on home panels."
+                        )
                     }
                     pendingWidgetBind = null
                 }
@@ -118,14 +159,39 @@ class MainActivity : ComponentActivity() {
                 val widgetId = widgetHost.allocateAppWidgetId()
                 val bound = appWidgetManager.bindAppWidgetIdIfAllowed(widgetId, provider.provider)
                 if (bound) {
-                    vm.setWidgetForPanel(panelIndex, widgetId)
+                    if (provider.configure != null) {
+                        pendingWidgetConfigure = panelIndex to widgetId
+                        val configureIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE).apply {
+                            component = provider.configure
+                            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+                        }
+                        runCatching { widgetConfigLauncher.launch(configureIntent) }
+                            .onFailure {
+                                saveWidgetForPanel(panelIndex, widgetId)
+                                pendingWidgetConfigure = null
+                            }
+                    } else {
+                        saveWidgetForPanel(panelIndex, widgetId)
+                    }
                 } else {
                     pendingWidgetBind = panelIndex to widgetId
                     val bindIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_BIND).apply {
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
                         putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider.provider)
                     }
-                    bindWidgetLauncher.launch(bindIntent)
+                    widgetDialog = AxiomDialogState(
+                        "WIDGET PERMISSION REQUIRED",
+                        "AXIOM needs permission to host widgets on home panels."
+                    )
+                    runCatching { bindWidgetLauncher.launch(bindIntent) }
+                        .onFailure {
+                            pendingWidgetBind = null
+                            runCatching { widgetHost.deleteAppWidgetId(widgetId) }
+                            widgetDialog = AxiomDialogState(
+                                "WIDGET UNAVAILABLE",
+                                "This device does not allow AXIOM to request widget binding directly."
+                            )
+                        }
                 }
             }
 
@@ -256,7 +322,8 @@ class MainActivity : ComponentActivity() {
                         onOpenClock = ::openClock,
                         onOpenCalendar = ::openCalendar,
                         onPhone = { vm.openDialer(this@MainActivity) },
-                        onMessages = { vm.openMessages(this@MainActivity) }
+                        onMessages = { vm.openMessages(this@MainActivity) },
+                        onOpenPhoneSettings = { SystemSettingsNavigator.openPhoneSettings(this@MainActivity) }
                     )
                     LauncherState.AppDrawer -> AppDrawerScreen(
                         query = query,
@@ -321,7 +388,7 @@ class MainActivity : ComponentActivity() {
                                 AxiomWallpaperManager.Result.Restricted -> {
                                     vm.setLockScreenWallpaperEnabled(false)
                                     wallpaperDialog = AxiomDialogState(
-                                        "LOCK SCREEN WALLPAPER",
+                                        "WALLPAPER UNAVAILABLE",
                                         "This device does not allow AXIOM to set lock-screen wallpaper directly."
                                     )
                                 }
@@ -335,7 +402,7 @@ class MainActivity : ComponentActivity() {
                         onOpenRightFolderApps = { state = LauncherState.RightFolderApps },
                         onFolderIconStyleSelected = vm::setFolderIconStyle,
                         onChooseDefaultLauncher = ::openDefaultLauncherSettings,
-                        onOpenPhoneSettings = { openSettingsIntent(Intent(android.provider.Settings.ACTION_SETTINGS)) },
+                        onOpenPhoneSettings = { SystemSettingsNavigator.openPhoneSettings(this@MainActivity) },
                         onOpenAbout = { state = LauncherState.About },
                         onOpenContact = { state = LauncherState.Contact },
                         onOpenPermissions = { state = LauncherState.PermissionSetup },
@@ -424,10 +491,7 @@ class MainActivity : ComponentActivity() {
                         voidSysInstalled = voidSysInstalled,
                         onChooseDefaultLauncher = ::openDefaultLauncherSettings,
                         onOpenWidgetSettings = {
-                            SystemSettingsNavigator.openSpecificSettings(
-                                this@MainActivity,
-                                android.provider.Settings.ACTION_APPLICATION_SETTINGS
-                            )
+                            SystemSettingsNavigator.openDefaultLauncherSettings(this@MainActivity)
                         }
                     )
                 }
@@ -446,6 +510,14 @@ class MainActivity : ComponentActivity() {
                         message = dialog.message,
                         accentColor = accent,
                         onDismiss = { wallpaperDialog = null }
+                    )
+                }
+                widgetDialog?.let { dialog ->
+                    AxiomMessageDialog(
+                        title = dialog.title,
+                        message = dialog.message,
+                        accentColor = accent,
+                        onDismiss = { widgetDialog = null }
                     )
                 }
                 if (systemPanelDisabledVisible) {

@@ -35,7 +35,7 @@ fun PermissionSetupScreen(
     val accent = settings.accentColor()
     val permManager = remember(context) { PermissionManager(context) }
     val isDefault = permManager.isDefaultLauncher()
-    val hasWidgetBind = permManager.hasWidgetBindPermission()
+    val hasWidgetSetupPath = permManager.hasWidgetSetupPath()
 
     Column(
         modifier = Modifier
@@ -67,10 +67,9 @@ fun PermissionSetupScreen(
         SettingsSection("Widgets") {
             SettingsRow(
                 title = "Widget Binding",
-                value = if (hasWidgetBind) "GRANTED" else "REQUIRED",
-                subtitle = if (hasWidgetBind) "AXIOM can host widgets on home panels."
-                else "Tap to allow AXIOM to bind widgets for home panels.",
-                onClick = if (!hasWidgetBind) onOpenWidgetSettings else null
+                value = if (hasWidgetSetupPath) "AVAILABLE" else "REQUIRED",
+                subtitle = "Long-press a widget panel, choose a widget, then approve the Android widget permission dialog if shown.",
+                onClick = onOpenWidgetSettings
             )
         }
 

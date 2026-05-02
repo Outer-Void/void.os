@@ -28,6 +28,7 @@ import com.outervoid.axiom.settings.AxiomSettings
 import com.outervoid.axiom.settings.accentColor
 import com.outervoid.axiom.system.SystemAction
 import com.outervoid.axiom.system.SystemActionController
+import com.outervoid.axiom.system.SystemSettingsNavigator
 import com.outervoid.axiom.ui.components.CornerBrackets
 import com.outervoid.axiom.ui.components.DockBar
 import com.outervoid.axiom.ui.components.SystemActionTile
@@ -112,7 +113,7 @@ fun SystemPanelScreen(
                 onSettings = { haptic(); onOpenSettings() },
                 onAppDrawer = { haptic(); onOpenAppDrawer() },
                 onSystem = { haptic(); onReturnHome() },
-                onLongClickSystem = { haptic(); onReturnHome() },
+                onLongClickSystem = { haptic(); SystemSettingsNavigator.openPhoneSettings(context) },
                 onRightFolder = { haptic(); onOpenRightFolder() },
                 onMessages = { haptic(); onMessages() },
                 compactMode = settings.compactMode,

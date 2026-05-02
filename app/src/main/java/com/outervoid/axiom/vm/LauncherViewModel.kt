@@ -174,7 +174,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         val candidates = buildList {
             add(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_MESSAGING)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            add(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("sms:"))
+            add(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("smsto:"))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             listOf(
                 "com.google.android.apps.messaging",

@@ -37,5 +37,7 @@ object SystemSettingsNavigator {
         false
     } catch (_: SecurityException) {
         false
+    } catch (_: RuntimeException) {
+        false
     }
 }
