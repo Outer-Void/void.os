@@ -9,27 +9,19 @@ cd /home/jadis/void.os
 ./gradlew assembleDebug
 ```
 
-VOID.SYS:
-
-```bash
-cd /home/jadis/void.sys
-./gradlew assembleDebug
-```
-
-VOID.GAME:
-
-```bash
-cd /home/jadis/void.game
-./gradlew assembleDebug
-```
-
 ## Install Order
 
 ```bash
-adb install -r /home/jadis/void.sys/app/build/outputs/apk/debug/app-debug.apk
-adb install -r /home/jadis/void.game/android/build/outputs/apk/debug/android-debug.apk
 adb install -r /home/jadis/void.os/app/build/outputs/apk/debug/app-debug.apk
 ```
+
+Optional companion-package checks:
+
+```bash
+adb install -r /home/jadis/void.sys/app/build/outputs/apk/debug/app-debug.apk
+```
+
+The VOID.GAME debug APK is development-only. Do not include it in the AXIOM release install flow.
 
 ## 1. AXIOM As Launcher
 
@@ -44,29 +36,22 @@ adb install -r /home/jadis/void.os/app/build/outputs/apk/debug/app-debug.apk
 
 ## 2. VOID.SYS
 
-- Confirm Settings shows VOID.SYS installed.
-- Confirm the app grid attempts VOID.SYS icons.
-- Uninstall VOID.SYS.
-- Confirm Settings updates live.
-- Confirm system icon fallback.
+- Confirm AXIOM native icons exist without standalone VOID.SYS installed.
+- Confirm Settings shows `Native: Included`.
+- Optionally install standalone VOID.SYS and confirm Settings shows the standalone package as installed.
+- Uninstall standalone VOID.SYS and confirm AXIOM native icons remain available.
 
 ## 3. VOID.GAME
 
-- Confirm Settings shows AXIOM Shooter installed.
+- Confirm Settings shows AXIOM Shooter `Included`.
 - Long-press the AXIOM wordmark/logo.
 - Confirm amber pulse transition.
 - Confirm `AXIOM SHOOTER` / `SYSTEM ONLINE.` text.
-- Confirm VOID.GAME opens.
+- Confirm bundled Axiom Shooter opens.
 - Press Back and confirm Pause opens.
 - Exit and confirm control returns to AXIOM/Android.
 
-## 4. Missing Module
-
-- Uninstall VOID.GAME.
-- Long-press the AXIOM wordmark/logo.
-- Confirm `AXIOM SHOOTER NOT INSTALLED` dialog.
-
-## 5. Locked Behavior
+## 4. Locked Behavior
 
 - Confirm debug bypass allows development testing.
 - Document that release builds intentionally fail closed until real Play Licensing, Play Integrity, and server signatures exist.

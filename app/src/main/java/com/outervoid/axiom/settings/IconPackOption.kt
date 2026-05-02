@@ -14,7 +14,7 @@ object IconPackOptions {
     val VoidSys = IconPackOption(
         displayName = "VOID.SYS",
         packageName = VoidSysPackage,
-        description = "Intended icon system for AXIOM"
+        description = "Native AXIOM icon system"
     )
 
     val SystemDefault = IconPackOption(

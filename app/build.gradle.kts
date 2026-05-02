@@ -65,5 +65,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.foundation:foundation")
+    implementation("com.badlogicgames.gdx:gdx:1.12.1")
+    implementation("com.badlogicgames.gdx:gdx-backend-android:1.12.1")
+    implementation("com.badlogicgames.gdx:gdx-platform:1.12.1:natives-armeabi-v7a")
+    implementation("com.badlogicgames.gdx:gdx-platform:1.12.1:natives-arm64-v8a")
+    implementation("com.badlogicgames.gdx:gdx-platform:1.12.1:natives-x86")
+    implementation("com.badlogicgames.gdx:gdx-platform:1.12.1:natives-x86_64")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

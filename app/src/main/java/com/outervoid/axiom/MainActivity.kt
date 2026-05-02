@@ -61,7 +61,6 @@ class MainActivity : ComponentActivity() {
             val filteredApps by vm.filteredApps.collectAsState()
             val query by vm.query.collectAsState()
             val voidSysInstalled by moduleStatusManager.voidSysInstalled.collectAsState()
-            val gameInstalled by moduleStatusManager.voidGameInstalled.collectAsState()
             val productUnlocked = LicenseGate.unlocks(entitlementState) && signatureGate.unlocks(entitlementState)
             var shooterDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
             var systemPanelDisabledVisible by remember { mutableStateOf(false) }
@@ -145,14 +144,7 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         onLaunchShooter = {
-                            if (gameInstalled) {
-                                state = LauncherState.AxiomShooterTransition
-                            } else {
-                                shooterDialog = AxiomDialogState(
-                                    title = "AXIOM SHOOTER NOT INSTALLED",
-                                    message = "Install the AXIOM Shooter module to continue."
-                                )
-                            }
+                            state = LauncherState.AxiomShooterTransition
                         }
                     )
                     LauncherState.Search -> SearchScreen(
@@ -186,7 +178,7 @@ class MainActivity : ComponentActivity() {
                         onHapticFeedbackChanged = vm::setHapticFeedback,
                         onReloadApps = vm::loadApps,
                         onResetSettings = vm::resetSettings,
-                        axiomShooterInstalled = gameInstalled
+                        axiomShooterIncluded = true
                     )
                     LauncherState.SystemPanel -> SystemPanelScreen(
                         settings = settings,
@@ -198,17 +190,13 @@ class MainActivity : ComponentActivity() {
                         onLaunch = {
                             when (gameLaunchManager.launch(entitlementState)) {
                                 SignedGameLaunchManager.LaunchResult.Started -> Unit
-                                SignedGameLaunchManager.LaunchResult.Missing -> shooterDialog = AxiomDialogState(
-                                    title = "AXIOM SHOOTER NOT INSTALLED",
-                                    message = "Install the AXIOM Shooter module to continue."
-                                )
                                 SignedGameLaunchManager.LaunchResult.Locked -> shooterDialog = AxiomDialogState(
                                     title = "AXIOM SHOOTER LOCKED",
                                     message = "This protected module requires a valid AXIOM entitlement."
                                 )
                                 SignedGameLaunchManager.LaunchResult.Unavailable -> shooterDialog = AxiomDialogState(
                                     title = "AXIOM SHOOTER UNAVAILABLE",
-                                    message = "The module could not be opened."
+                                    message = "The internal arcade module could not be opened."
                                 )
                             }
                             state = LauncherState.Home

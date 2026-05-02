@@ -11,15 +11,13 @@ import kotlinx.coroutines.flow.StateFlow
 
 class ModuleStatusManager(private val context: Context) {
     private val appContext = context.applicationContext
-    private val _voidGameInstalled = MutableStateFlow(isInstalled(VoidGamePackage))
     private val _voidSysInstalled = MutableStateFlow(isInstalled(VoidSysPackage))
-    val voidGameInstalled: StateFlow<Boolean> = _voidGameInstalled
     val voidSysInstalled: StateFlow<Boolean> = _voidSysInstalled
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val packageName = intent?.data?.schemeSpecificPart ?: return
-            if (packageName == VoidGamePackage || packageName == VoidSysPackage) {
+            if (packageName == VoidSysPackage) {
                 refresh()
             }
         }
@@ -42,7 +40,6 @@ class ModuleStatusManager(private val context: Context) {
     }
 
     fun refresh() {
-        _voidGameInstalled.value = isInstalled(VoidGamePackage)
         _voidSysInstalled.value = isInstalled(VoidSysPackage)
     }
 
@@ -57,7 +54,6 @@ class ModuleStatusManager(private val context: Context) {
     }.getOrDefault(false)
 
     companion object {
-        const val VoidGamePackage = "com.outervoid.voidgame"
         const val VoidSysPackage = "com.outervoid.voidsys"
     }
 }

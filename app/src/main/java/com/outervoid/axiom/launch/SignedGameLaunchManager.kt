@@ -2,7 +2,6 @@ package com.outervoid.axiom.launch
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import com.outervoid.axiom.security.EntitlementState
 import com.outervoid.axiom.security.LicenseGate
 import com.outervoid.axiom.security.SignatureGate
@@ -15,17 +14,17 @@ class SignedGameLaunchManager(private val context: Context) {
     fun canLaunch(entitlementState: EntitlementState): Boolean =
         LicenseGate.unlocks(entitlementState) && signatureGate.unlocks(entitlementState)
 
-    fun isGameInstalled(): Boolean = runCatching {
-        context.packageManager.getPackageInfo(TargetPackage, 0)
-        true
+    fun isGameBundled(): Boolean = runCatching {
+        val intent = Intent().setClassName(context.packageName, TargetActivity)
+        intent.resolveActivity(context.packageManager) != null
     }.getOrDefault(false)
 
     fun launch(entitlementState: EntitlementState): LaunchResult {
         if (!canLaunch(entitlementState)) return LaunchResult.Locked
-        if (!isGameInstalled()) return LaunchResult.Missing
+        if (!isGameBundled()) return LaunchResult.Unavailable
         val token = createToken(entitlementState)
         val intent = Intent().apply {
-            setClassName(TargetPackage, TargetActivity)
+            setClassName(context.packageName, TargetActivity)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             putExtra("axiom_source_package", SourcePackage)
             putExtra("axiom_target_package", token.targetPackage)
@@ -63,7 +62,6 @@ class SignedGameLaunchManager(private val context: Context) {
 
     sealed interface LaunchResult {
         data object Started : LaunchResult
-        data object Missing : LaunchResult
         data object Locked : LaunchResult
         data object Unavailable : LaunchResult
     }

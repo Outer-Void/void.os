@@ -60,7 +60,7 @@ fun SettingsScreen(
     onHapticFeedbackChanged: (Boolean) -> Unit,
     onReloadApps: () -> Unit,
     onResetSettings: () -> Unit,
-    axiomShooterInstalled: Boolean = false
+    axiomShooterIncluded: Boolean = true
 ) {
     var resetConfirmVisible by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
@@ -106,7 +106,7 @@ fun SettingsScreen(
                 )
                 SettingsDropdown(
                     title = "Icon pack",
-                    subtitle = "Prefer VOID.SYS when available; fallback uses system icons.",
+                    subtitle = "Native VOID.SYS icons are included with AXIOM.",
                     selected = IconPackOptions.byPackage(settings.selectedIconPackPackage),
                     options = IconPackOptions.All,
                     optionLabel = { it.displayName },
@@ -183,13 +183,13 @@ fun SettingsScreen(
             SettingsSection("Modules") {
                 SettingsRow(
                     title = "AXIOM SHOOTER",
-                    value = if (axiomShooterInstalled) "INSTALLED" else "NOT INSTALLED",
-                    subtitle = "Included with AXIOM."
+                    value = if (axiomShooterIncluded) "Included" else "Unavailable",
+                    subtitle = "Hidden arcade module"
                 )
                 SettingsRow(
                     title = "VOID.SYS",
-                    value = if (voidSysInstalled) "INSTALLED" else "NOT INSTALLED",
-                    subtitle = "Default icon system."
+                    value = "Native: Included",
+                    subtitle = "Standalone: ${if (voidSysInstalled) "Installed" else "Not Installed"}"
                 )
             }
 
@@ -214,14 +214,12 @@ fun SettingsScreen(
             SettingsSection("VOID.SYS") {
                 SettingsRow(
                     title = "VOID.SYS status",
-                    value = if (voidSysInstalled) "ACTIVE / INSTALLED" else "NOT INSTALLED"
+                    value = "Native: Included"
                 )
+                SettingsRow("Standalone package", value = if (voidSysInstalled) "Installed" else "Not Installed")
                 SettingsRow("Package", value = IconPackOptions.VoidSysPackage)
-                SettingsRow("Icon system", subtitle = "Intended/default icon system for AXIOM.")
+                SettingsRow("Icon system", subtitle = "Default AXIOM icon system.")
                 SettingsRow("Standalone product", value = "$1.99")
-                if (!voidSysInstalled) {
-                    SettingsRow("Fallback", subtitle = "VOID.SYS not installed. Using system icons.")
-                }
             }
             Spacer(Modifier.height(24.dp))
         }

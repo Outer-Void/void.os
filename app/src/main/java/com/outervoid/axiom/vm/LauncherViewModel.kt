@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.outervoid.axiom.data.AppInfo
-import com.outervoid.axiom.icon.VoidSysIconProvider
+import com.outervoid.axiom.icon.BundledVoidSysIconProvider
 import com.outervoid.axiom.settings.AxiomSettings
 import com.outervoid.axiom.settings.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,7 +83,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun loadApps() = viewModelScope.launch {
         val application = getApplication<Application>()
         val pm = application.packageManager
-        val iconProvider = VoidSysIconProvider(application, settings.value.selectedIconPackPackage)
+        val iconProvider = BundledVoidSysIconProvider(application, settings.value.selectedIconPackPackage)
         val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
         _apps.value = pm.queryIntentActivities(intent, 0)
             .mapNotNull { resolveInfo ->
