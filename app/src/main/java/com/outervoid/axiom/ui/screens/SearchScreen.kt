@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.settings.AxiomSettings
+import com.outervoid.axiom.settings.accentColor
 import com.outervoid.axiom.ui.components.AppIconCell
 import com.outervoid.axiom.ui.components.CornerBrackets
 import com.outervoid.axiom.ui.theme.*
@@ -57,7 +58,7 @@ fun SearchScreen(
 ) {
     val focusRequester = androidx.compose.runtime.remember { FocusRequester() }
     val haptics = LocalHapticFeedback.current
-    val accent = if (settings.amberAccentEnabled) Amber else TextSecondary
+    val accent = settings.accentColor()
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
     }
@@ -137,7 +138,9 @@ fun SearchScreen(
                         onLongClick = {},
                         showLabel = settings.showAppLabels,
                         iconScale = settings.iconScale,
-                        compactMode = settings.compactMode
+                        compactMode = settings.compactMode,
+                        iconShape = settings.iconShape,
+                        accentColor = accent
                     )
                 }
             }

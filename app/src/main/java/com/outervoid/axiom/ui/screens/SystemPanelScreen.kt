@@ -25,14 +25,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.settings.AxiomSettings
+import com.outervoid.axiom.settings.accentColor
 import com.outervoid.axiom.system.SystemAction
 import com.outervoid.axiom.system.SystemActionController
 import com.outervoid.axiom.ui.components.CornerBrackets
 import com.outervoid.axiom.ui.components.DockBar
 import com.outervoid.axiom.ui.components.SystemActionTile
-import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.Background
-import com.outervoid.axiom.ui.theme.TextSecondary
 import kotlinx.coroutines.delay
 
 @Composable
@@ -49,7 +48,7 @@ fun SystemPanelScreen(
     val controller = remember(context) { SystemActionController(context.applicationContext) }
     val flashlightEnabled by controller.flashlightEnabled.collectAsState()
     val activeStates by controller.activeStates.collectAsState()
-    val accent = if (settings.amberAccentEnabled) Amber else TextSecondary
+    val accent = settings.accentColor()
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
     }

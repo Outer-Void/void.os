@@ -8,5 +8,11 @@ enum class LauncherState {
     SystemPanel,
     LeftFolder,
     RightFolder,
+    HiddenApps,
+    About,
+    Contact,
+    WidgetPicker,
+    LeftFolderApps,
+    RightFolderApps,
     AxiomShooterTransition
 }

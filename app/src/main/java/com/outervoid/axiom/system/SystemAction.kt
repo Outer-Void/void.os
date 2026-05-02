@@ -1,22 +1,37 @@
 package com.outervoid.axiom.system
 
 enum class SystemAction(val label: String) {
+    PhoneSettings("Phone Settings"),
     Wifi("Wi-Fi"),
     Bluetooth("Bluetooth"),
     Battery("Battery"),
-    Data("Data"),
-    DarkMode("Dark Mode"),
-    Flashlight("Flashlight"),
-    Location("Location"),
+    MobileNetwork("Mobile Network"),
+    DataUsage("Data Usage"),
     Hotspot("Hotspot"),
     Nfc("NFC"),
-    Sync("Sync"),
-    Airplane("Airplane"),
+    Airplane("Airplane Mode"),
     DoNotDisturb("Do Not Disturb"),
+    Sound("Sound"),
+    Display("Display"),
+    Wallpaper("Wallpaper"),
+    Apps("Apps"),
+    Notifications("Notifications"),
+    Accessibility("Accessibility"),
     Security("Security"),
+    Privacy("Privacy"),
+    Flashlight("Flashlight"),
+    Location("Location"),
     Storage("Storage"),
     Users("Users"),
-    Developer("Developer");
+    Accounts("Accounts"),
+    Keyboard("Keyboard / Input"),
+    DateTime("Date & Time"),
+    Language("Language"),
+    Vpn("VPN"),
+    Developer("Developer Options"),
+    DefaultApps("Default Apps"),
+    HomeSettings("Home Settings"),
+    SystemUpdate("System Update");
 
     companion object {
         val PanelActions = entries.toList()

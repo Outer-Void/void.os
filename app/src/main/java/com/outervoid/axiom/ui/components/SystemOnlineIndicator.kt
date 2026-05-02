@@ -16,12 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.TextSecondary
 
 @Composable
-fun SystemOnlineIndicator(modifier: Modifier = Modifier) {
+fun SystemOnlineIndicator(modifier: Modifier = Modifier, accentColor: Color = Amber) {
     val pulse by rememberInfiniteTransition(label = "system-online")
         .animateFloat(
             initialValue = 0.35f,
@@ -36,7 +37,7 @@ fun SystemOnlineIndicator(modifier: Modifier = Modifier) {
         Spacer(
             Modifier
                 .size(8.dp)
-                .background(Amber.copy(alpha = pulse), CircleShape)
+                .background(accentColor.copy(alpha = pulse), CircleShape)
         )
     }
 }

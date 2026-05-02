@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.ui.theme.Amber
@@ -20,20 +21,21 @@ import com.outervoid.axiom.ui.theme.TextDim
 fun SettingsToggle(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    accentColor: Color = Amber
 ) {
     Box(
         modifier = modifier
             .size(width = 44.dp, height = 24.dp)
-            .background(if (checked) Amber.copy(alpha = 0.18f) else SurfaceAlt, RoundedCornerShape(12.dp))
-            .border(1.dp, if (checked) Amber else Border, RoundedCornerShape(12.dp))
+            .background(if (checked) accentColor.copy(alpha = 0.18f) else SurfaceAlt, RoundedCornerShape(12.dp))
+            .border(1.dp, if (checked) accentColor else Border, RoundedCornerShape(12.dp))
             .clickable(role = Role.Switch) { onCheckedChange(!checked) },
         contentAlignment = if (checked) Alignment.CenterEnd else Alignment.CenterStart
     ) {
         Box(
             Modifier
                 .size(16.dp)
-                .background(if (checked) Amber else TextDim, RoundedCornerShape(8.dp))
+                .background(if (checked) accentColor else TextDim, RoundedCornerShape(8.dp))
         )
     }
 }

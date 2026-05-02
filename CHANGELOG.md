@@ -1,5 +1,15 @@
 # Changelog
 
+## AXIOM v1 Customization Controls
+
+- Added persistent accent color, icon shape, clock format, favorites, home panel, hidden app, lock-screen wallpaper, and folder settings.
+- Added Home favorites with configurable counts, lock behavior, and app info/remove actions.
+- Added 1-5 Home panels with real widget-provider discovery through Android `AppWidgetManager`.
+- Added hidden-app filtering for App Drawer/Search.
+- Added default-launcher, About, Contact, clock/date, wallpaper, and expanded phone settings actions.
+- Added basic left/right dock folder app selection and launch panels.
+- Kept VOID.SYS native icons, bundled fonts, and Axiom Shooter internal launch/security gates intact.
+
 ## Terminal Panel Scaffold
 
 - Added developer toggle placeholder.

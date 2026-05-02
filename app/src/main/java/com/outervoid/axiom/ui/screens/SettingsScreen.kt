@@ -25,13 +25,16 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.settings.AxiomSettings
+import com.outervoid.axiom.settings.AccentColorOptions
+import com.outervoid.axiom.settings.ClockFormat
 import com.outervoid.axiom.settings.FontOptions
 import com.outervoid.axiom.settings.IconPackOptions
+import com.outervoid.axiom.settings.accentColor
+import com.outervoid.axiom.ui.iconshape.IconShape
 import com.outervoid.axiom.ui.components.SettingsDropdown
 import com.outervoid.axiom.ui.components.SettingsRow
 import com.outervoid.axiom.ui.components.SettingsSection
 import com.outervoid.axiom.ui.components.SettingsToggle
-import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.Background
 import com.outervoid.axiom.ui.theme.Danger
 import com.outervoid.axiom.ui.theme.Surface
@@ -44,6 +47,21 @@ fun SettingsScreen(
     voidSysInstalled: Boolean,
     onFontSelected: (String) -> Unit,
     onIconPackSelected: (String) -> Unit,
+    onIconShapeSelected: (IconShape) -> Unit,
+    onAccentColorSelected: (String) -> Unit,
+    onClockFormatSelected: (ClockFormat) -> Unit,
+    onLockScreenWallpaper: () -> Unit,
+    onFavoritesCountSelected: (Int) -> Unit,
+    onFavoritesLockedChanged: (Boolean) -> Unit,
+    onHomePanelCountSelected: (Int) -> Unit,
+    onOpenHiddenApps: () -> Unit,
+    onOpenLeftFolderApps: () -> Unit,
+    onOpenRightFolderApps: () -> Unit,
+    onFolderIconStyleSelected: (String) -> Unit,
+    onChooseDefaultLauncher: () -> Unit,
+    onOpenPhoneSettings: () -> Unit,
+    onOpenAbout: () -> Unit,
+    onOpenContact: () -> Unit,
     onShowAppLabelsChanged: (Boolean) -> Unit,
     onGridColumnsChanged: (Int) -> Unit,
     onIconScaleChanged: (Float) -> Unit,
@@ -62,6 +80,7 @@ fun SettingsScreen(
 ) {
     var resetConfirmVisible by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
+    val accent = settings.accentColor()
 
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -90,7 +109,7 @@ fun SettingsScreen(
                     .padding(top = 14.dp, bottom = 8.dp)
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(Amber)
+                    .background(accent)
             )
 
             SettingsSection("Appearance") {
@@ -103,6 +122,34 @@ fun SettingsScreen(
                     onSelected = { haptic(); onFontSelected(it.key) }
                 )
                 SettingsDropdown(
+                    title = "Icon Shape",
+                    selected = settings.iconShape,
+                    options = IconShape.entries,
+                    optionLabel = { it.name.replace('_', ' ') },
+                    onSelected = { haptic(); onIconShapeSelected(it) }
+                )
+                SettingsDropdown(
+                    title = "Accent Color",
+                    selected = AccentColorOptions.byKey(settings.accentColorKey),
+                    options = AccentColorOptions.All,
+                    optionLabel = { it.displayName },
+                    onSelected = { haptic(); onAccentColorSelected(it.key) }
+                )
+                SettingsDropdown(
+                    title = "Clock Format",
+                    selected = settings.clockFormat,
+                    options = ClockFormat.entries,
+                    optionLabel = {
+                        when (it) {
+                            ClockFormat.SYSTEM -> "System"
+                            ClockFormat.TWELVE_HOUR -> "12 hour"
+                            ClockFormat.TWENTY_FOUR_HOUR -> "24 hour"
+                        }
+                    },
+                    onSelected = { haptic(); onClockFormatSelected(it) }
+                )
+                SettingsRow("Lock Screen Wallpaper", value = "SET", onClick = { haptic(); onLockScreenWallpaper() })
+                SettingsDropdown(
                     title = "Icon pack",
                     subtitle = "Native VOID.SYS icons are included with AXIOM.",
                     selected = IconPackOptions.byPackage(settings.selectedIconPackPackage),
@@ -113,7 +160,7 @@ fun SettingsScreen(
                 SettingsRow(
                     title = "Show app labels",
                     trailing = {
-                        SettingsToggle(checked = settings.showAppLabels, onCheckedChange = {
+                        SettingsToggle(checked = settings.showAppLabels, accentColor = accent, onCheckedChange = {
                             toggle { onShowAppLabelsChanged(it) }
                         })
                     }
@@ -135,54 +182,97 @@ fun SettingsScreen(
                 SettingsRow(
                     title = "Compact mode",
                     trailing = {
-                        SettingsToggle(checked = settings.compactMode, onCheckedChange = {
+                        SettingsToggle(checked = settings.compactMode, accentColor = accent, onCheckedChange = {
                             toggle { onCompactModeChanged(it) }
                         })
                     }
                 )
             }
 
+            SettingsSection("Home Screen") {
+                SettingsDropdown(
+                    title = "Favorites Count",
+                    selected = settings.favoritesCount,
+                    options = listOf(5, 10, 15, 20, 25),
+                    optionLabel = { it.toString() },
+                    onSelected = { haptic(); onFavoritesCountSelected(it) }
+                )
+                SettingsRow("Lock Favorites", trailing = {
+                    SettingsToggle(
+                        checked = settings.favoritesLocked,
+                        onCheckedChange = { toggle { onFavoritesLockedChanged(it) } },
+                        accentColor = accent
+                    )
+                })
+                SettingsDropdown(
+                    title = "Home Panels",
+                    selected = settings.homePanelCount,
+                    options = listOf(1, 2, 3, 4, 5),
+                    optionLabel = { count ->
+                        if (count == 1) "1 = Favorites" else "$count = Favorites / " + List(count - 1) { "Widgets" }.joinToString(" / ")
+                    },
+                    onSelected = { haptic(); onHomePanelCountSelected(it) }
+                )
+            }
+
+            SettingsSection("App Drawer") {
+                SettingsRow("Hidden Apps", value = "OPEN", subtitle = "Hide from app drawer only.", onClick = { haptic(); onOpenHiddenApps() })
+            }
+
+            SettingsSection("Folders") {
+                SettingsRow("Left Folder", value = "APPS", subtitle = settings.leftFolderName, onClick = { haptic(); onOpenLeftFolderApps() })
+                SettingsRow("Right Folder", value = "APPS", subtitle = settings.rightFolderName, onClick = { haptic(); onOpenRightFolderApps() })
+                SettingsDropdown(
+                    title = "Folder Customization",
+                    selected = settings.folderIconStyle,
+                    options = listOf("FOLDER", "GRID", "RING", "DOTS"),
+                    optionLabel = { it },
+                    onSelected = { haptic(); onFolderIconStyleSelected(it) }
+                )
+            }
+
             SettingsSection("Interface") {
                 SettingsRow("Ambient boot sequence", trailing = {
-                    SettingsToggle(checked = settings.ambientBootEnabled, onCheckedChange = { toggle { onAmbientBootChanged(it) } })
+                    SettingsToggle(checked = settings.ambientBootEnabled, accentColor = accent, onCheckedChange = { toggle { onAmbientBootChanged(it) } })
                 })
                 SettingsRow("Show SYSTEM ONLINE indicator", trailing = {
-                    SettingsToggle(checked = settings.showSystemOnline, onCheckedChange = { toggle { onShowSystemOnlineChanged(it) } })
+                    SettingsToggle(checked = settings.showSystemOnline, accentColor = accent, onCheckedChange = { toggle { onShowSystemOnlineChanged(it) } })
                 })
                 SettingsRow("Amber accent enabled", trailing = {
-                    SettingsToggle(checked = settings.amberAccentEnabled, onCheckedChange = { toggle { onAmberAccentChanged(it) } })
+                    SettingsToggle(checked = settings.amberAccentEnabled, accentColor = accent, onCheckedChange = { toggle { onAmberAccentChanged(it) } })
                 })
                 SettingsRow("Hide status bar", trailing = {
-                    SettingsToggle(checked = settings.hideStatusBar, onCheckedChange = { toggle { onHideStatusBarChanged(it) } })
+                    SettingsToggle(checked = settings.hideStatusBar, accentColor = accent, onCheckedChange = { toggle { onHideStatusBarChanged(it) } })
                 })
                 SettingsRow("Hide navigation bar", trailing = {
-                    SettingsToggle(checked = settings.hideNavigationBar, onCheckedChange = { toggle { onHideNavigationBarChanged(it) } })
+                    SettingsToggle(checked = settings.hideNavigationBar, accentColor = accent, onCheckedChange = { toggle { onHideNavigationBarChanged(it) } })
                 })
             }
 
             SettingsSection("Controls") {
                 SettingsRow("Swipe up opens App Drawer", trailing = {
-                    SettingsToggle(checked = settings.searchOnSwipeUp, onCheckedChange = { toggle { onSearchOnSwipeUpChanged(it) } })
+                    SettingsToggle(checked = settings.searchOnSwipeUp, onCheckedChange = { toggle { onSearchOnSwipeUpChanged(it) } }, accentColor = accent)
                 })
                 SettingsRow("System panel enabled", subtitle = "Enable access to the AXIOM system control panel.", trailing = {
-                    SettingsToggle(checked = settings.systemPanelEnabled, onCheckedChange = { toggle { onSystemPanelChanged(it) } })
+                    SettingsToggle(checked = settings.systemPanelEnabled, onCheckedChange = { toggle { onSystemPanelChanged(it) } }, accentColor = accent)
                 })
                 SettingsRow("Haptic feedback", trailing = {
-                    SettingsToggle(checked = settings.hapticFeedbackEnabled, onCheckedChange = { toggle { onHapticFeedbackChanged(it) } })
+                    SettingsToggle(checked = settings.hapticFeedbackEnabled, onCheckedChange = { toggle { onHapticFeedbackChanged(it) } }, accentColor = accent)
                 })
             }
 
             SettingsSection("System") {
+                SettingsRow("Choose Default Launcher", value = "OPEN", onClick = { haptic(); onChooseDefaultLauncher() })
+                SettingsRow("Open Phone Settings", value = "OPEN", onClick = { haptic(); onOpenPhoneSettings() })
                 SettingsRow("Reload apps", value = "RUN", onClick = { haptic(); onReloadApps() })
                 SettingsRow("Reset settings", value = "RESET", onClick = { haptic(); resetConfirmVisible = true })
-                SettingsRow("About AXIOM", subtitle = "Proprietary paid Android launcher by Outer-Void.")
             }
 
             SettingsSection("Modules") {
                 SettingsRow(
                     title = "AXIOM SHOOTER",
-                    value = if (axiomShooterIncluded) "Included" else "Unavailable",
-                    subtitle = "Hidden arcade Easter egg"
+                    value = if (axiomShooterIncluded) "v1.0000" else "Unavailable",
+                    subtitle = "Signal buried in the system."
                 )
                 SettingsRow(
                     title = "VOID.SYS",
@@ -198,6 +288,11 @@ fun SettingsScreen(
                     subtitle = "Planned for v1.1"
                 )
                 SettingsRow("Custom dock folders", value = "PLANNED", subtitle = "Folder slots open placeholders for now.")
+            }
+
+            SettingsSection("About") {
+                SettingsRow("About AXIOM", value = "OPEN", onClick = { haptic(); onOpenAbout() })
+                SettingsRow("Contact", value = "OPEN", onClick = { haptic(); onOpenContact() })
             }
 
             SettingsSection("VOID.SYS") {
@@ -240,7 +335,7 @@ fun SettingsScreen(
             title = { Text("RESET SETTINGS", color = TextPrimary, style = MaterialTheme.typography.titleLarge) },
             text = {
                 Text(
-                    "Restore AXIOM defaults: Monospace, VOID.SYS, 4-column grid, labels, and ambient boot.",
+                    "Restore AXIOM defaults: bundled font, VOID.SYS, 4-column grid, labels, and ambient boot.",
                     color = TextSecondary,
                     style = MaterialTheme.typography.bodyMedium
                 )

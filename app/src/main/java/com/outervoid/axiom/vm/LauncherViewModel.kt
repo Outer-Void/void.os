@@ -14,7 +14,10 @@ import androidx.lifecycle.viewModelScope
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.icon.BundledVoidSysIconProvider
 import com.outervoid.axiom.settings.AxiomSettings
+import com.outervoid.axiom.settings.ClockFormat
 import com.outervoid.axiom.settings.SettingsRepository
+import com.outervoid.axiom.settings.appKey
+import com.outervoid.axiom.ui.iconshape.IconShape
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,15 +36,18 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
-    val filteredApps: StateFlow<List<AppInfo>> = combine(_apps, _query) { apps, query ->
+    val settings: StateFlow<AxiomSettings> = settingsRepository.settings
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AxiomSettings.Defaults)
+    val drawerApps: StateFlow<List<AppInfo>> = combine(_apps, settings) { apps, settings ->
+        apps.filterNot { app -> appKey(app.packageName, app.activityName) in settings.hiddenApps }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val filteredApps: StateFlow<List<AppInfo>> = combine(drawerApps, _query) { apps, query ->
         val normalized = query.trim()
         if (normalized.isEmpty()) apps else apps.filter { app ->
             app.label.contains(normalized, ignoreCase = true) ||
                 app.packageName.contains(normalized, ignoreCase = true)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-    val settings: StateFlow<AxiomSettings> = settingsRepository.settings
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AxiomSettings.Defaults)
     private val _voidSysInstalled = MutableStateFlow(settingsRepository.isVoidSysInstalled())
     val voidSysInstalled: StateFlow<Boolean> = _voidSysInstalled.asStateFlow()
 
@@ -109,6 +115,21 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     fun setFont(key: String) = viewModelScope.launch { settingsRepository.updateFont(key) }
     fun setIconPack(packageName: String) = viewModelScope.launch { settingsRepository.updateIconPack(packageName) }
+    fun setIconShape(shape: IconShape) = viewModelScope.launch { settingsRepository.updateIconShape(shape) }
+    fun setFavoritesCount(count: Int) = viewModelScope.launch { settingsRepository.updateFavoritesCount(count) }
+    fun setAccentColor(key: String) = viewModelScope.launch { settingsRepository.updateAccentColor(key) }
+    fun setFavoritesLocked(locked: Boolean) = viewModelScope.launch { settingsRepository.updateFavoritesLocked(locked) }
+    fun setHomePanelCount(count: Int) = viewModelScope.launch { settingsRepository.updateHomePanelCount(count) }
+    fun setHiddenApps(keys: Set<String>) = viewModelScope.launch { settingsRepository.updateHiddenApps(keys) }
+    fun setClockFormat(format: ClockFormat) = viewModelScope.launch { settingsRepository.updateClockFormat(format) }
+    fun setLockScreenWallpaperEnabled(enabled: Boolean) =
+        viewModelScope.launch { settingsRepository.updateLockScreenWallpaperEnabled(enabled) }
+    fun setLeftFolderName(name: String) = viewModelScope.launch { settingsRepository.updateLeftFolderName(name) }
+    fun setRightFolderName(name: String) = viewModelScope.launch { settingsRepository.updateRightFolderName(name) }
+    fun setLeftFolderApps(keys: Set<String>) = viewModelScope.launch { settingsRepository.updateLeftFolderApps(keys) }
+    fun setRightFolderApps(keys: Set<String>) = viewModelScope.launch { settingsRepository.updateRightFolderApps(keys) }
+    fun setFolderIconStyle(style: String) = viewModelScope.launch { settingsRepository.updateFolderIconStyle(style) }
+    fun setFavoriteAppKeys(keys: Set<String>) = viewModelScope.launch { settingsRepository.updateFavoriteAppKeys(keys) }
     fun setShowAppLabels(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateShowAppLabels(enabled) }
     fun setGridColumns(columns: Int) = viewModelScope.launch { settingsRepository.updateGridColumns(columns) }
     fun setIconScale(scale: Float) = viewModelScope.launch { settingsRepository.updateIconScale(scale) }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,14 +19,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.outervoid.axiom.data.AppInfo
+import com.outervoid.axiom.ui.iconshape.IconShape
+import com.outervoid.axiom.ui.iconshape.iconShapeMask
 import com.outervoid.axiom.ui.theme.IconBackground
-import com.outervoid.axiom.ui.theme.IconBorder
 import com.outervoid.axiom.ui.theme.TextSecondary
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -38,12 +39,15 @@ fun AppIconCell(
     onLongClick: () -> Unit,
     showLabel: Boolean = true,
     iconScale: Float = 0.72f,
-    compactMode: Boolean = false
+    compactMode: Boolean = false,
+    iconShape: IconShape = IconShape.ROUNDED_SQUARE,
+    accentColor: Color = Color(0xFF1E1E1E)
 ) {
     val iconBitmap = remember(app.packageName, app.activityName) {
         app.icon.toBitmap(96, 96).asImageBitmap()
     }
 
+    val shape = iconShapeMask(iconShape)
     Column(
         modifier = Modifier
             .aspectRatio(if (compactMode) 0.86f else 0.74f)
@@ -54,8 +58,8 @@ fun AppIconCell(
         Box(
             modifier = Modifier
                 .size(if (compactMode) 50.dp else 60.dp)
-                .background(IconBackground, RoundedCornerShape(15.dp))
-                .border(1.dp, IconBorder, RoundedCornerShape(15.dp)),
+                .background(IconBackground, shape)
+                .border(1.dp, accentColor.copy(alpha = 0.55f), shape),
             contentAlignment = Alignment.Center
         ) {
             Image(

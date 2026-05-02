@@ -34,6 +34,21 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Confirm left and right custom folder dock slots open placeholder panels.
 - Confirm Settings opens.
 - Change fonts in Settings and confirm Home, App Drawer, Settings, System Panel, dialogs, and transition text use visibly different bundled fonts.
+- Change Accent Color and confirm headers, active toggles, dock controls, SYSTEM ONLINE, clock, and Axiom Shooter pulse change color.
+- Change Icon Shape and confirm Home favorites and App Drawer icon tiles change masks.
+- Change Clock Format and confirm Home clock follows System / 12 hour / 24 hour.
+- Tap the clock and confirm a clock/alarm app or supported fallback opens.
+- Tap the date and confirm a calendar app opens when present.
+- Change Favorites Count to 5, 10, 15, 20, and 25 and confirm Home changes slot count.
+- Enable Lock Favorites and confirm favorite long-press edit actions are blocked.
+- Set Home Panels to 2-5, swipe horizontally, and confirm widget panels appear.
+- Long-press a widget panel and confirm the picker lists real installed Android widget providers.
+- Hide an app in Settings > App Drawer > Hidden Apps and confirm it disappears from App Drawer/Search.
+- Use Choose Default Launcher and confirm Android default/home settings opens.
+- Use About AXIOM, GitHub links, and Email and confirm external intents open.
+- Use Phone Settings actions and confirm each opens an Android settings screen or falls back to general Settings.
+- Select apps for left/right dock folders and confirm those panels show and launch selected apps.
+- Set AXIOM Lock Screen Wallpaper and confirm success or the documented device restriction message.
 - Confirm System Panel opens only when `System panel enabled` is on.
 - Turn `System panel enabled` off and confirm the dock system control shows `SYSTEM PANEL DISABLED` with `Enable it in Settings to access the AXIOM system control panel.`
 

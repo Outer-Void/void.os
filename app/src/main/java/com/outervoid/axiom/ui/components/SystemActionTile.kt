@@ -90,8 +90,10 @@ private fun SystemActionGlyph(action: SystemAction, color: Color) {
                 drawRoundRect(color, topLeft = Offset(4.dp.toPx(), size.height * 0.28f), size = androidx.compose.ui.geometry.Size(size.width * 0.76f, size.height * 0.44f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(3.dp.toPx()), style = stroke)
                 drawLine(color, Offset(size.width * 0.85f, size.height * 0.42f), Offset(size.width * 0.85f, size.height * 0.58f), strokeWidth = 2.dp.toPx())
             }
-            SystemAction.Data -> drawBars(color)
-            SystemAction.DarkMode -> {
+            SystemAction.MobileNetwork,
+            SystemAction.DataUsage -> drawBars(color)
+            SystemAction.Display,
+            SystemAction.Wallpaper -> {
                 drawCircle(color, r, c, style = stroke)
                 drawCircle(color = androidx.compose.ui.graphics.Color.Black, radius = r * 0.82f, center = Offset(c.x + r * 0.45f, c.y - r * 0.2f))
             }
@@ -113,7 +115,10 @@ private fun SystemActionGlyph(action: SystemAction, color: Color) {
                 drawCircle(color, r * 1.05f, c, style = stroke)
             }
             SystemAction.Nfc -> drawRoundRect(color, Offset(size.width * 0.22f, size.height * 0.2f), androidx.compose.ui.geometry.Size(size.width * 0.56f, size.height * 0.6f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(6.dp.toPx()), style = stroke)
-            SystemAction.Sync -> {
+            SystemAction.Accounts,
+            SystemAction.DefaultApps,
+            SystemAction.HomeSettings,
+            SystemAction.SystemUpdate -> {
                 drawArc(color, 35f, 230f, false, style = stroke)
                 drawArc(color, 215f, 230f, false, style = stroke)
             }
@@ -151,6 +156,11 @@ private fun SystemActionGlyph(action: SystemAction, color: Color) {
                 drawLine(color, Offset(size.width * 0.18f, c.y), Offset(size.width * 0.35f, size.height * 0.72f), strokeWidth = 2.dp.toPx())
                 drawLine(color, Offset(size.width * 0.65f, size.height * 0.28f), Offset(size.width * 0.82f, c.y), strokeWidth = 2.dp.toPx())
                 drawLine(color, Offset(size.width * 0.82f, c.y), Offset(size.width * 0.65f, size.height * 0.72f), strokeWidth = 2.dp.toPx())
+            }
+            else -> {
+                drawCircle(color, r, c, style = stroke)
+                drawLine(color, Offset(c.x - r * 0.6f, c.y), Offset(c.x + r * 0.6f, c.y), strokeWidth = 2.dp.toPx())
+                drawLine(color, Offset(c.x, c.y - r * 0.6f), Offset(c.x, c.y + r * 0.6f), strokeWidth = 2.dp.toPx())
             }
         }
     }

@@ -1,8 +1,24 @@
 package com.outervoid.axiom.settings
 
+import com.outervoid.axiom.ui.iconshape.IconShape
+
 data class AxiomSettings(
     val selectedFontKey: String = DEFAULT_FONT_KEY,
     val selectedIconPackPackage: String = DEFAULT_ICON_PACK_PACKAGE,
+    val iconShape: IconShape = IconShape.ROUNDED_SQUARE,
+    val favoritesCount: Int = 10,
+    val accentColorKey: String = AccentColorOptions.DefaultKey,
+    val favoritesLocked: Boolean = false,
+    val homePanelCount: Int = 1,
+    val hiddenApps: Set<String> = emptySet(),
+    val clockFormat: ClockFormat = ClockFormat.SYSTEM,
+    val lockScreenWallpaperEnabled: Boolean = false,
+    val leftFolderName: String = "CUSTOM FOLDER",
+    val rightFolderName: String = "CUSTOM FOLDER",
+    val leftFolderAppPackages: Set<String> = emptySet(),
+    val rightFolderAppPackages: Set<String> = emptySet(),
+    val folderIconStyle: String = "FOLDER",
+    val favoriteAppKeys: Set<String> = emptySet(),
     val showAppLabels: Boolean = true,
     val gridColumns: Int = 4,
     val iconScale: Float = 0.72f,

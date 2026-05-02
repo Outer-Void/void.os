@@ -6,6 +6,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.core.MutablePreferences
+import com.outervoid.axiom.ui.iconshape.IconShape
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -23,6 +25,20 @@ class SettingsRepository(private val context: Context) {
                 selectedFontKey = preferences[SettingsKeys.SelectedFontKey] ?: AxiomSettings.DEFAULT_FONT_KEY,
                 selectedIconPackPackage = preferences[SettingsKeys.SelectedIconPackPackage]
                     ?: AxiomSettings.DEFAULT_ICON_PACK_PACKAGE,
+                iconShape = enumValue(preferences[SettingsKeys.IconShape], IconShape.ROUNDED_SQUARE),
+                favoritesCount = (preferences[SettingsKeys.FavoritesCount] ?: 10).coerceIn(5, 25),
+                accentColorKey = preferences[SettingsKeys.AccentColorKey] ?: AccentColorOptions.DefaultKey,
+                favoritesLocked = preferences[SettingsKeys.FavoritesLocked] ?: false,
+                homePanelCount = (preferences[SettingsKeys.HomePanelCount] ?: 1).coerceIn(1, 5),
+                hiddenApps = preferences[SettingsKeys.HiddenApps] ?: emptySet(),
+                clockFormat = enumValue(preferences[SettingsKeys.ClockFormat], ClockFormat.SYSTEM),
+                lockScreenWallpaperEnabled = preferences[SettingsKeys.LockScreenWallpaperEnabled] ?: false,
+                leftFolderName = preferences[SettingsKeys.LeftFolderName] ?: "CUSTOM FOLDER",
+                rightFolderName = preferences[SettingsKeys.RightFolderName] ?: "CUSTOM FOLDER",
+                leftFolderAppPackages = preferences[SettingsKeys.LeftFolderAppPackages] ?: emptySet(),
+                rightFolderAppPackages = preferences[SettingsKeys.RightFolderAppPackages] ?: emptySet(),
+                folderIconStyle = preferences[SettingsKeys.FolderIconStyle] ?: "FOLDER",
+                favoriteAppKeys = preferences[SettingsKeys.FavoriteAppKeys] ?: emptySet(),
                 showAppLabels = preferences[SettingsKeys.ShowAppLabels] ?: true,
                 gridColumns = (preferences[SettingsKeys.GridColumns] ?: 4).coerceIn(3, 6),
                 iconScale = (preferences[SettingsKeys.IconScale] ?: 0.72f).coerceIn(0.55f, 0.95f),
@@ -43,6 +59,22 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun updateIconPack(packageName: String) =
         update { it[SettingsKeys.SelectedIconPackPackage] = packageName }
+
+    suspend fun updateIconShape(shape: IconShape) = update { it[SettingsKeys.IconShape] = shape.name }
+    suspend fun updateFavoritesCount(count: Int) = update { it[SettingsKeys.FavoritesCount] = count.coerceIn(5, 25) }
+    suspend fun updateAccentColor(key: String) = update { it[SettingsKeys.AccentColorKey] = key }
+    suspend fun updateFavoritesLocked(locked: Boolean) = update { it[SettingsKeys.FavoritesLocked] = locked }
+    suspend fun updateHomePanelCount(count: Int) = update { it[SettingsKeys.HomePanelCount] = count.coerceIn(1, 5) }
+    suspend fun updateHiddenApps(keys: Set<String>) = update { it[SettingsKeys.HiddenApps] = keys }
+    suspend fun updateClockFormat(format: ClockFormat) = update { it[SettingsKeys.ClockFormat] = format.name }
+    suspend fun updateLockScreenWallpaperEnabled(enabled: Boolean) =
+        update { it[SettingsKeys.LockScreenWallpaperEnabled] = enabled }
+    suspend fun updateLeftFolderName(name: String) = update { it[SettingsKeys.LeftFolderName] = name.ifBlank { "CUSTOM FOLDER" } }
+    suspend fun updateRightFolderName(name: String) = update { it[SettingsKeys.RightFolderName] = name.ifBlank { "CUSTOM FOLDER" } }
+    suspend fun updateLeftFolderApps(keys: Set<String>) = update { it[SettingsKeys.LeftFolderAppPackages] = keys }
+    suspend fun updateRightFolderApps(keys: Set<String>) = update { it[SettingsKeys.RightFolderAppPackages] = keys }
+    suspend fun updateFolderIconStyle(style: String) = update { it[SettingsKeys.FolderIconStyle] = style }
+    suspend fun updateFavoriteAppKeys(keys: Set<String>) = update { it[SettingsKeys.FavoriteAppKeys] = keys }
 
     suspend fun updateShowAppLabels(enabled: Boolean) = update { it[SettingsKeys.ShowAppLabels] = enabled }
 
@@ -90,10 +122,13 @@ class SettingsRepository(private val context: Context) {
     private suspend fun update(block: (MutablePreferencesEditor) -> Unit) {
         context.axiomSettingsStore.edit { preferences -> block(MutablePreferencesEditor(preferences)) }
     }
+
+    private inline fun <reified T : Enum<T>> enumValue(value: String?, fallback: T): T =
+        value?.let { runCatching { enumValueOf<T>(it) }.getOrNull() } ?: fallback
 }
 
 class MutablePreferencesEditor internal constructor(
-    private val preferences: androidx.datastore.preferences.core.MutablePreferences
+    private val preferences: MutablePreferences
 ) {
     operator fun <T> set(key: Preferences.Key<T>, value: T) {
         preferences[key] = value

@@ -28,7 +28,10 @@ import com.outervoid.axiom.ui.theme.TextPrimary
 import kotlinx.coroutines.delay
 
 @Composable
-fun AxiomShooterTransitionScreen(onLaunch: () -> Unit) {
+fun AxiomShooterTransitionScreen(
+    accentColor: Color = Amber,
+    onLaunch: () -> Unit
+) {
     val pulse = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
         pulse.animateTo(1f, tween(950))
@@ -44,12 +47,12 @@ fun AxiomShooterTransitionScreen(onLaunch: () -> Unit) {
         Canvas(Modifier.fillMaxSize()) {
             val radius = size.minDimension * (0.08f + pulse.value * 0.76f)
             drawCircle(
-                color = Color(0xFFFFD000).copy(alpha = 0.28f * (1f - pulse.value)),
+                color = accentColor.copy(alpha = 0.28f * (1f - pulse.value)),
                 radius = radius,
                 center = center,
                 style = Stroke(width = 2.dp.toPx())
             )
-            drawCircle(color = Color(0xFFFFD000), radius = 5.dp.toPx(), center = center)
+            drawCircle(color = accentColor, radius = 5.dp.toPx(), center = center)
         }
         Column(
             modifier = Modifier
@@ -57,7 +60,7 @@ fun AxiomShooterTransitionScreen(onLaunch: () -> Unit) {
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("AXIOM SHOOTER", color = Amber, style = MaterialTheme.typography.titleLarge)
+            Text("AXIOM SHOOTER", color = accentColor, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(8.dp))
             Text("SYSTEM ONLINE.", color = TextPrimary, style = MaterialTheme.typography.labelLarge)
         }
