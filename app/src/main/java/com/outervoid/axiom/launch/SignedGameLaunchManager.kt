@@ -5,6 +5,7 @@ import android.content.Intent
 import com.outervoid.axiom.security.EntitlementState
 import com.outervoid.axiom.security.LicenseGate
 import com.outervoid.axiom.security.SignatureGate
+import com.outervoid.voidgame.VoidGameActivity
 import java.security.MessageDigest
 import java.security.SecureRandom
 
@@ -14,17 +15,10 @@ class SignedGameLaunchManager(private val context: Context) {
     fun canLaunch(entitlementState: EntitlementState): Boolean =
         LicenseGate.unlocks(entitlementState) && signatureGate.unlocks(entitlementState)
 
-    fun isGameBundled(): Boolean = runCatching {
-        val intent = Intent().setClassName(context.packageName, TargetActivity)
-        intent.resolveActivity(context.packageManager) != null
-    }.getOrDefault(false)
-
     fun launch(entitlementState: EntitlementState): LaunchResult {
         if (!canLaunch(entitlementState)) return LaunchResult.Locked
-        if (!isGameBundled()) return LaunchResult.Unavailable
         val token = createToken(entitlementState)
-        val intent = Intent().apply {
-            setClassName(context.packageName, TargetActivity)
+        val intent = Intent(context, VoidGameActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             putExtra("axiom_source_package", SourcePackage)
             putExtra("axiom_target_package", token.targetPackage)
@@ -69,7 +63,6 @@ class SignedGameLaunchManager(private val context: Context) {
     companion object {
         const val SourcePackage = "com.outervoid.axiom"
         const val TargetPackage = "com.outervoid.voidgame"
-        const val TargetActivity = "com.outervoid.voidgame.VoidGameActivity"
         private const val TokenTtlMillis = 30_000L
     }
 }

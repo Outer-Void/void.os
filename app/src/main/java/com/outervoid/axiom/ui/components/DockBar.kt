@@ -31,27 +31,32 @@ import com.outervoid.axiom.ui.theme.SurfaceAlt
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DockBar(
+    onLeftFolder: () -> Unit,
     onSettings: () -> Unit,
     onLongClickSettings: () -> Unit = {},
-    onSearch: () -> Unit,
+    onAppDrawer: () -> Unit,
     onSystem: () -> Unit = {},
+    onRightFolder: () -> Unit,
     compactMode: Boolean = false,
     accentColor: Color = Amber
 ) {
-    val buttonSize = if (compactMode) 48.dp else 54.dp
+    val buttonSize = if (compactMode) 42.dp else 48.dp
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier
-                .widthIn(max = if (compactMode) 232.dp else 260.dp)
+                .widthIn(max = if (compactMode) 304.dp else 336.dp)
                 .background(SurfaceAlt, RoundedCornerShape(22.dp))
                 .border(1.dp, BorderDim, RoundedCornerShape(22.dp))
-                .padding(horizontal = if (compactMode) 10.dp else 12.dp, vertical = if (compactMode) 8.dp else 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(if (compactMode) 14.dp else 18.dp),
+                .padding(horizontal = if (compactMode) 8.dp else 10.dp, vertical = if (compactMode) 7.dp else 9.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (compactMode) 8.dp else 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            DockButton(onClick = onLeftFolder, contentDescription = "Left custom folder", size = buttonSize, accentColor = accentColor) {
+                FolderIcon(it)
+            }
             DockButton(
                 onClick = onSettings,
                 onLongClick = onLongClickSettings,
@@ -61,11 +66,14 @@ fun DockBar(
             ) {
                 PowerDialIcon(it)
             }
-            DockButton(onClick = onSearch, contentDescription = "Search apps", size = buttonSize, accentColor = accentColor, focal = true) {
+            DockButton(onClick = onAppDrawer, contentDescription = "App drawer", size = buttonSize, accentColor = accentColor, focal = true) {
                 GridDotsIcon(it)
             }
             DockButton(onClick = onSystem, contentDescription = "System", size = buttonSize, accentColor = accentColor) {
                 RingIndicatorIcon(it)
+            }
+            DockButton(onClick = onRightFolder, contentDescription = "Right custom folder", size = buttonSize, accentColor = accentColor) {
+                FolderIcon(it)
             }
         }
     }
@@ -150,5 +158,25 @@ private fun RingIndicatorIcon(color: Color) {
             style = Stroke(width = 2.dp.toPx())
         )
         drawCircle(color = color, radius = 2.dp.toPx(), center = Offset(size.width * 0.72f, size.height * 0.28f))
+    }
+}
+
+@Composable
+private fun FolderIcon(color: Color) {
+    Canvas(Modifier.size(24.dp)) {
+        val stroke = 2.dp.toPx()
+        val top = 7.dp.toPx()
+        val left = 3.dp.toPx()
+        val tabRight = 10.dp.toPx()
+        val tabBottom = 10.dp.toPx()
+        val right = size.width - 3.dp.toPx()
+        val bottom = size.height - 5.dp.toPx()
+        drawLine(color, Offset(left, tabBottom), Offset(left, bottom), stroke)
+        drawLine(color, Offset(left, bottom), Offset(right, bottom), stroke)
+        drawLine(color, Offset(right, bottom), Offset(right, tabBottom), stroke)
+        drawLine(color, Offset(right, tabBottom), Offset(tabRight, tabBottom), stroke)
+        drawLine(color, Offset(tabRight, tabBottom), Offset(tabRight - 2.dp.toPx(), top), stroke)
+        drawLine(color, Offset(tabRight - 2.dp.toPx(), top), Offset(left, top), stroke)
+        drawLine(color, Offset(left, top), Offset(left, tabBottom), stroke)
     }
 }

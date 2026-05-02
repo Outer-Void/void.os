@@ -14,7 +14,7 @@ AXIOM Launcher settings are stored with AndroidX DataStore Preferences. The app 
 
 ## Defaults
 
-- Font: `jetbrains_mono`
+- Font: `monospace`
 - Icon pack: `com.outervoid.voidsys`
 - App labels: enabled
 - Grid columns: `4`
@@ -24,26 +24,35 @@ AXIOM Launcher settings are stored with AndroidX DataStore Preferences. The app 
 - Amber accent: enabled
 - Compact mode: disabled
 - Status/navigation hiding: disabled
-- Swipe-up search: enabled
+- Swipe-up App Drawer: enabled
 - System panel: disabled by default; when enabled, dock access opens the AXIOM internal control panel
 - Haptics: enabled
 
 ## Fonts
 
-The settings catalog includes Core AXIOM mono fonts, Nerd Font variants, popular sans, popular serif, and display/system choices. Fonts are referenced by system family name. AXIOM does not bundle proprietary font files; unavailable fonts fall back through Android typeface resolution and keep the app usable with monospace styling.
+The active settings catalog only exposes bundled or Android-backed font choices. Because AXIOM currently does not bundle font files, active choices are limited to Android system families that visibly change UI on device:
+
+- Default / Sans
+- Serif
+- Monospace
+- Casual
+- Cursive
+
+Future expanded font packs may add JetBrains Mono, Roboto Mono, Space Mono, Fira Code, Inter, Orbitron, Share Tech Mono, and other bundled open-license fonts after the files are packaged in `res/font`.
 
 ## Icon Pack Logic
 
-VOID.SYS is the intended and default icon system:
+VOID.SYS is the native default icon system:
 
 - Default package: `com.outervoid.voidsys`
-- If VOID.SYS is installed, AXIOM reports it as `ACTIVE / INSTALLED`.
-- If it is missing, AXIOM keeps VOID.SYS selected but falls back to system app icons.
+- Native bundled icon assets are included in AXIOM.
+- If standalone VOID.SYS is installed, AXIOM reports the standalone package as installed.
+- If standalone VOID.SYS is missing, AXIOM native icons remain available.
 - `System Default` bypasses VOID.SYS and uses installed app icons.
 
 ## Known Limitations
 
-Generic third-party icon pack parsing is not implemented in A5. The `Installed Icon Pack` option exists as architecture for a later phase, but appfilter parsing and user-selected package scanning remain future work.
+Generic third-party icon pack parsing is not implemented in the active settings UI. Appfilter parsing and user-selected package scanning remain future work.
 
 ## System Panel Access
 

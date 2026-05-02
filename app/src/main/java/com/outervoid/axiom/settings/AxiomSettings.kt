@@ -18,7 +18,7 @@ data class AxiomSettings(
     val hapticFeedbackEnabled: Boolean = true
 ) {
     companion object {
-        const val DEFAULT_FONT_KEY = "jetbrains_mono"
+        const val DEFAULT_FONT_KEY = "monospace"
         const val DEFAULT_ICON_PACK_PACKAGE = "com.outervoid.voidsys"
         val Defaults = AxiomSettings()
     }

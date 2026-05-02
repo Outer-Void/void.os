@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.settings.AxiomSettings
 import com.outervoid.axiom.settings.FontOptions
 import com.outervoid.axiom.settings.IconPackOptions
-import com.outervoid.axiom.ui.components.CornerBrackets
 import com.outervoid.axiom.ui.components.SettingsDropdown
 import com.outervoid.axiom.ui.components.SettingsRow
 import com.outervoid.axiom.ui.components.SettingsSection
@@ -56,7 +55,6 @@ fun SettingsScreen(
     onHideNavigationBarChanged: (Boolean) -> Unit,
     onSearchOnSwipeUpChanged: (Boolean) -> Unit,
     onSystemPanelChanged: (Boolean) -> Unit,
-    onTerminalPanelChanged: (Boolean) -> Unit,
     onHapticFeedbackChanged: (Boolean) -> Unit,
     onReloadApps: () -> Unit,
     onResetSettings: () -> Unit,
@@ -163,7 +161,7 @@ fun SettingsScreen(
             }
 
             SettingsSection("Controls") {
-                SettingsRow("Swipe up opens search", trailing = {
+                SettingsRow("Swipe up opens App Drawer", trailing = {
                     SettingsToggle(checked = settings.searchOnSwipeUp, onCheckedChange = { toggle { onSearchOnSwipeUpChanged(it) } })
                 })
                 SettingsRow("System panel enabled", subtitle = "Enable access to the AXIOM system control panel.", trailing = {
@@ -184,31 +182,22 @@ fun SettingsScreen(
                 SettingsRow(
                     title = "AXIOM SHOOTER",
                     value = if (axiomShooterIncluded) "Included" else "Unavailable",
-                    subtitle = "Hidden arcade module"
+                    subtitle = "Hidden arcade Easter egg"
                 )
                 SettingsRow(
                     title = "VOID.SYS",
                     value = "Native: Included",
-                    subtitle = "Standalone: ${if (voidSysInstalled) "Installed" else "Not Installed"}"
+                    subtitle = "Standalone package: ${if (voidSysInstalled) "Installed" else "Optional / Not Installed"}"
                 )
             }
 
             SettingsSection("Developer") {
                 SettingsRow(
                     title = "Terminal Panel",
-                    value = if (settings.terminalPanelEnabled) "ENABLED" else "DISABLED",
-                    subtitle = if (settings.terminalPanelEnabled) {
-                        "Terminal Panel is a future AXIOM feature (v1.1)."
-                    } else {
-                        "Status: Disabled"
-                    },
-                    trailing = {
-                        SettingsToggle(
-                            checked = settings.terminalPanelEnabled,
-                            onCheckedChange = { toggle { onTerminalPanelChanged(it) } }
-                        )
-                    }
+                    value = "PLANNED",
+                    subtitle = "Planned for v1.1"
                 )
+                SettingsRow("Custom dock folders", value = "PLANNED", subtitle = "Folder slots open placeholders for now.")
             }
 
             SettingsSection("VOID.SYS") {
@@ -223,7 +212,6 @@ fun SettingsScreen(
             }
             Spacer(Modifier.height(24.dp))
         }
-        CornerBrackets()
     }
 
     if (resetConfirmVisible) {
@@ -252,7 +240,7 @@ fun SettingsScreen(
             title = { Text("RESET SETTINGS", color = TextPrimary, style = MaterialTheme.typography.titleLarge) },
             text = {
                 Text(
-                    "Restore AXIOM defaults: JetBrains Mono, VOID.SYS, 4-column grid, labels, and ambient boot.",
+                    "Restore AXIOM defaults: Monospace, VOID.SYS, 4-column grid, labels, and ambient boot.",
                     color = TextSecondary,
                     style = MaterialTheme.typography.bodyMedium
                 )

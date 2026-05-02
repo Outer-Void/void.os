@@ -39,7 +39,9 @@ import kotlinx.coroutines.delay
 fun SystemPanelScreen(
     settings: AxiomSettings,
     onOpenSettings: () -> Unit,
-    onOpenSearch: () -> Unit,
+    onOpenAppDrawer: () -> Unit,
+    onOpenLeftFolder: () -> Unit,
+    onOpenRightFolder: () -> Unit,
     onReturnHome: () -> Unit
 ) {
     val context = LocalContext.current
@@ -104,13 +106,15 @@ fun SystemPanelScreen(
             }
             Spacer(Modifier.height(if (settings.compactMode) 10.dp else 16.dp))
             DockBar(
+                onLeftFolder = { haptic(); onOpenLeftFolder() },
                 onSettings = { haptic(); onOpenSettings() },
-                onSearch = { haptic(); onOpenSearch() },
+                onAppDrawer = { haptic(); onOpenAppDrawer() },
                 onSystem = { haptic(); onReturnHome() },
+                onRightFolder = { haptic(); onOpenRightFolder() },
                 compactMode = settings.compactMode,
                 accentColor = accent
             )
         }
-        CornerBrackets()
+        CornerBrackets(topPadding = 74.dp, bottomPadding = 104.dp, alpha = 0.64f)
     }
 }

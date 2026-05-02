@@ -26,9 +26,10 @@ import com.outervoid.axiom.security.LicenseGate
 import com.outervoid.axiom.security.SignatureGate
 import com.outervoid.axiom.ui.screens.AxiomShooterTransitionScreen
 import com.outervoid.axiom.ui.screens.AmbientScreen
+import com.outervoid.axiom.ui.screens.AppDrawerScreen
+import com.outervoid.axiom.ui.screens.CustomFolderPanel
 import com.outervoid.axiom.ui.screens.HomeScreen
 import com.outervoid.axiom.ui.screens.LockedScreen
-import com.outervoid.axiom.ui.screens.SearchScreen
 import com.outervoid.axiom.ui.screens.SettingsScreen
 import com.outervoid.axiom.ui.screens.SystemPanelScreen
 import com.outervoid.axiom.ui.state.LauncherState
@@ -57,7 +58,6 @@ class MainActivity : ComponentActivity() {
             val moduleStatusManager = remember { ModuleStatusManager(applicationContext) }
             val entitlementState by entitlementManager.state.collectAsState()
             val settings by vm.settings.collectAsState()
-            val apps by vm.apps.collectAsState()
             val filteredApps by vm.filteredApps.collectAsState()
             val query by vm.query.collectAsState()
             val voidSysInstalled by moduleStatusManager.voidSysInstalled.collectAsState()
@@ -123,7 +123,14 @@ class MainActivity : ComponentActivity() {
                 }
 
                 BackHandler(enabled = state == LauncherState.Home) {}
-                BackHandler(enabled = state == LauncherState.Search || state == LauncherState.Settings || state == LauncherState.SystemPanel || state == LauncherState.AxiomShooterTransition) {
+                BackHandler(
+                    enabled = state == LauncherState.AppDrawer ||
+                        state == LauncherState.Settings ||
+                        state == LauncherState.SystemPanel ||
+                        state == LauncherState.LeftFolder ||
+                        state == LauncherState.RightFolder ||
+                        state == LauncherState.AxiomShooterTransition
+                ) {
                     state = LauncherState.Home
                 }
                 when (state) {
@@ -131,10 +138,8 @@ class MainActivity : ComponentActivity() {
                     LauncherState.Home -> HomeScreen(
                         date = date,
                         time = time,
-                        apps = apps,
                         settings = settings,
-                        vm = vm,
-                        onOpenSearch = { state = LauncherState.Search },
+                        onOpenAppDrawer = { state = LauncherState.AppDrawer },
                         onOpenSettings = { state = LauncherState.Settings },
                         onOpenSystemPanel = {
                             if (settings.systemPanelEnabled) {
@@ -143,11 +148,13 @@ class MainActivity : ComponentActivity() {
                                 systemPanelDisabledVisible = true
                             }
                         },
+                        onOpenLeftFolder = { state = LauncherState.LeftFolder },
+                        onOpenRightFolder = { state = LauncherState.RightFolder },
                         onLaunchShooter = {
                             state = LauncherState.AxiomShooterTransition
                         }
                     )
-                    LauncherState.Search -> SearchScreen(
+                    LauncherState.AppDrawer -> AppDrawerScreen(
                         query = query,
                         apps = filteredApps,
                         settings = settings,
@@ -158,6 +165,8 @@ class MainActivity : ComponentActivity() {
                         },
                         onClose = { state = LauncherState.Home }
                     )
+                    LauncherState.LeftFolder -> CustomFolderPanel(settings = settings, side = "LEFT SLOT")
+                    LauncherState.RightFolder -> CustomFolderPanel(settings = settings, side = "RIGHT SLOT")
                     LauncherState.Settings -> SettingsScreen(
                         settings = settings,
                         voidSysInstalled = voidSysInstalled,
@@ -174,7 +183,6 @@ class MainActivity : ComponentActivity() {
                         onHideNavigationBarChanged = vm::setHideNavigationBar,
                         onSearchOnSwipeUpChanged = vm::setSearchOnSwipeUp,
                         onSystemPanelChanged = vm::setSystemPanel,
-                        onTerminalPanelChanged = vm::setTerminalPanel,
                         onHapticFeedbackChanged = vm::setHapticFeedback,
                         onReloadApps = vm::loadApps,
                         onResetSettings = vm::resetSettings,
@@ -183,7 +191,9 @@ class MainActivity : ComponentActivity() {
                     LauncherState.SystemPanel -> SystemPanelScreen(
                         settings = settings,
                         onOpenSettings = { state = LauncherState.Settings },
-                        onOpenSearch = { state = LauncherState.Search },
+                        onOpenAppDrawer = { state = LauncherState.AppDrawer },
+                        onOpenLeftFolder = { state = LauncherState.LeftFolder },
+                        onOpenRightFolder = { state = LauncherState.RightFolder },
                         onReturnHome = { state = LauncherState.Home }
                     )
                     LauncherState.AxiomShooterTransition -> AxiomShooterTransitionScreen(

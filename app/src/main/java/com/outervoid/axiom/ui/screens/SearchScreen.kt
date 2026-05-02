@@ -88,7 +88,7 @@ fun SearchScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("SEARCH APPS", color = accent, style = MaterialTheme.typography.titleLarge)
+                Text("APP DRAWER", color = accent, style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.width(8.dp))
                 Spacer(
                     Modifier
@@ -142,6 +142,25 @@ fun SearchScreen(
                 }
             }
         }
-        CornerBrackets()
+        CornerBrackets(topPadding = 74.dp, bottomPadding = 36.dp, alpha = 0.68f)
     }
+}
+
+@Composable
+fun AppDrawerScreen(
+    query: String,
+    apps: List<AppInfo>,
+    settings: AxiomSettings,
+    onQueryChange: (String) -> Unit,
+    onLaunch: (AppInfo) -> Unit,
+    onClose: () -> Unit
+) {
+    SearchScreen(
+        query = query,
+        apps = apps,
+        settings = settings,
+        onQueryChange = onQueryChange,
+        onLaunch = onLaunch,
+        onClose = onClose
+    )
 }
