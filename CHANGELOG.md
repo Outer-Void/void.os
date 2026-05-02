@@ -1,5 +1,11 @@
 # Changelog
 
+## Terminal Panel Scaffold
+
+- Added developer toggle placeholder.
+- Added documentation.
+- Feature scheduled for v1.1.
+
 ## Final Integration Tightening
 
 - Split AXIOM Shooter missing/locked/unavailable dialogs.

@@ -182,6 +182,7 @@ class MainActivity : ComponentActivity() {
                         onHideNavigationBarChanged = vm::setHideNavigationBar,
                         onSearchOnSwipeUpChanged = vm::setSearchOnSwipeUp,
                         onSystemPanelChanged = vm::setSystemPanel,
+                        onTerminalPanelChanged = vm::setTerminalPanel,
                         onHapticFeedbackChanged = vm::setHapticFeedback,
                         onReloadApps = vm::loadApps,
                         onResetSettings = vm::resetSettings,

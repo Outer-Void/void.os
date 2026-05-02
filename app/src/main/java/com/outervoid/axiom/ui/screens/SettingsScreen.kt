@@ -56,6 +56,7 @@ fun SettingsScreen(
     onHideNavigationBarChanged: (Boolean) -> Unit,
     onSearchOnSwipeUpChanged: (Boolean) -> Unit,
     onSystemPanelChanged: (Boolean) -> Unit,
+    onTerminalPanelChanged: (Boolean) -> Unit,
     onHapticFeedbackChanged: (Boolean) -> Unit,
     onReloadApps: () -> Unit,
     onResetSettings: () -> Unit,
@@ -189,6 +190,24 @@ fun SettingsScreen(
                     title = "VOID.SYS",
                     value = if (voidSysInstalled) "INSTALLED" else "NOT INSTALLED",
                     subtitle = "Default icon system."
+                )
+            }
+
+            SettingsSection("Developer") {
+                SettingsRow(
+                    title = "Terminal Panel",
+                    value = if (settings.terminalPanelEnabled) "ENABLED" else "DISABLED",
+                    subtitle = if (settings.terminalPanelEnabled) {
+                        "Terminal Panel is a future AXIOM feature (v1.1)."
+                    } else {
+                        "Status: Disabled"
+                    },
+                    trailing = {
+                        SettingsToggle(
+                            checked = settings.terminalPanelEnabled,
+                            onCheckedChange = { toggle { onTerminalPanelChanged(it) } }
+                        )
+                    }
                 )
             }
 

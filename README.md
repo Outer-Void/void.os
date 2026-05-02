@@ -22,6 +22,10 @@ Architecture plan: [docs/licensing-backend-plan.md](docs/licensing-backend-plan.
 
 Current integration hardening includes System Panel disabled-state enforcement, reactive module status for VOID.SYS and Axiom Shooter, separated Axiom Shooter missing/locked/unavailable states, protected Axiom Shooter launch routing, and VOID.SYS native icon lookup. Device-test instructions are available in [docs/device-testing.md](docs/device-testing.md). Real licensing backend work remains future work after device behavior confirmation.
 
+## Planned Features (v1.1)
+
+- **AXIOM Terminal Panel**: optional developer feature documented in [docs/terminal-panel.md](docs/terminal-panel.md). It is not included in the current build.
+
 ## Build
 
 ```bash

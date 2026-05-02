@@ -19,5 +19,6 @@ object SettingsKeys {
     val HideNavigationBar = booleanPreferencesKey("hide_navigation_bar")
     val SearchOnSwipeUp = booleanPreferencesKey("search_on_swipe_up")
     val SystemPanelEnabled = booleanPreferencesKey("system_panel_enabled")
+    val TerminalPanelEnabled = booleanPreferencesKey("terminal_panel_enabled")
     val HapticFeedbackEnabled = booleanPreferencesKey("haptic_feedback_enabled")
 }

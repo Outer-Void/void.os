@@ -120,6 +120,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun setHideNavigationBar(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateHideNavigationBar(enabled) }
     fun setSearchOnSwipeUp(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateSearchOnSwipeUp(enabled) }
     fun setSystemPanel(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateSystemPanel(enabled) }
+    fun setTerminalPanel(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateTerminalPanel(enabled) }
     fun setHapticFeedback(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateHapticFeedback(enabled) }
     fun resetSettings() = viewModelScope.launch { settingsRepository.reset() }
 

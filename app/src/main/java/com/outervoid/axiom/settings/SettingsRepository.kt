@@ -34,6 +34,7 @@ class SettingsRepository(private val context: Context) {
                 hideNavigationBar = preferences[SettingsKeys.HideNavigationBar] ?: false,
                 searchOnSwipeUp = preferences[SettingsKeys.SearchOnSwipeUp] ?: true,
                 systemPanelEnabled = preferences[SettingsKeys.SystemPanelEnabled] ?: false,
+                terminalPanelEnabled = preferences[SettingsKeys.TerminalPanelEnabled] ?: false,
                 hapticFeedbackEnabled = preferences[SettingsKeys.HapticFeedbackEnabled] ?: true
             )
         }
@@ -69,6 +70,8 @@ class SettingsRepository(private val context: Context) {
         update { it[SettingsKeys.SearchOnSwipeUp] = enabled }
 
     suspend fun updateSystemPanel(enabled: Boolean) = update { it[SettingsKeys.SystemPanelEnabled] = enabled }
+
+    suspend fun updateTerminalPanel(enabled: Boolean) = update { it[SettingsKeys.TerminalPanelEnabled] = enabled }
 
     suspend fun updateHapticFeedback(enabled: Boolean) =
         update { it[SettingsKeys.HapticFeedbackEnabled] = enabled }

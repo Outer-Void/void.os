@@ -14,6 +14,7 @@ data class AxiomSettings(
     val hideNavigationBar: Boolean = false,
     val searchOnSwipeUp: Boolean = true,
     val systemPanelEnabled: Boolean = false,
+    val terminalPanelEnabled: Boolean = false,
     val hapticFeedbackEnabled: Boolean = true
 ) {
     companion object {
