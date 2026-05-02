@@ -38,7 +38,7 @@ class SignedGameLaunchManager(private val context: Context) {
         return runCatching {
             context.startActivity(intent)
             LaunchResult.Started
-        }.getOrDefault(LaunchResult.Missing)
+        }.getOrDefault(LaunchResult.Unavailable)
     }
 
     private fun createToken(entitlementState: EntitlementState): SignedLaunchToken {
@@ -65,6 +65,7 @@ class SignedGameLaunchManager(private val context: Context) {
         data object Started : LaunchResult
         data object Missing : LaunchResult
         data object Locked : LaunchResult
+        data object Unavailable : LaunchResult
     }
 
     companion object {

@@ -1,5 +1,12 @@
 # Changelog
 
+## Final Integration Tightening
+
+- Split AXIOM Shooter missing/locked/unavailable dialogs.
+- Hardened System Panel setting enforcement.
+- Updated full device-test instructions.
+
+
 ## Licensing Backend Planning
 
 - Added entitlement/server verification architecture plan.

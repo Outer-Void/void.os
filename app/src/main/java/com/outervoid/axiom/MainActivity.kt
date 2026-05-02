@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
             val voidSysInstalled by moduleStatusManager.voidSysInstalled.collectAsState()
             val gameInstalled by moduleStatusManager.voidGameInstalled.collectAsState()
             val productUnlocked = LicenseGate.unlocks(entitlementState) && signatureGate.unlocks(entitlementState)
-            var shooterDialog by remember { mutableStateOf<String?>(null) }
+            var shooterDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
             var systemPanelDisabledVisible by remember { mutableStateOf(false) }
 
             DisposableEffect(moduleStatusManager) {
@@ -107,6 +108,13 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                LaunchedEffect(state, settings.systemPanelEnabled) {
+                    if (state == LauncherState.SystemPanel && !settings.systemPanelEnabled) {
+                        state = LauncherState.Home
+                        systemPanelDisabledVisible = true
+                    }
+                }
+
                 if (!productUnlocked) {
                     LockedScreen(
                         onCheckLicense = entitlementManager::refresh,
@@ -140,7 +148,10 @@ class MainActivity : ComponentActivity() {
                             if (gameInstalled) {
                                 state = LauncherState.AxiomShooterTransition
                             } else {
-                                shooterDialog = "This module is available through AXIOM Launcher."
+                                shooterDialog = AxiomDialogState(
+                                    title = "AXIOM SHOOTER NOT INSTALLED",
+                                    message = "Install the AXIOM Shooter module to continue."
+                                )
                             }
                         }
                     )
@@ -186,25 +197,35 @@ class MainActivity : ComponentActivity() {
                         onLaunch = {
                             when (gameLaunchManager.launch(entitlementState)) {
                                 SignedGameLaunchManager.LaunchResult.Started -> Unit
-                                SignedGameLaunchManager.LaunchResult.Missing -> shooterDialog = "AXIOM SHOOTER not installed."
-                                SignedGameLaunchManager.LaunchResult.Locked -> shooterDialog = "AXIOM SHOOTER locked."
+                                SignedGameLaunchManager.LaunchResult.Missing -> shooterDialog = AxiomDialogState(
+                                    title = "AXIOM SHOOTER NOT INSTALLED",
+                                    message = "Install the AXIOM Shooter module to continue."
+                                )
+                                SignedGameLaunchManager.LaunchResult.Locked -> shooterDialog = AxiomDialogState(
+                                    title = "AXIOM SHOOTER LOCKED",
+                                    message = "This protected module requires a valid AXIOM entitlement."
+                                )
+                                SignedGameLaunchManager.LaunchResult.Unavailable -> shooterDialog = AxiomDialogState(
+                                    title = "AXIOM SHOOTER UNAVAILABLE",
+                                    message = "The module could not be opened."
+                                )
                             }
                             state = LauncherState.Home
                         }
                     )
                 }
 
-                shooterDialog?.let { message ->
+                shooterDialog?.let { dialog ->
                     AxiomMessageDialog(
-                        title = "AXIOM SHOOTER NOT INSTALLED",
-                        message = message,
+                        title = dialog.title,
+                        message = dialog.message,
                         onDismiss = { shooterDialog = null }
                     )
                 }
                 if (systemPanelDisabledVisible) {
                     AxiomMessageDialog(
                         title = "SYSTEM PANEL DISABLED",
-                        message = "Enable it in Settings.",
+                        message = "Enable it in Settings to access the AXIOM system control panel.",
                         onDismiss = { systemPanelDisabledVisible = false }
                     )
                 }
@@ -220,6 +241,12 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+
+@Stable
+private data class AxiomDialogState(
+    val title: String,
+    val message: String
+)
 
 @androidx.compose.runtime.Composable
 private fun AxiomMessageDialog(

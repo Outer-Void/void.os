@@ -4,7 +4,7 @@ Package: `com.outervoid.axiom`
 
 AXIOM Launcher is proprietary paid Android launcher software by Outer-Void. Planned price: `$4.99`.
 
-Status: AXIOM Launcher integration hardening baseline.
+Status: Integration hardening + device-test ready foundation.
 
 AXIOM provides a controlled Android environment, not just a launcher: a home launcher, app grid, search, settings, System Panel, VOID.SYS icon integration, and hidden Axiom Shooter activation.
 
@@ -20,7 +20,7 @@ AXIOM includes scaffolding for paid entitlement, Play Integrity, package signatu
 
 Architecture plan: [docs/licensing-backend-plan.md](docs/licensing-backend-plan.md).
 
-Current integration hardening includes System Panel setting enforcement, reactive module status for VOID.SYS and Axiom Shooter, protected Axiom Shooter launch routing, and VOID.SYS native icon lookup. Release security still requires Google Play Licensing, Play Integrity, and server-issued signature verification before production distribution.
+Current integration hardening includes System Panel disabled-state enforcement, reactive module status for VOID.SYS and Axiom Shooter, separated Axiom Shooter missing/locked/unavailable states, protected Axiom Shooter launch routing, and VOID.SYS native icon lookup. Device-test instructions are available in [docs/device-testing.md](docs/device-testing.md). Real licensing backend work remains future work after device behavior confirmation.
 
 ## Build
 

@@ -1,42 +1,72 @@
 # Device Testing Matrix
 
-## 1. Launcher
+## Build APKs Locally
 
-- Install the AXIOM debug APK.
-- Set AXIOM as the default home launcher.
-- Press Home and confirm AXIOM opens.
-- Verify the app grid loads.
-- Verify Search opens and filters apps.
-- Verify Settings opens.
-- Verify System Panel opens only when `System panel enabled` is on.
-- Turn `System panel enabled` off and confirm the dock system control shows `SYSTEM PANEL DISABLED` instead of opening the panel.
+AXIOM:
+
+```bash
+cd /home/jadis/void.os
+./gradlew assembleDebug
+```
+
+VOID.SYS:
+
+```bash
+cd /home/jadis/void.sys
+./gradlew assembleDebug
+```
+
+VOID.GAME:
+
+```bash
+cd /home/jadis/void.game
+./gradlew assembleDebug
+```
+
+## Install Order
+
+```bash
+adb install -r /home/jadis/void.sys/app/build/outputs/apk/debug/app-debug.apk
+adb install -r /home/jadis/void.game/android/build/outputs/apk/debug/android-debug.apk
+adb install -r /home/jadis/void.os/app/build/outputs/apk/debug/app-debug.apk
+```
+
+## 1. AXIOM As Launcher
+
+- Set AXIOM as the default launcher.
+- Press Home.
+- Confirm Home loads.
+- Confirm the app grid loads.
+- Confirm Search opens.
+- Confirm Settings opens.
+- Confirm System Panel opens only when `System panel enabled` is on.
+- Turn `System panel enabled` off and confirm the dock system control shows `SYSTEM PANEL DISABLED` with `Enable it in Settings to access the AXIOM system control panel.`
 
 ## 2. VOID.SYS
 
-- Install the VOID.SYS APK.
-- Verify Settings shows VOID.SYS installed.
-- Verify AXIOM attempts VOID.SYS icon lookup.
-- Uninstall VOID.SYS while AXIOM is running.
-- Verify Settings updates live and app icons fall back to system icons.
+- Confirm Settings shows VOID.SYS installed.
+- Confirm the app grid attempts VOID.SYS icons.
+- Uninstall VOID.SYS.
+- Confirm Settings updates live.
+- Confirm system icon fallback.
 
 ## 3. VOID.GAME
 
-- Install the VOID.GAME APK.
-- Verify Settings shows AXIOM Shooter installed.
-- Long press the AXIOM wordmark.
-- Verify the pulse transition appears.
-- Verify the game opens.
-- Press Back in game and confirm pause behavior.
-- Exit and verify control returns to AXIOM.
+- Confirm Settings shows AXIOM Shooter installed.
+- Long-press the AXIOM wordmark/logo.
+- Confirm amber pulse transition.
+- Confirm `AXIOM SHOOTER` / `SYSTEM ONLINE.` text.
+- Confirm VOID.GAME opens.
+- Press Back and confirm Pause opens.
+- Exit and confirm control returns to AXIOM/Android.
 
-## 4. Locked Behavior
+## 4. Missing Module
 
-- Debug build should allow `DebugBypass`.
-- Release build should fail closed until licensing, Play Integrity, and product signature verification are implemented.
+- Uninstall VOID.GAME.
+- Long-press the AXIOM wordmark/logo.
+- Confirm `AXIOM SHOOTER NOT INSTALLED` dialog.
 
-## 5. Failure Cases
+## 5. Locked Behavior
 
-- VOID.GAME missing: long press AXIOM wordmark should show the not-installed dialog.
-- VOID.SYS missing: Settings should show not installed and launcher should use system icons.
-- Missing or corrupted signature files: release should remain locked.
-- Package install/uninstall while AXIOM is running should update module status live.
+- Confirm debug bypass allows development testing.
+- Document that release builds intentionally fail closed until real Play Licensing, Play Integrity, and server signatures exist.
