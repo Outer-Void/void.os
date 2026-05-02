@@ -2,7 +2,7 @@ package com.outervoid.axiom.system
 
 import android.annotation.SuppressLint
 import android.Manifest
-import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -107,7 +107,7 @@ class SystemActionController(private val context: Context) {
 
     @SuppressLint("MissingPermission")
     private fun isBluetoothEnabled(): Boolean = try {
-        BluetoothAdapter.getDefaultAdapter()?.isEnabled == true
+        context.getSystemService(BluetoothManager::class.java)?.adapter?.isEnabled == true
     } catch (_: SecurityException) {
         false
     }
