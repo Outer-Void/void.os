@@ -62,7 +62,7 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 ## 2. VOID.SYS
 
 - Confirm AXIOM native icons exist without standalone VOID.SYS installed.
-- Confirm the APK contains the expanded native VOID.SYS icon map and matte drawable assets.
+- Confirm the APK contains the expanded native VOID.SYS icon map and matte drawable assets, including 500+ bundled source icons synced into AXIOM.
 - Confirm Settings shows `Native: Included`.
 - Optionally install standalone VOID.SYS and confirm Settings shows the standalone package as installed.
 - Uninstall standalone VOID.SYS and confirm AXIOM native icons remain available.
@@ -74,6 +74,7 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Confirm amber pulse transition overlay.
 - Confirm `AXIOM SHOOTER` / `SYSTEM ONLINE.` text during transition.
 - Confirm bundled Axiom Shooter opens (no external package install required).
+- If launch fails, capture logcat for `AxiomShooterLaunch` and `VoidGameActivity`; AXIOM should show `AXIOM SHOOTER UNAVAILABLE` instead of a silent failure.
 - Press Back during gameplay and confirm pause overlay appears inside GameScreen.
 - Tap RESUME, RESTART, or EXIT TO AXIOM from the pause overlay.
 - Exit and confirm control returns to AXIOM/Android.

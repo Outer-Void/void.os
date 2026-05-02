@@ -1,5 +1,12 @@
 # Changelog
 
+## Shooter Launch + VOID.SYS 500+ Sync
+
+- Hardened Axiom Shooter launch to use the live Activity context, explicit internal component/package routing, foreground reuse flags, fullscreen game theme, keep-screen-on flag, and diagnostic logging.
+- Fixed release-token validation in the bundled `VoidGameActivity` so internal AXIOM source package checks compare against the AXIOM application id instead of the game activity package.
+- Synced expanded VOID.SYS native assets into AXIOM: 578 bundled PNG icons across Android densities and 1,908 icon-map lookups.
+- Added Android-safe synced resource names for digit-leading apps such as `app_7_eleven`.
+
 ## AXIOM Feed Module System
 
 - Added `LauncherState.AxiomFeed`, left-swipe Home gesture, right-swipe/back return to Home, and AXIOM-styled `AxiomFeedScreen`.

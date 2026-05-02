@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val entitlementManager = remember { EntitlementManager(applicationContext).also { it.initialize() } }
             val signatureGate = remember { SignatureGate(applicationContext) }
-            val gameLaunchManager = remember { SignedGameLaunchManager(applicationContext) }
+            val gameLaunchManager = remember { SignedGameLaunchManager(this@MainActivity) }
             val moduleStatusManager = remember { ModuleStatusManager(applicationContext) }
             val feedRepository = remember { FeedRepository(applicationContext) }
             val scope = rememberCoroutineScope()

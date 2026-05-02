@@ -1,7 +1,10 @@
 package com.outervoid.axiom.launch
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import com.outervoid.axiom.BuildConfig
 import com.outervoid.axiom.security.EntitlementState
 import com.outervoid.axiom.security.LicenseGate
 import com.outervoid.axiom.security.SignatureGate
@@ -19,7 +22,9 @@ class SignedGameLaunchManager(private val context: Context) {
         if (!canLaunch(entitlementState)) return LaunchResult.Locked
         val token = createToken(entitlementState)
         val intent = Intent(context, VoidGameActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            setPackage(BuildConfig.APPLICATION_ID)
+            addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            if (context !is Activity) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             putExtra("axiom_source_package", SourcePackage)
             putExtra("axiom_target_package", token.targetPackage)
             putExtra("axiom_issued_at", token.issuedAtMillis)
@@ -29,8 +34,11 @@ class SignedGameLaunchManager(private val context: Context) {
             putExtra("axiom_signature", token.signature)
         }
         return runCatching {
+            Log.i(Tag, "Launching bundled Axiom Shooter activity")
             context.startActivity(intent)
             LaunchResult.Started
+        }.onFailure { error ->
+            Log.e(Tag, "Unable to launch bundled Axiom Shooter", error)
         }.getOrDefault(LaunchResult.Unavailable)
     }
 
@@ -64,5 +72,6 @@ class SignedGameLaunchManager(private val context: Context) {
         const val SourcePackage = "com.outervoid.axiom"
         const val TargetPackage = "com.outervoid.voidgame"
         private const val TokenTtlMillis = 30_000L
+        private const val Tag = "AxiomShooterLaunch"
     }
 }

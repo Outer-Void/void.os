@@ -18,7 +18,7 @@
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Axiom" />
+            android:theme="@style/Theme.Axiom.Game" />
 
         <activity
             android:name=".MainActivity"
