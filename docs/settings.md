@@ -72,7 +72,7 @@ VOID.SYS is the native default icon system:
 - Favorites are real Home items. Empty favorites auto-fill from installed apps until the user pins explicit favorites; locked favorites block edit/remove actions.
 - Home panels support one Favorites panel plus up to four widget panels. Widget discovery uses Android `AppWidgetManager`, binding uses the platform approval flow when needed, configuration activities are handled, and replacement deletes the old widget host ID.
 - Hidden apps are stored as package/activity keys and filtered from App Drawer/Search only.
-- Lock-screen wallpaper uses the bundled `axiom_logo.png` resource and Android `WallpaperManager.FLAG_LOCK` where supported. Restricted devices get a generated-image handoff to Android's wallpaper setter when available; otherwise AXIOM shows `WALLPAPER UNAVAILABLE`.
+- Lock-screen wallpaper uses the bundled `axiom_wallpaper.png` resource generated from `docs/assets/axiom-launcher-wallpaper.png` and Android `WallpaperManager.FLAG_LOCK` where supported. Restricted devices get a generated-image handoff to Android's wallpaper setter when available; otherwise AXIOM shows `WALLPAPER UNAVAILABLE`.
 - Folder customization stores left/right folder app sets and an icon style key. Folder panels launch selected apps.
 - AXIOM Feed settings expose Enable AXIOM Feed, Configure Feed, Reset Feed Layout, and Minimal Feed Mode. Feed module configuration is stored separately in `FeedRepository` using DataStore Preferences.
 

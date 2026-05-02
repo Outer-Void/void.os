@@ -66,6 +66,7 @@ fun SettingsScreen(
     onFolderIconStyleSelected: (String) -> Unit,
     onChooseDefaultLauncher: () -> Unit,
     onOpenPhoneSettings: () -> Unit,
+    onLaunchShooter: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenContact: () -> Unit,
     onOpenPermissions: () -> Unit,
@@ -238,7 +239,7 @@ fun SettingsScreen(
             }
 
             SettingsSection("AXIOM FEED") {
-                SettingsRow("Enable AXIOM Feed", subtitle = "Left-swipe user-built control layer.", trailing = {
+                SettingsRow("Enable AXIOM Feed", subtitle = "Right-swipe user-built control layer.", trailing = {
                     SettingsToggle(checked = feedEnabled, accentColor = accent, onCheckedChange = { toggle { onFeedEnabledChanged(it) } })
                 })
                 SettingsRow("Configure Feed", value = "OPEN", subtitle = "Layout, reorder, collapse, remove, and module library.", onClick = { haptic(); onOpenFeedConfiguration() })
@@ -288,8 +289,9 @@ fun SettingsScreen(
             SettingsSection("Modules") {
                 SettingsRow(
                     title = "AXIOM SHOOTER",
-                    value = "Included",
-                    subtitle = "Hidden arcade Easter egg"
+                    value = "LAUNCH",
+                    subtitle = "Included arcade module",
+                    onClick = { haptic(); onLaunchShooter() }
                 )
                 SettingsRow(
                     title = "VOID.SYS",

@@ -1,5 +1,12 @@
 # Changelog
 
+## Wallpaper Artwork + Shooter Launch Hardening
+
+- Added the recreated AXIOM lock-screen wallpaper artwork at `docs/assets/axiom-launcher-wallpaper.png` and packaged it as `res/drawable-nodpi/axiom_wallpaper.png`.
+- Updated wallpaper generation to use the full AXIOM wallpaper artwork directly instead of drawing a small logo over a solid black bitmap.
+- Hardened bundled Axiom Shooter launch with an explicit internal component/class intent, retry fallback, and a visible Settings > Modules launch row.
+- Packaged LibGDX `libgdx.so` native runtime libraries for `armeabi-v7a`, `arm64-v8a`, `x86`, and `x86_64` so the bundled Shooter activity can load on-device.
+
 ## Feed Gesture, Wallpaper Fallback, and Mockup Visual Sync
 
 - Changed AXIOM Feed navigation to avoid widget-panel conflicts: swipe right from the Home favorites panel opens Feed, while left swipe remains reserved for Home widget panels.

@@ -1,6 +1,6 @@
 package com.outervoid.axiom.launch
 
-import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -21,10 +21,12 @@ class SignedGameLaunchManager(private val context: Context) {
     fun launch(entitlementState: EntitlementState): LaunchResult {
         if (!canLaunch(entitlementState)) return LaunchResult.Locked
         val token = createToken(entitlementState)
-        val intent = Intent(context, VoidGameActivity::class.java).apply {
-            setPackage(BuildConfig.APPLICATION_ID)
+        val intent = Intent().apply {
+            component = ComponentName(BuildConfig.APPLICATION_ID, VoidGameActivity::class.java.name)
+            setClassName(BuildConfig.APPLICATION_ID, VoidGameActivity::class.java.name)
             addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            if (context !is Activity) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             putExtra("axiom_source_package", SourcePackage)
             putExtra("axiom_target_package", token.targetPackage)
             putExtra("axiom_issued_at", token.issuedAtMillis)
@@ -39,6 +41,18 @@ class SignedGameLaunchManager(private val context: Context) {
             LaunchResult.Started
         }.onFailure { error ->
             Log.e(Tag, "Unable to launch bundled Axiom Shooter", error)
+        }.recoverCatching {
+            val fallback = Intent(context, VoidGameActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                putExtra("axiom_source_package", SourcePackage)
+                putExtra("axiom_target_package", token.targetPackage)
+                putExtra("axiom_expires_at", token.expiresAtMillis)
+            }
+            Log.i(Tag, "Retrying bundled Axiom Shooter with class intent")
+            context.startActivity(fallback)
+            LaunchResult.Started
+        }.onFailure { error ->
+            Log.e(Tag, "Axiom Shooter fallback launch failed", error)
         }.getOrDefault(LaunchResult.Unavailable)
     }
 

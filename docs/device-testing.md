@@ -56,6 +56,7 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Use Phone Settings actions and confirm each opens an Android settings screen or falls back to general Settings.
 - Select apps for left/right dock folders and confirm those panels show and launch selected apps.
 - Set AXIOM Lock Screen Wallpaper and confirm direct success, Android wallpaper setup handoff, or `WALLPAPER UNAVAILABLE`.
+- Confirm the resulting lock-screen image is the full AXIOM artwork, not a solid black wallpaper.
 - Confirm System Panel opens only when `System panel enabled` is on.
 - Turn `System panel enabled` off and confirm the dock system control shows `SYSTEM PANEL DISABLED` with `Enable it in Settings to access the AXIOM system control panel.`
 - Swipe right from the Home favorites panel and confirm AXIOM Feed opens when enabled.
@@ -74,10 +75,12 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 ## 3. VOID.GAME
 
 - Confirm Settings > Modules shows AXIOM SHOOTER `Included` and subtitle `Hidden arcade Easter egg`.
+- Tap Settings > Modules > AXIOM SHOOTER and confirm the bundled game opens.
 - Long-press the AXIOM wordmark/logo on the Home screen.
 - Confirm amber pulse transition overlay.
 - Confirm `AXIOM SHOOTER` / `SYSTEM ONLINE.` text during transition.
 - Confirm bundled Axiom Shooter opens (no external package install required).
+- Confirm the APK contains `libgdx.so` under Android native ABI folders; missing native libs will prevent Shooter from loading.
 - If launch fails, capture logcat for `AxiomShooterLaunch` and `VoidGameActivity`; AXIOM should show `AXIOM SHOOTER UNAVAILABLE` instead of a silent failure.
 - Press Back during gameplay and confirm pause overlay appears inside GameScreen.
 - Tap RESUME, RESTART, or EXIT TO AXIOM from the pause overlay.

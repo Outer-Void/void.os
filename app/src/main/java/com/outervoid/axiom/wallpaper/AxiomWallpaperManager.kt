@@ -70,20 +70,16 @@ class AxiomWallpaperManager(private val context: Context) {
         val (w, h) = screenSize()
         val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        canvas.drawColor(Color.rgb(11, 11, 11))
-
-        val logo = BitmapFactory.decodeResource(context.resources, R.drawable.axiom_logo)
-        if (logo != null) {
-            if (logo.height > logo.width * 1.35f) {
-                drawCover(canvas, logo, w, h)
-            } else {
-                drawCenteredLogo(canvas, logo, w, h)
-                drawSignalLine(canvas, w, h)
-            }
-            logo.recycle()
+        val wallpaper = BitmapFactory.decodeResource(context.resources, R.drawable.axiom_wallpaper)
+            ?: throw IllegalStateException("AXIOM wallpaper artwork missing")
+        if (wallpaper.height > wallpaper.width * 1.35f) {
+            drawCover(canvas, wallpaper, w, h)
         } else {
+            canvas.drawColor(Color.rgb(11, 11, 11))
+            drawCenteredLogo(canvas, wallpaper, w, h)
             drawSignalLine(canvas, w, h)
         }
+        wallpaper.recycle()
         return bitmap
     }
 
