@@ -74,21 +74,43 @@ class AxiomWallpaperManager(private val context: Context) {
 
         val logo = BitmapFactory.decodeResource(context.resources, R.drawable.axiom_logo)
         if (logo != null) {
-            val logoW = (w * 0.45f).toInt()
-            val scale = logoW.toFloat() / logo.width
-            val logoH = (logo.height * scale).toInt()
-            val left = (w - logoW) / 2f
-            val top = h * 0.35f - logoH / 2f
-            canvas.drawBitmap(logo, null, RectF(left, top, left + logoW, top + logoH), null)
+            if (logo.height > logo.width * 1.35f) {
+                drawCover(canvas, logo, w, h)
+            } else {
+                drawCenteredLogo(canvas, logo, w, h)
+                drawSignalLine(canvas, w, h)
+            }
             logo.recycle()
+        } else {
+            drawSignalLine(canvas, w, h)
         }
+        return bitmap
+    }
 
+    private fun drawCenteredLogo(canvas: Canvas, logo: Bitmap, w: Int, h: Int) {
+        val logoW = (w * 0.45f).toInt()
+        val scale = logoW.toFloat() / logo.width
+        val logoH = (logo.height * scale).toInt()
+        val left = (w - logoW) / 2f
+        val top = h * 0.35f - logoH / 2f
+        canvas.drawBitmap(logo, null, RectF(left, top, left + logoW, top + logoH), null)
+    }
+
+    private fun drawCover(canvas: Canvas, source: Bitmap, w: Int, h: Int) {
+        val scale = maxOf(w.toFloat() / source.width, h.toFloat() / source.height)
+        val drawW = source.width * scale
+        val drawH = source.height * scale
+        val left = (w - drawW) / 2f
+        val top = (h - drawH) / 2f
+        canvas.drawBitmap(source, null, RectF(left, top, left + drawW, top + drawH), null)
+    }
+
+    private fun drawSignalLine(canvas: Canvas, w: Int, h: Int) {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         paint.color = Color.rgb(255, 208, 0)
         paint.strokeWidth = (h * 0.002f).coerceAtLeast(3f)
         val lineX = w * 0.5f
         canvas.drawLine(lineX, h * 0.60f, lineX, h * 0.75f, paint)
-        return bitmap
     }
 
     private fun screenSize(): Pair<Int, Int> {
