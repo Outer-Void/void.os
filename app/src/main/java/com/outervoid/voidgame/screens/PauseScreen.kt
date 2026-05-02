@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.outervoid.voidgame.GameConfig
 import com.outervoid.voidgame.VoidGame
 
+@Deprecated("GameScreen owns the pause overlay inline. This class is unused and kept only as a reference.")
 class PauseScreen(private val game: VoidGame) : Screen {
     private val batch = SpriteBatch()
     private val font = BitmapFont()

@@ -295,8 +295,7 @@ class MainActivity : ComponentActivity() {
                         onSystemPanelChanged = vm::setSystemPanel,
                         onHapticFeedbackChanged = vm::setHapticFeedback,
                         onReloadApps = vm::loadApps,
-                        onResetSettings = vm::resetSettings,
-                        axiomShooterIncluded = true
+                        onResetSettings = vm::resetSettings
                     )
                     LauncherState.SystemPanel -> SystemPanelScreen(
                         settings = settings,

@@ -61,13 +61,15 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 
 ## 3. VOID.GAME
 
-- Confirm Settings shows AXIOM Shooter `Included`.
-- Long-press the AXIOM wordmark/logo.
-- Confirm amber pulse transition.
-- Confirm `AXIOM SHOOTER` / `SYSTEM ONLINE.` text.
-- Confirm bundled Axiom Shooter opens.
-- Press Back and confirm Pause opens.
+- Confirm Settings > Modules shows AXIOM SHOOTER `Included` and subtitle `Hidden arcade Easter egg`.
+- Long-press the AXIOM wordmark/logo on the Home screen.
+- Confirm amber pulse transition overlay.
+- Confirm `AXIOM SHOOTER` / `SYSTEM ONLINE.` text during transition.
+- Confirm bundled Axiom Shooter opens (no external package install required).
+- Press Back during gameplay and confirm pause overlay appears inside GameScreen.
+- Tap RESUME, RESTART, or EXIT TO AXIOM from the pause overlay.
 - Exit and confirm control returns to AXIOM/Android.
+- Note: PauseScreen.kt is deprecated dead code — all pause logic lives inside GameScreen inline.
 
 ## 4. Locked Behavior
 

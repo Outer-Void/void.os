@@ -1,5 +1,13 @@
 # Changelog
 
+## Debug Build Alignment — Native VOID.SYS + Bundled Shooter
+
+- Settings Modules section: AXIOM SHOOTER value → "Included", subtitle → "Hidden arcade Easter egg".
+- Settings Modules section: VOID.SYS standalone subtitle → "Standalone: Installed / Not Installed".
+- Bundled PauseScreen marked deprecated — GameScreen owns the inline pause overlay; only one pause system active.
+- void.game PauseScreen marked deprecated in sync.
+- Build confirmed clean for debug APK.
+
 ## AXIOM v1 Customization Controls
 
 - Added persistent accent color, icon shape, clock format, favorites, home panel, hidden app, lock-screen wallpaper, and folder settings.

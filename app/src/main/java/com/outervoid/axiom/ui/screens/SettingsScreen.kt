@@ -75,8 +75,7 @@ fun SettingsScreen(
     onSystemPanelChanged: (Boolean) -> Unit,
     onHapticFeedbackChanged: (Boolean) -> Unit,
     onReloadApps: () -> Unit,
-    onResetSettings: () -> Unit,
-    axiomShooterIncluded: Boolean = true
+    onResetSettings: () -> Unit
 ) {
     var resetConfirmVisible by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
@@ -271,13 +270,13 @@ fun SettingsScreen(
             SettingsSection("Modules") {
                 SettingsRow(
                     title = "AXIOM SHOOTER",
-                    value = if (axiomShooterIncluded) "v1.0000" else "Unavailable",
-                    subtitle = "Signal buried in the system."
+                    value = "Included",
+                    subtitle = "Hidden arcade Easter egg"
                 )
                 SettingsRow(
                     title = "VOID.SYS",
                     value = "Native: Included",
-                    subtitle = "Standalone package: ${if (voidSysInstalled) "Installed" else "Optional / Not Installed"}"
+                    subtitle = "Standalone: ${if (voidSysInstalled) "Installed" else "Not Installed"}"
                 )
             }
 
