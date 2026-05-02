@@ -14,7 +14,7 @@ AXIOM Launcher settings are stored with AndroidX DataStore Preferences. The app 
 
 ## Defaults
 
-- Font: `monospace`
+- Font: `jetbrains_mono`
 - Icon pack: `com.outervoid.voidsys`
 - App labels: enabled
 - Grid columns: `4`
@@ -30,15 +30,17 @@ AXIOM Launcher settings are stored with AndroidX DataStore Preferences. The app 
 
 ## Fonts
 
-The active settings catalog only exposes bundled or Android-backed font choices. Because AXIOM currently does not bundle font files, active choices are limited to Android system families that visibly change UI on device:
+The active settings catalog exposes bundled open-license font choices. Each selectable option maps to a real file under `app/src/main/res/font`, and `tools/fetch_fonts.sh` refreshes those assets from Google Fonts and official Nerd Fonts releases.
 
-- Default / Sans
-- Serif
-- Monospace
-- Casual
-- Cursive
+Bundled categories:
 
-Future expanded font packs may add JetBrains Mono, Roboto Mono, Space Mono, Fira Code, Inter, Orbitron, Share Tech Mono, and other bundled open-license fonts after the files are packaged in `res/font`.
+- Core AXIOM mono fonts.
+- Nerd Font variants.
+- Popular sans fonts.
+- Popular serif fonts.
+- Display/system fonts.
+
+Do not add active font options unless the font file is bundled or generated into `res/font`.
 
 ## Icon Pack Logic
 
@@ -57,6 +59,11 @@ Generic third-party icon pack parsing is not implemented in the active settings 
 ## System Panel Access
 
 System Panel access controls whether the AXIOM internal control panel is available from the dock.
+
+## Planned Features
+
+- Terminal Panel remains planned for v1.1.
+- Dock custom folders are scaffolded as left/right placeholder panels. Full folder app selection and editing remain planned.
 
 ## Future Icon Pack Plan
 

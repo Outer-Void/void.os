@@ -33,6 +33,7 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Confirm Home does not render the full installed app list.
 - Confirm left and right custom folder dock slots open placeholder panels.
 - Confirm Settings opens.
+- Change fonts in Settings and confirm Home, App Drawer, Settings, System Panel, dialogs, and transition text use visibly different bundled fonts.
 - Confirm System Panel opens only when `System panel enabled` is on.
 - Turn `System panel enabled` off and confirm the dock system control shows `SYSTEM PANEL DISABLED` with `Enable it in Settings to access the AXIOM system control panel.`
 
