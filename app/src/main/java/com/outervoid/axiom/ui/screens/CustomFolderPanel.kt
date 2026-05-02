@@ -74,8 +74,7 @@ fun CustomFolderPanel(
                             showLabel = settings.showAppLabels,
                             iconScale = settings.iconScale,
                             compactMode = settings.compactMode,
-                            iconShape = settings.iconShape,
-                            accentColor = accent
+                            iconShape = settings.iconShape
                         )
                     }
                 }

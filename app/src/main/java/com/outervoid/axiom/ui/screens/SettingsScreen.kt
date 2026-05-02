@@ -150,8 +150,8 @@ fun SettingsScreen(
                 )
                 SettingsRow("Lock Screen Wallpaper", value = "SET", onClick = { haptic(); onLockScreenWallpaper() })
                 SettingsDropdown(
-                    title = "Icon pack",
-                    subtitle = "Native VOID.SYS icons are included with AXIOM.",
+                    title = "Icon Style Mode",
+                    subtitle = "Default: VOID.SYS Native with AXIOM fallback.",
                     selected = IconPackOptions.byPackage(settings.selectedIconPackPackage),
                     options = IconPackOptions.All,
                     optionLabel = { it.displayName },

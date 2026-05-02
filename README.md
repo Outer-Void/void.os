@@ -13,7 +13,8 @@ AXIOM provides a controlled Android environment, not just a launcher: a separate
 - **AXIOM Launcher**: core paid product and launcher shell.
 - **Bundled fonts**: the active font selector uses packaged open-license font resources under `app/src/main/res/font`.
 - **Customization controls**: accent color, icon shape, clock format, favorites count/lock, home panels, hidden apps, lock-screen wallpaper, default-launcher chooser, and expanded phone settings shortcuts.
-- **VOID.SYS native icon system**: bundled inside AXIOM. Users do not install the standalone VOID.SYS package for AXIOM to have native icons.
+- **VOID.SYS native icon system**: 430 bundled matte system icons and 1,477 lookup mappings inside AXIOM. Users do not install the standalone VOID.SYS package for AXIOM to have native icons.
+- **AXIOM fallback icons**: unmatched apps use generated dark symbolic fallback icons by default. Colorful Android system icons appear only when the user selects `System Icons`.
 - **Axiom Shooter / VOID.GAME**: hidden protected Easter egg bundled inside AXIOM and launched by long-pressing the AXIOM wordmark/name. Users do not install Axiom Shooter separately.
 - **Wallpaper setup**: bundled `res/drawable-nodpi/axiom_logo.png` is used to generate a matte black AXIOM lock-screen wallpaper at runtime. Devices that block direct lock-screen wallpaper writes show a clear AXIOM-styled failure message.
 - **Widget setup**: widget panels use Android `AppWidgetHost`, real installed widget providers, platform bind/configuration flows, and persisted widget IDs per panel.

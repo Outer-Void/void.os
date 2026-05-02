@@ -1,5 +1,13 @@
 # Changelog
 
+## Visual System Alignment
+
+- Synced the regenerated VOID.SYS native asset set into AXIOM: 430 bundled PNG icons across Android densities and 1,477 icon-map lookups.
+- Added `AxiomFallbackIconProvider` so unmatched apps render controlled matte AXIOM fallback symbols instead of raw colorful Android icons.
+- Added icon style modes: `VOID.SYS Native`, `AXIOM Fallback`, and `System Icons`.
+- Tightened accent discipline: app icon borders use neutral system borders, active system tiles use subdued accent borders, and toggles use reduced accent saturation.
+- Updated App Drawer header to `SEARCH APPS` and preserved the dark matte layout language across Home, App Drawer, System Panel, dock, folders, and settings.
+
 ## Device-Test Repair Pass
 
 - Replaced the stale wallpaper source with the user-provided AXIOM logo at `res/drawable-nodpi/axiom_logo.png`.

@@ -51,15 +51,17 @@ Bundled categories:
 
 Do not add active font options unless the font file is bundled or generated into `res/font`.
 
-## Icon Pack Logic
+## Icon Style Logic
 
 VOID.SYS is the native default icon system:
 
 - Default package: `com.outervoid.voidsys`
 - Native bundled icon assets are included in AXIOM.
+- Default mode is `VOID.SYS Native`: bundled/native icons first, AXIOM symbolic fallback when no match exists. Current bundled coverage is 430 PNG icons and 1,477 lookup mappings.
+- `AXIOM Fallback` uses generated matte symbolic fallback icons for every app.
+- `System Icons` is the only mode that uses colorful installed app launcher icons.
 - If standalone VOID.SYS is installed, AXIOM reports the standalone package as installed.
 - If standalone VOID.SYS is missing, AXIOM native icons remain available.
-- `System Default` bypasses VOID.SYS and uses installed app icons.
 
 ## v1 Customization Controls
 

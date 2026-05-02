@@ -10,12 +10,17 @@ class BundledVoidSysIconProvider(
     private val context: Context,
     private val selectedIconPackPackage: String,
     private val externalProvider: VoidSysIconProvider = VoidSysIconProvider(context, selectedIconPackPackage),
-    private val fallbackProvider: IconProvider = SystemIconProvider()
+    private val fallbackProvider: IconProvider = AxiomFallbackIconProvider(context),
+    private val systemProvider: IconProvider = SystemIconProvider()
 ) : IconProvider {
     private val iconMap: Map<String, String> by lazy { loadIconMap() }
 
     override fun iconFor(packageName: String, activityName: String?, fallback: Drawable): Drawable {
-        if (selectedIconPackPackage != IconPackOptions.VoidSysPackage) {
+        if (selectedIconPackPackage == IconPackOptions.SystemPackage) {
+            return systemProvider.iconFor(packageName, activityName, fallback)
+        }
+
+        if (selectedIconPackPackage == IconPackOptions.AxiomFallbackPackage) {
             return fallbackProvider.iconFor(packageName, activityName, fallback)
         }
 

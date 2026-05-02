@@ -44,8 +44,7 @@ fun FolderAppSelectionScreen(
                     trailing = {
                         SettingsToggle(
                             checked = key in selectedKeys,
-                            onCheckedChange = { checked -> onChanged(if (checked) selectedKeys + key else selectedKeys - key) },
-                            accentColor = accent
+                            onCheckedChange = { checked -> onChanged(if (checked) selectedKeys + key else selectedKeys - key) }
                         )
                     }
                 )

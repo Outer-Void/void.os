@@ -35,7 +35,11 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Confirm Settings opens.
 - Change fonts in Settings and confirm Home, App Drawer, Settings, System Panel, dialogs, and transition text use visibly different bundled fonts.
 - Change Accent Color and confirm headers, active toggles, dock controls, SYSTEM ONLINE, clock, and Axiom Shooter pulse change color.
-- Change Icon Shape and confirm Home favorites and App Drawer icon tiles change masks.
+- Change Icon Shape and confirm Home favorites, App Drawer, folder panels, and dock-adjacent app tiles change masks.
+- Set Icon Style Mode to `VOID.SYS Native` and confirm common apps use matte VOID.SYS icons while unmatched apps use AXIOM fallback icons.
+- Set Icon Style Mode to `AXIOM Fallback` and confirm all app tiles remain dark symbolic icons.
+- Set Icon Style Mode to `System Icons` and confirm colorful installed app icons appear only in this explicit mode.
+- Set Accent Color to Red and confirm the UI remains mostly TextPrimary/TextSecondary/TextDim with red limited to clock, small rules, active toggles, and dock/system glyphs.
 - Change Clock Format and confirm Home clock follows System / 12 hour / 24 hour.
 - Tap the clock and confirm a clock/alarm app or supported fallback opens.
 - Tap the date and confirm a calendar app opens when present.
@@ -55,6 +59,7 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 ## 2. VOID.SYS
 
 - Confirm AXIOM native icons exist without standalone VOID.SYS installed.
+- Confirm the APK contains the expanded native VOID.SYS icon map and matte drawable assets.
 - Confirm Settings shows `Native: Included`.
 - Optionally install standalone VOID.SYS and confirm Settings shows the standalone package as installed.
 - Uninstall standalone VOID.SYS and confirm AXIOM native icons remain available.

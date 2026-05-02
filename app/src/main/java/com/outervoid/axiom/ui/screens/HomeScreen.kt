@@ -179,8 +179,7 @@ fun HomeScreen(
                                         showLabel = settings.showAppLabels,
                                         iconScale = settings.iconScale,
                                         compactMode = settings.compactMode,
-                                        iconShape = settings.iconShape,
-                                        accentColor = accent
+                                        iconShape = settings.iconShape
                                     )
                                 }
                             }
@@ -247,8 +246,7 @@ fun HomeScreen(
                 onLongClickSystem = { haptic(); onOpenPhoneSettings() },
                 onRightFolder = { haptic(); onOpenRightFolder() },
                 onMessages = { haptic(); onMessages() },
-                compactMode = settings.compactMode,
-                accentColor = accent
+                compactMode = settings.compactMode
             )
         }
         CornerBrackets(topPadding = 92.dp, bottomPadding = 104.dp)

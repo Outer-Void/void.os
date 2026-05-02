@@ -58,8 +58,7 @@ fun HiddenAppsScreen(
                                 checked = key in settings.hiddenApps,
                                 onCheckedChange = { checked ->
                                     onHiddenAppsChanged(if (checked) settings.hiddenApps + key else settings.hiddenApps - key)
-                                },
-                                accentColor = accent
+                                }
                             )
                         }
                     )

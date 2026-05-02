@@ -89,7 +89,7 @@ fun SearchScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("APP DRAWER", color = accent, style = MaterialTheme.typography.titleLarge)
+                Text("SEARCH APPS", color = accent, style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.width(8.dp))
                 Spacer(
                     Modifier
@@ -139,8 +139,7 @@ fun SearchScreen(
                         showLabel = settings.showAppLabels,
                         iconScale = settings.iconScale,
                         compactMode = settings.compactMode,
-                        iconShape = settings.iconShape,
-                        accentColor = accent
+                        iconShape = settings.iconShape
                     )
                 }
             }

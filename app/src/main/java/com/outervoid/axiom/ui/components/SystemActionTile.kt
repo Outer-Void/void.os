@@ -26,8 +26,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.system.SystemAction
 import com.outervoid.axiom.ui.theme.Amber
+import com.outervoid.axiom.ui.theme.BorderAlt
 import com.outervoid.axiom.ui.theme.IconBackground
-import com.outervoid.axiom.ui.theme.IconBorder
 import com.outervoid.axiom.ui.theme.TextSecondary
 
 @Composable
@@ -50,7 +50,7 @@ fun SystemActionTile(
             modifier = Modifier
                 .size(if (compactMode) 50.dp else 60.dp)
                 .background(IconBackground, RoundedCornerShape(15.dp))
-                .border(1.dp, if (active) accentColor else IconBorder, RoundedCornerShape(15.dp)),
+                .border(1.dp, if (active) accentColor.copy(alpha = 0.5f) else BorderAlt.copy(alpha = 0.65f), RoundedCornerShape(15.dp)),
             contentAlignment = Alignment.Center
         ) {
             SystemActionGlyph(action = action, color = if (active) accentColor else TextSecondary)

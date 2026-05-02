@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +27,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.ui.iconshape.IconShape
 import com.outervoid.axiom.ui.iconshape.iconShapeMask
+import com.outervoid.axiom.ui.theme.BorderAlt
 import com.outervoid.axiom.ui.theme.IconBackground
 import com.outervoid.axiom.ui.theme.TextSecondary
 
@@ -40,8 +40,7 @@ fun AppIconCell(
     showLabel: Boolean = true,
     iconScale: Float = 0.72f,
     compactMode: Boolean = false,
-    iconShape: IconShape = IconShape.ROUNDED_SQUARE,
-    accentColor: Color = Color(0xFF1E1E1E)
+    iconShape: IconShape = IconShape.ROUNDED_SQUARE
 ) {
     val iconBitmap = remember(app.packageName, app.activityName) {
         app.icon.toBitmap(96, 96).asImageBitmap()
@@ -59,7 +58,7 @@ fun AppIconCell(
             modifier = Modifier
                 .size(if (compactMode) 50.dp else 60.dp)
                 .background(IconBackground, shape)
-                .border(1.dp, accentColor.copy(alpha = 0.55f), shape),
+                .border(1.dp, BorderAlt.copy(alpha = 0.72f), shape),
             contentAlignment = Alignment.Center
         ) {
             Image(
