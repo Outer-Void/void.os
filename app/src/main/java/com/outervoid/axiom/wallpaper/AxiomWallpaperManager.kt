@@ -68,19 +68,44 @@ class AxiomWallpaperManager(private val context: Context) {
 
     private fun createWallpaper(): Bitmap {
         val (w, h) = screenSize()
-        val bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        // Clamp to a sensible minimum so we never create a zero/tiny bitmap
+        val bw = w.coerceAtLeast(720)
+        val bh = h.coerceAtLeast(1280)
+        val bitmap = Bitmap.createBitmap(bw, bh, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
+        // Always fill with solid dark color first so the bitmap is never transparent-black
+        canvas.drawColor(Color.rgb(11, 11, 11))
+
         val wallpaper = BitmapFactory.decodeResource(context.resources, R.drawable.axiom_wallpaper)
-            ?: throw IllegalStateException("AXIOM wallpaper artwork missing")
-        if (wallpaper.height > wallpaper.width * 1.35f) {
-            drawCover(canvas, wallpaper, w, h)
+        if (wallpaper != null) {
+            if (wallpaper.height > wallpaper.width * 1.35f) {
+                drawCover(canvas, wallpaper, bw, bh)
+            } else {
+                drawCenteredLogo(canvas, wallpaper, bw, bh)
+                drawSignalLine(canvas, bw, bh)
+            }
+            wallpaper.recycle()
         } else {
-            canvas.drawColor(Color.rgb(11, 11, 11))
-            drawCenteredLogo(canvas, wallpaper, w, h)
-            drawSignalLine(canvas, w, h)
+            // Fallback: programmatic AXIOM wallpaper
+            drawFallbackWallpaper(canvas, bw, bh)
         }
-        wallpaper.recycle()
         return bitmap
+    }
+
+    private fun drawFallbackWallpaper(canvas: Canvas, w: Int, h: Int) {
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        paint.color = Color.rgb(255, 208, 0)
+        paint.strokeWidth = (h * 0.0018f).coerceAtLeast(2f)
+        val cx = w * 0.5f
+        canvas.drawLine(cx, h * 0.22f, cx, h * 0.78f, paint)
+        paint.textAlign = Paint.Align.CENTER
+        paint.textSize = (w * 0.10f).coerceIn(64f, 140f)
+        paint.letterSpacing = 0.14f
+        canvas.drawText("AXIOM", cx, h * 0.35f, paint)
+        paint.color = Color.rgb(68, 68, 68)
+        paint.textSize = (w * 0.028f).coerceIn(18f, 40f)
+        paint.letterSpacing = 0.06f
+        canvas.drawText("SEE THROUGH. STAY IN CONTROL.", cx, h * 0.70f, paint)
     }
 
     private fun drawCenteredLogo(canvas: Canvas, logo: Bitmap, w: Int, h: Int) {
