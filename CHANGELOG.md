@@ -1,5 +1,15 @@
 # Changelog
 
+## AXIOM Feed Module System
+
+- Added `LauncherState.AxiomFeed`, left-swipe Home gesture, right-swipe/back return to Home, and AXIOM-styled `AxiomFeedScreen`.
+- Added feed architecture under `com.outervoid.axiom.feed`: module types, categories, config, registry, renderer, and DataStore-backed repository.
+- Added Feed Configuration and Module Library screens with enable/disable, collapse/expand, remove, re-add, and Up/Down reorder controls.
+- Added Settings > AXIOM FEED rows: Enable AXIOM Feed, Configure Feed, Reset Feed Layout, and Minimal Feed Mode.
+- Implemented functional local modules: System Status, Clock Panel, Focus Panel, Task List, Session Timer, Next Action, Quick Actions, App Shortcuts, Notes, Minimal Clock, System Dot Indicator, Focus Only Panel, Black Screen Module, and Observe Mode.
+- Added permission/setup states for weather, calendar, notification, usage metrics, contacts, media, location, health, GitHub, RSS, and manual source modules without faking data.
+- Marked v1.1/planned modules visibly instead of pretending incomplete integrations are live.
+
 ## Visual System Alignment
 
 - Synced the regenerated VOID.SYS native asset set into AXIOM: 430 bundled PNG icons across Android densities and 1,477 icon-map lookups.

@@ -27,9 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import com.outervoid.axiom.data.AppInfo
+import com.outervoid.axiom.feed.FeedRepository
+import com.outervoid.axiom.feed.FeedState
 import com.outervoid.axiom.launch.SignedGameLaunchManager
 import com.outervoid.axiom.module.ModuleStatusManager
 import com.outervoid.axiom.security.EntitlementManager
@@ -45,6 +48,9 @@ import com.outervoid.axiom.ui.screens.AmbientScreen
 import com.outervoid.axiom.ui.screens.AppDrawerScreen
 import com.outervoid.axiom.ui.screens.ContactScreen
 import com.outervoid.axiom.ui.screens.CustomFolderPanel
+import com.outervoid.axiom.ui.screens.AxiomFeedScreen
+import com.outervoid.axiom.ui.screens.FeedConfigurationScreen
+import com.outervoid.axiom.ui.screens.FeedModuleLibraryScreen
 import com.outervoid.axiom.ui.screens.FolderAppSelectionScreen
 import com.outervoid.axiom.ui.screens.HiddenAppsScreen
 import com.outervoid.axiom.ui.screens.HomeScreen
@@ -65,6 +71,7 @@ import com.outervoid.axiom.widgets.AxiomWidgetHost
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -79,8 +86,11 @@ class MainActivity : ComponentActivity() {
             val signatureGate = remember { SignatureGate(applicationContext) }
             val gameLaunchManager = remember { SignedGameLaunchManager(applicationContext) }
             val moduleStatusManager = remember { ModuleStatusManager(applicationContext) }
+            val feedRepository = remember { FeedRepository(applicationContext) }
+            val scope = rememberCoroutineScope()
             val entitlementState by entitlementManager.state.collectAsState()
             val settings by vm.settings.collectAsState()
+            val feedState by feedRepository.state.collectAsState(initial = FeedState())
             val allApps by vm.apps.collectAsState()
             val filteredApps by vm.filteredApps.collectAsState()
             val query by vm.query.collectAsState()
@@ -271,6 +281,9 @@ class MainActivity : ComponentActivity() {
                 BackHandler(
                     enabled = state == LauncherState.AppDrawer ||
                         state == LauncherState.Settings ||
+                        state == LauncherState.AxiomFeed ||
+                        state == LauncherState.FeedConfiguration ||
+                        state == LauncherState.FeedModuleLibrary ||
                         state == LauncherState.SystemPanel ||
                         state == LauncherState.LeftFolder ||
                         state == LauncherState.RightFolder ||
@@ -295,6 +308,8 @@ class MainActivity : ComponentActivity() {
                         settings = settings,
                         widgetHost = widgetHost,
                         onOpenAppDrawer = { state = LauncherState.AppDrawer },
+                        feedEnabled = feedState.enabled,
+                        onOpenAxiomFeed = { state = LauncherState.AxiomFeed },
                         onOpenSettings = { state = LauncherState.Settings },
                         onOpenSystemPanel = {
                             if (settings.systemPanelEnabled) {
@@ -324,6 +339,29 @@ class MainActivity : ComponentActivity() {
                         onPhone = { vm.openDialer(this@MainActivity) },
                         onMessages = { vm.openMessages(this@MainActivity) },
                         onOpenPhoneSettings = { SystemSettingsNavigator.openPhoneSettings(this@MainActivity) }
+                    )
+                    LauncherState.AxiomFeed -> AxiomFeedScreen(
+                        feedState = feedState,
+                        settings = settings,
+                        apps = allApps,
+                        context = this@MainActivity,
+                        onReturnHome = { state = LauncherState.Home },
+                        onLaunchApp = { app ->
+                            vm.launchApp(this@MainActivity, app)
+                            state = LauncherState.Home
+                        },
+                        onOpenSystemPanel = {
+                            if (settings.systemPanelEnabled) {
+                                state = LauncherState.SystemPanel
+                            } else {
+                                systemPanelDisabledVisible = true
+                            }
+                        },
+                        onOpenAppDrawer = { state = LauncherState.AppDrawer },
+                        onUpdatePriorities = { values -> scope.launch { feedRepository.setPriorities(values) } },
+                        onUpdateTasks = { values -> scope.launch { feedRepository.setTasks(values) } },
+                        onUpdateNextAction = { value -> scope.launch { feedRepository.setNextAction(value) } },
+                        onUpdateNotes = { values -> scope.launch { feedRepository.setNotes(values) } }
                     )
                     LauncherState.AppDrawer -> AppDrawerScreen(
                         query = query,
@@ -400,6 +438,12 @@ class MainActivity : ComponentActivity() {
                         onOpenHiddenApps = { state = LauncherState.HiddenApps },
                         onOpenLeftFolderApps = { state = LauncherState.LeftFolderApps },
                         onOpenRightFolderApps = { state = LauncherState.RightFolderApps },
+                        feedEnabled = feedState.enabled,
+                        feedMinimalMode = feedState.minimalMode,
+                        onFeedEnabledChanged = { enabled -> scope.launch { feedRepository.setEnabled(enabled) } },
+                        onOpenFeedConfiguration = { state = LauncherState.FeedConfiguration },
+                        onResetFeedLayout = { scope.launch { feedRepository.resetLayout() } },
+                        onFeedMinimalModeChanged = { enabled -> scope.launch { feedRepository.setMinimalMode(enabled) } },
                         onFolderIconStyleSelected = vm::setFolderIconStyle,
                         onChooseDefaultLauncher = ::openDefaultLauncherSettings,
                         onOpenPhoneSettings = { SystemSettingsNavigator.openPhoneSettings(this@MainActivity) },
@@ -420,6 +464,22 @@ class MainActivity : ComponentActivity() {
                         onHapticFeedbackChanged = vm::setHapticFeedback,
                         onReloadApps = vm::loadApps,
                         onResetSettings = vm::resetSettings
+                    )
+                    LauncherState.FeedConfiguration -> FeedConfigurationScreen(
+                        feedState = feedState,
+                        onToggleEnabled = { module -> scope.launch { feedRepository.toggleModule(module.id, feedState.modules) } },
+                        onToggleCollapsed = { module -> scope.launch { feedRepository.toggleCollapsed(module.id, feedState.modules) } },
+                        onRemove = { module -> scope.launch { feedRepository.removeModule(module.id, feedState.modules) } },
+                        onMoveUp = { module -> scope.launch { feedRepository.moveModule(module.id, -1, feedState.modules) } },
+                        onMoveDown = { module -> scope.launch { feedRepository.moveModule(module.id, 1, feedState.modules) } },
+                        onOpenLibrary = { state = LauncherState.FeedModuleLibrary }
+                    )
+                    LauncherState.FeedModuleLibrary -> FeedModuleLibraryScreen(
+                        feedState = feedState,
+                        onAddModule = { type ->
+                            scope.launch { feedRepository.addModule(type, feedState.modules) }
+                            state = LauncherState.FeedConfiguration
+                        }
                     )
                     LauncherState.SystemPanel -> SystemPanelScreen(
                         settings = settings,

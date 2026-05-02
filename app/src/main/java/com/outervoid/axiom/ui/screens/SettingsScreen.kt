@@ -57,6 +57,12 @@ fun SettingsScreen(
     onOpenHiddenApps: () -> Unit,
     onOpenLeftFolderApps: () -> Unit,
     onOpenRightFolderApps: () -> Unit,
+    feedEnabled: Boolean,
+    feedMinimalMode: Boolean,
+    onFeedEnabledChanged: (Boolean) -> Unit,
+    onOpenFeedConfiguration: () -> Unit,
+    onResetFeedLayout: () -> Unit,
+    onFeedMinimalModeChanged: (Boolean) -> Unit,
     onFolderIconStyleSelected: (String) -> Unit,
     onChooseDefaultLauncher: () -> Unit,
     onOpenPhoneSettings: () -> Unit,
@@ -229,6 +235,17 @@ fun SettingsScreen(
                     optionLabel = { it },
                     onSelected = { haptic(); onFolderIconStyleSelected(it) }
                 )
+            }
+
+            SettingsSection("AXIOM FEED") {
+                SettingsRow("Enable AXIOM Feed", subtitle = "Left-swipe user-built control layer.", trailing = {
+                    SettingsToggle(checked = feedEnabled, accentColor = accent, onCheckedChange = { toggle { onFeedEnabledChanged(it) } })
+                })
+                SettingsRow("Configure Feed", value = "OPEN", subtitle = "Layout, reorder, collapse, remove, and module library.", onClick = { haptic(); onOpenFeedConfiguration() })
+                SettingsRow("Reset Feed Layout", value = "RESET", subtitle = "Restore default feed modules.", onClick = { haptic(); onResetFeedLayout() })
+                SettingsRow("Minimal Feed Mode", subtitle = "Minimal Clock / System Dot / Focus Only.", trailing = {
+                    SettingsToggle(checked = feedMinimalMode, accentColor = accent, onCheckedChange = { toggle { onFeedMinimalModeChanged(it) } })
+                })
             }
 
             SettingsSection("Interface") {

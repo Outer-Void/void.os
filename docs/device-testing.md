@@ -55,6 +55,9 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Set AXIOM Lock Screen Wallpaper and confirm success or `WALLPAPER UNAVAILABLE`.
 - Confirm System Panel opens only when `System panel enabled` is on.
 - Turn `System panel enabled` off and confirm the dock system control shows `SYSTEM PANEL DISABLED` with `Enable it in Settings to access the AXIOM system control panel.`
+- Swipe left from Home and confirm AXIOM Feed opens when enabled.
+- Swipe right from AXIOM Feed and confirm Home returns.
+- Press Back from AXIOM Feed and confirm Home returns.
 
 ## 2. VOID.SYS
 
@@ -119,3 +122,20 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 
 - Confirm debug bypass allows development testing (no LockedScreen flash on launch).
 - Document that release builds intentionally fail closed until real Play Licensing, Play Integrity, and server signatures exist.
+
+## 9. AXIOM Feed
+
+- Open Settings > AXIOM FEED.
+- Toggle Enable AXIOM Feed off and confirm left-swipe no longer opens the feed.
+- Toggle Enable AXIOM Feed on and confirm left-swipe opens `AXIOM FEED / CONTROL LAYER`.
+- Open Configure Feed and confirm Active Feed Layout appears.
+- Use Up / Down controls and confirm module order changes.
+- Toggle a module row and confirm it enables/disables.
+- Collapse a module and confirm the feed shows only the compact header row.
+- Remove a module, open Add Module, and re-add it from Module Library.
+- Reset Feed Layout and confirm defaults return: System Status, Weather, Calendar, Focus Panel, Quick Actions.
+- Enable Minimal Feed Mode and confirm the feed contains Minimal Clock, System Dot Indicator, and Focus Only Panel.
+- Confirm functional modules persist local state: Focus priorities, Task List, Next Action, and Notes.
+- Confirm setup-required modules show clear permission/setup text rather than fake data.
+- Confirm planned modules show `PLANNED` or `PLANNED / V1.1`.
+- Confirm the feed does not show algorithmic content, recommendations, ads, trending items, or infinite-scroll news behavior.

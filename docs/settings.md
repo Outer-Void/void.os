@@ -36,6 +36,8 @@ AXIOM Launcher settings are stored with AndroidX DataStore Preferences. The app 
 - Swipe-up App Drawer: enabled
 - System panel: disabled by default; when enabled, dock access opens the AXIOM internal control panel
 - Haptics: enabled
+- AXIOM Feed: enabled
+- Minimal Feed Mode: disabled
 
 ## Fonts
 
@@ -72,6 +74,18 @@ VOID.SYS is the native default icon system:
 - Hidden apps are stored as package/activity keys and filtered from App Drawer/Search only.
 - Lock-screen wallpaper uses the bundled `axiom_logo.png` resource and Android `WallpaperManager.FLAG_LOCK` where supported. Restricted devices show `WALLPAPER UNAVAILABLE`.
 - Folder customization stores left/right folder app sets and an icon style key. Folder panels launch selected apps.
+- AXIOM Feed settings expose Enable AXIOM Feed, Configure Feed, Reset Feed Layout, and Minimal Feed Mode. Feed module configuration is stored separately in `FeedRepository` using DataStore Preferences.
+
+## AXIOM Feed Settings
+
+Settings > AXIOM FEED controls the optional left-swipe control layer:
+
+- `Enable AXIOM Feed`: controls whether left-swipe from Home opens the feed.
+- `Configure Feed`: opens active layout controls for reorder, enable/disable, collapse/expand, remove, and add module.
+- `Reset Feed Layout`: restores System Status, Weather, Calendar, Focus Panel, and Quick Actions.
+- `Minimal Feed Mode`: replaces active modules with Minimal Clock, System Dot Indicator, and Focus Only Panel.
+
+AXIOM Feed is not Google Discover, a news feed, or an infinite-scroll recommendation surface. Permission-bound modules show setup-required states until Android access is granted.
 
 ## Known Limitations
 

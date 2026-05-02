@@ -63,6 +63,8 @@ fun HomeScreen(
     settings: AxiomSettings,
     widgetHost: AxiomWidgetHost,
     onOpenAppDrawer: () -> Unit,
+    feedEnabled: Boolean,
+    onOpenAxiomFeed: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenSystemPanel: () -> Unit,
     onOpenLeftFolder: () -> Unit,
@@ -106,9 +108,12 @@ fun HomeScreen(
                     }
                 }
             }
-            .pointerInput(settings.homePanelCount) {
+            .pointerInput(settings.homePanelCount, feedEnabled, panel) {
                 detectHorizontalDragGestures { _, dragAmount ->
-                    if (settings.homePanelCount > 1 && kotlin.math.abs(dragAmount) > 18f) {
+                    if (feedEnabled && panel == 0 && dragAmount < -28f) {
+                        haptic()
+                        onOpenAxiomFeed()
+                    } else if (settings.homePanelCount > 1 && kotlin.math.abs(dragAmount) > 18f) {
                         panel = if (dragAmount < 0) {
                             (panel + 1).coerceAtMost(settings.homePanelCount - 1)
                         } else {

@@ -6,7 +6,7 @@ AXIOM Launcher is proprietary paid Android launcher software by Outer-Void. Plan
 
 Status: v1 customization build + device-test ready foundation.
 
-AXIOM provides a controlled Android environment, not just a launcher: a separated home surface, app drawer/search, settings, System Panel, bundled font customization, native VOID.SYS icon integration, real favorites, widget panels, hidden apps, basic dock folder customization, lock-screen wallpaper setup, and hidden bundled Axiom Shooter activation.
+AXIOM provides a controlled Android environment, not just a launcher: a separated home surface, app drawer/search, AXIOM Feed, settings, System Panel, bundled font customization, native VOID.SYS icon integration, real favorites, widget panels, hidden apps, basic dock folder customization, lock-screen wallpaper setup, and hidden bundled Axiom Shooter activation.
 
 ## Product Modules
 
@@ -19,6 +19,7 @@ AXIOM provides a controlled Android environment, not just a launcher: a separate
 - **Wallpaper setup**: bundled `res/drawable-nodpi/axiom_logo.png` is used to generate a matte black AXIOM lock-screen wallpaper at runtime. Devices that block direct lock-screen wallpaper writes show a clear AXIOM-styled failure message.
 - **Widget setup**: widget panels use Android `AppWidgetHost`, real installed widget providers, platform bind/configuration flows, and persisted widget IDs per panel.
 - **Seven-slot dock**: Phone, Left Folder, AXIOM Settings, App Drawer, System/Phone Settings, Right Folder, and Messages.
+- **AXIOM Feed**: optional left-swipe user-built control layer, not a news feed. Default modules are System Status, Weather setup, Calendar setup, Focus Panel, and Quick Actions. Users can configure, reorder, collapse, remove, and re-add modules from the module library.
 - **VOID.SYS standalone**: separate proprietary `$1.99` icon pack for Nova, Lawnchair, and other compatible launchers.
 
 ## Security Foundation
@@ -28,6 +29,8 @@ AXIOM includes scaffolding for paid entitlement, Play Integrity, package signatu
 Architecture plan: [docs/licensing-backend-plan.md](docs/licensing-backend-plan.md).
 
 Current integration hardening includes System Panel disabled-state enforcement, bundled VOID.SYS icon lookup, standalone VOID.SYS package status, protected internal Axiom Shooter launch routing, and locked/unavailable handling for release gates. Device-test instructions are available in [docs/device-testing.md](docs/device-testing.md). Real licensing backend work remains future work after device behavior confirmation.
+
+AXIOM Feed documentation: [docs/axiom-feed.md](docs/axiom-feed.md).
 
 ## Planned Features (v1.1)
 
