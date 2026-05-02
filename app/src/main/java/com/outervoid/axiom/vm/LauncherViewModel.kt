@@ -162,6 +162,33 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         context.startActivity(intent)
     }
 
+    fun setWidgetForPanel(panelIndex: Int, widgetId: Int?) =
+        viewModelScope.launch { settingsRepository.updatePanelWidget(panelIndex, widgetId) }
+
+    fun openDialer(context: Context) {
+        val intent = Intent(Intent.ACTION_DIAL).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        runCatching { context.startActivity(intent) }
+    }
+
+    fun openMessages(context: Context) {
+        val candidates = buildList {
+            add(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_MESSAGING)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            add(Intent(Intent.ACTION_VIEW, android.net.Uri.parse("sms:"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            listOf(
+                "com.google.android.apps.messaging",
+                "com.samsung.android.messaging",
+                "com.android.mms"
+            ).forEach { pkg ->
+                context.packageManager.getLaunchIntentForPackage(pkg)?.let(::add)
+            }
+        }
+        for (intent in candidates) {
+            if (runCatching { context.startActivity(intent); true }.getOrDefault(false)) return
+        }
+    }
+
     fun uninstallApp(context: Context, app: AppInfo) {
         val intent = Intent(Intent.ACTION_DELETE, Uri.parse("package:${app.packageName}"))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

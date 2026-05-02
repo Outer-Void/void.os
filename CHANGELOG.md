@@ -1,5 +1,27 @@
 # Changelog
 
+## Device-Test Routing, Widgets, Wallpaper, 7-Slot Dock, About/Contact, Permissions
+
+- Fixed `LauncherState.Contact` routing: `ContactScreen` now exists as a separate composable with Email, Outer-Void GitHub, and Justadudeinspace GitHub rows. No longer renders `AboutScreen` for the Contact route.
+- Fixed `AboutScreen`: removed merged contact content (`onEmail` param, Email row). About is now product-only (version, product, VOID.SYS, Shooter, License, GitHub links).
+- Fixed `WidgetPickerScreen`: added `panelIndex: Int` and `onSelectProvider: (AppWidgetProviderInfo) -> Unit` — selecting a widget now triggers the bind/allocate flow.
+- Fixed `HomeScreen.onOpenWidgetPicker` type: changed from `() -> Unit` to `(Int) -> Unit` so the panel index is passed through to the picker.
+- Fixed `DockBar`: rewritten from 5 slots to 7 slots — Phone, LeftFolder, Settings (long-press = Shooter), AppDrawer (focal), System (long-press = System), RightFolder, Messages. Button size 40/36dp, spacing 5/4dp, paddings 8/6dp.
+- Fixed `EntitlementManager`: initial state set to `DebugBypass` immediately in debug builds — no more brief `LockedScreen` flash during development.
+- Fixed `AxiomWallpaperManager.createWallpaper()`: replaced hardcoded 1080×2400 with dynamic screen-size detection via `WindowManager` (API 30+ path: `currentWindowMetrics.bounds`; legacy path: `getRealMetrics`).
+- Added `SystemSettingsNavigator`: centralised Android Settings intent dispatch with fallback chain.
+- Added `PermissionManager`: checks default-launcher status and BIND_APPWIDGET permission at runtime.
+- Added `PermissionSetupScreen`: shows Default Launcher, Widget Binding, Wallpaper note, and VOID.SYS status. Reachable via Settings > Setup > Permissions & Setup.
+- Added `LauncherState.PermissionSetup` enum value; BackHandler covers new state.
+- Added widget persistence: `SettingsKeys.PanelWidgets`, `AxiomSettings.panelWidgets` + `widgetForPanel()`, `SettingsRepository.updatePanelWidget()`, `LauncherViewModel.setWidgetForPanel()`.
+- Added `BoundWidgetPanel` composable inside `HomeScreen`: renders a bound `AppWidgetHostView` or "WIDGET UNAVAILABLE" fallback; long-press replaces widget.
+- Added `AxiomWidgetHost` lifecycle management in `MainActivity` (startListening/stopListening via DisposableEffect).
+- Added widget bind result launcher (`rememberLauncherForActivityResult`) for devices that deny `bindAppWidgetIdIfAllowed`.
+- Added `vm.openDialer()` and `vm.openMessages()` in `LauncherViewModel`; wired to Phone and Messages dock slots in `HomeScreen` and `SystemPanelScreen`.
+- Added `res/drawable-nodpi/` directory with `.gitkeep` placeholder (user adds `axiom_logo.png` manually).
+- Added Settings > Setup section with Permissions & Setup row.
+- Build confirmed clean.
+
 ## Debug Build Alignment — Native VOID.SYS + Bundled Shooter
 
 - Settings Modules section: AXIOM SHOOTER value → "Included", subtitle → "Hidden arcade Easter egg".

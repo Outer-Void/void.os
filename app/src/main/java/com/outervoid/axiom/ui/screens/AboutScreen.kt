@@ -22,10 +22,8 @@ import com.outervoid.axiom.ui.theme.TextSecondary
 @Composable
 fun AboutScreen(
     settings: AxiomSettings,
-    title: String,
     onOpenOuterVoid: () -> Unit,
-    onOpenJustadude: () -> Unit,
-    onEmail: () -> Unit
+    onOpenJustadude: () -> Unit
 ) {
     val accent = settings.accentColor()
     Column(
@@ -34,7 +32,7 @@ fun AboutScreen(
             .background(Background)
             .padding(horizontal = 18.dp, vertical = 22.dp)
     ) {
-        Text(title, color = accent, style = MaterialTheme.typography.titleLarge)
+        Text("ABOUT AXIOM", color = accent, style = MaterialTheme.typography.titleLarge)
         Text("AXIOM Launcher", color = TextSecondary, style = MaterialTheme.typography.labelLarge)
         Spacer(
             Modifier
@@ -45,11 +43,10 @@ fun AboutScreen(
         )
         SettingsRow("Version", value = BuildConfig.VERSION_NAME)
         SettingsRow("Product", subtitle = "Proprietary paid Android launcher by Outer-Void | Justadudeinspace")
-        SettingsRow("VOID.SYS", subtitle = "Native icon system")
-        SettingsRow("Axiom Shooter", subtitle = "Hidden module")
+        SettingsRow("VOID.SYS", subtitle = "Native icon system — bundled, no separate install required")
+        SettingsRow("Axiom Shooter", subtitle = "Hidden arcade Easter egg — long press AXIOM to launch")
         SettingsRow("License", value = "Proprietary")
         SettingsRow("Outer-Void GitHub", value = "OPEN", onClick = onOpenOuterVoid)
         SettingsRow("Justadudeinspace GitHub", value = "OPEN", onClick = onOpenJustadude)
-        SettingsRow("Email", value = "CONTACT", subtitle = "theoutervoid@outlook.com", onClick = onEmail)
     }
 }

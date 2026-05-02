@@ -71,7 +71,45 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Exit and confirm control returns to AXIOM/Android.
 - Note: PauseScreen.kt is deprecated dead code — all pause logic lives inside GameScreen inline.
 
-## 4. Locked Behavior
+## 4. 7-Slot Dock
 
-- Confirm debug bypass allows development testing.
+- Confirm dock shows 7 buttons: Phone, Left Folder, Settings (power-dial icon), App Drawer (grid dots, focal dot below), System (ring indicator), Right Folder, Messages (chat bubble).
+- Tap Phone and confirm dialer opens.
+- Tap Messages and confirm messaging app opens (Google Messages / Samsung Messages / sms: URI fallback).
+- Long-press Settings and confirm Axiom Shooter transition launches.
+- Long-press System and confirm System Panel opens (when enabled).
+- Tap Left Folder and Right Folder and confirm custom folder panels open.
+- Confirm compact mode reduces button size (36dp) and spacing (4dp).
+
+## 5. Widgets
+
+- Set Home Panels to 2+ in Settings.
+- Swipe to a widget panel and confirm "WIDGET PANEL / Long press to add widget." text.
+- Long-press the widget panel and confirm `WidgetPickerScreen` opens showing "PANEL 2" (or correct panel number).
+- Confirm the picker lists installed widget providers sorted alphabetically.
+- Select a widget. Confirm it appears on the correct panel after bind.
+- Long-press the bound widget and confirm the picker re-opens for replacement.
+- If device denies bind permission, confirm the system bind dialog appears and the widget is saved on OK or discarded on Cancel.
+
+## 6. Permissions & Setup
+
+- Open Settings > Setup > Permissions & Setup.
+- Confirm Default Launcher row shows ACTIVE when AXIOM is default, NOT SET otherwise.
+- Tap NOT SET and confirm Android home/default-apps settings opens.
+- Confirm Widget Binding row shows GRANTED or REQUIRED based on runtime permission check.
+- Confirm VOID.SYS section shows Native Icons: INCLUDED and Standalone: INSTALLED / OPTIONAL.
+- Press Back and confirm return to Settings.
+
+## 7. About / Contact Routing
+
+- Open Settings > About > About AXIOM.
+- Confirm screen shows Version, Product, VOID.SYS, Axiom Shooter, License, and two GitHub rows. No Email row.
+- Open Settings > About > Contact.
+- Confirm separate ContactScreen with Email (OPEN), Outer-Void GitHub (OPEN), Justadudeinspace GitHub (OPEN).
+- Tap Email and confirm mail client opens with theoutervoid@outlook.com pre-filled.
+- Tap GitHub links and confirm browser opens correct GitHub pages.
+
+## 8. Locked Behavior
+
+- Confirm debug bypass allows development testing (no LockedScreen flash on launch).
 - Document that release builds intentionally fail closed until real Play Licensing, Play Integrity, and server signatures exist.

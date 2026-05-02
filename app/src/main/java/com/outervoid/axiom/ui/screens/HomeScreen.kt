@@ -1,5 +1,6 @@
 package com.outervoid.axiom.ui.screens
 
+import android.appwidget.AppWidgetManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -36,8 +37,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.settings.AxiomSettings
 import com.outervoid.axiom.settings.accentColor
@@ -49,6 +52,7 @@ import com.outervoid.axiom.ui.components.DockBar
 import com.outervoid.axiom.ui.components.EmptyWidgetPanel
 import com.outervoid.axiom.ui.components.SystemOnlineIndicator
 import com.outervoid.axiom.ui.theme.*
+import com.outervoid.axiom.widgets.AxiomWidgetHost
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -57,6 +61,7 @@ fun HomeScreen(
     time: String,
     favoriteApps: List<AppInfo>,
     settings: AxiomSettings,
+    widgetHost: AxiomWidgetHost,
     onOpenAppDrawer: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenSystemPanel: () -> Unit,
@@ -67,9 +72,11 @@ fun HomeScreen(
     onOpenAppInfo: (AppInfo) -> Unit,
     onFavoriteKeysChanged: (Set<String>) -> Unit,
     onPickFavorite: () -> Unit,
-    onOpenWidgetPicker: () -> Unit,
+    onOpenWidgetPicker: (Int) -> Unit,
     onOpenClock: () -> Unit,
-    onOpenCalendar: () -> Unit
+    onOpenCalendar: () -> Unit,
+    onPhone: () -> Unit,
+    onMessages: () -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
     val accent = settings.accentColor()
@@ -179,7 +186,16 @@ fun HomeScreen(
                         }
                     }
                 } else {
-                    EmptyWidgetPanel(panelNumber = panel + 1, onOpenWidgetPicker = { haptic(); onOpenWidgetPicker() })
+                    val boundWidgetId = settings.widgetForPanel(panel)
+                    if (boundWidgetId != null) {
+                        BoundWidgetPanel(
+                            widgetId = boundWidgetId,
+                            widgetHost = widgetHost,
+                            onLongPress = { haptic(); onOpenWidgetPicker(panel) }
+                        )
+                    } else {
+                        EmptyWidgetPanel(panelNumber = panel + 1, onOpenWidgetPicker = { haptic(); onOpenWidgetPicker(panel) })
+                    }
                 }
                 if (settings.homePanelCount > 1) {
                     Text(
@@ -221,12 +237,15 @@ fun HomeScreen(
             }
             Spacer(Modifier.height(if (settings.compactMode) 10.dp else 16.dp))
             DockBar(
+                onPhone = { haptic(); onPhone() },
                 onLeftFolder = { haptic(); onOpenLeftFolder() },
                 onSettings = { haptic(); onOpenSettings() },
                 onLongClickSettings = { haptic(); onLaunchShooter() },
                 onAppDrawer = { haptic(); onOpenAppDrawer() },
                 onSystem = { haptic(); onOpenSystemPanel() },
+                onLongClickSystem = { haptic(); onOpenSystemPanel() },
                 onRightFolder = { haptic(); onOpenRightFolder() },
+                onMessages = { haptic(); onMessages() },
                 compactMode = settings.compactMode,
                 accentColor = accent
             )
@@ -252,5 +271,47 @@ private fun EmptyFavoriteSlot(
         contentAlignment = Alignment.Center
     ) {
         Text(if (locked) "LOCK" else "+", color = accentColor, style = MaterialTheme.typography.titleLarge)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun BoundWidgetPanel(
+    widgetId: Int,
+    widgetHost: AxiomWidgetHost,
+    onLongPress: () -> Unit
+) {
+    val context = LocalContext.current
+    val manager = remember { AppWidgetManager.getInstance(context) }
+    val info = remember(widgetId) { runCatching { manager.getAppWidgetInfo(widgetId) }.getOrNull() }
+
+    if (info == null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .combinedClickable(onLongClick = onLongPress, onClick = {}),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("WIDGET UNAVAILABLE", color = TextDim, style = MaterialTheme.typography.titleLarge)
+                Text("Long press to replace.", color = TextDim, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+        return
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .combinedClickable(onLongClick = onLongPress, onClick = {})
+    ) {
+        AndroidView(
+            factory = { ctx ->
+                widgetHost.createBoundView(ctx, widgetId, info).apply {
+                    setAppWidget(widgetId, info)
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }

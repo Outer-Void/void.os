@@ -13,7 +13,9 @@ class EntitlementManager(context: Context) {
     private val appContext = context.applicationContext
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val integrityGate = IntegrityGate(appContext)
-    private val _state = MutableStateFlow(EntitlementState.Unknown)
+    private val _state = MutableStateFlow(
+        if (BuildConfig.DEBUG) EntitlementState.DebugBypass else EntitlementState.Unknown
+    )
     val state: StateFlow<EntitlementState> = _state
 
     fun initialize() {

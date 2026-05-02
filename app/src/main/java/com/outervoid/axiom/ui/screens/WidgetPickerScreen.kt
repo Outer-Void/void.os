@@ -1,10 +1,14 @@
 package com.outervoid.axiom.ui.screens
 
 import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProviderInfo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +25,11 @@ import com.outervoid.axiom.ui.theme.Background
 import com.outervoid.axiom.ui.theme.TextSecondary
 
 @Composable
-fun WidgetPickerScreen(settings: AxiomSettings) {
+fun WidgetPickerScreen(
+    settings: AxiomSettings,
+    panelIndex: Int,
+    onSelectProvider: (AppWidgetProviderInfo) -> Unit
+) {
     val context = LocalContext.current
     val accent = settings.accentColor()
     val widgets = remember {
@@ -36,14 +44,32 @@ fun WidgetPickerScreen(settings: AxiomSettings) {
             .padding(horizontal = 18.dp, vertical = 22.dp)
     ) {
         Text("WIDGETS", color = accent, style = MaterialTheme.typography.titleLarge)
-        Text("Some widgets require Android bind permission before hosting.", color = TextSecondary, style = MaterialTheme.typography.bodySmall)
-        LazyColumn {
-            items(widgets) { provider ->
-                SettingsRow(
-                    title = provider.loadLabel(context.packageManager).toString(),
-                    subtitle = provider.provider.flattenToShortString(),
-                    value = "SELECT"
-                )
+        Text("PANEL ${panelIndex + 1}", color = TextSecondary, style = MaterialTheme.typography.labelLarge)
+        Spacer(
+            Modifier
+                .padding(top = 10.dp, bottom = 8.dp)
+                .width(104.dp)
+                .height(1.dp)
+                .background(accent)
+        )
+        Text(
+            "Widget binding requires device permission. AXIOM will request it if not yet granted.",
+            color = TextSecondary,
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(Modifier.height(12.dp))
+        if (widgets.isEmpty()) {
+            Text("No widgets found on this device.", color = TextSecondary, style = MaterialTheme.typography.bodyMedium)
+        } else {
+            LazyColumn {
+                items(widgets) { provider ->
+                    SettingsRow(
+                        title = provider.loadLabel(context.packageManager).toString(),
+                        subtitle = provider.provider.flattenToShortString(),
+                        value = "SELECT",
+                        onClick = { onSelectProvider(provider) }
+                    )
+                }
             }
         }
     }

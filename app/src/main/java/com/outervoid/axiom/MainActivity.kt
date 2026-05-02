@@ -1,6 +1,9 @@
 package com.outervoid.axiom
 
+import android.app.Activity
 import android.app.AlarmManager
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProviderInfo
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +11,9 @@ import android.os.Bundle
 import android.provider.AlarmClock
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -19,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,15 +38,18 @@ import com.outervoid.axiom.security.SignatureGate
 import com.outervoid.axiom.settings.ClockFormat
 import com.outervoid.axiom.settings.accentColor
 import com.outervoid.axiom.settings.appKey
+import com.outervoid.axiom.system.SystemSettingsNavigator
 import com.outervoid.axiom.ui.screens.AboutScreen
 import com.outervoid.axiom.ui.screens.AxiomShooterTransitionScreen
 import com.outervoid.axiom.ui.screens.AmbientScreen
 import com.outervoid.axiom.ui.screens.AppDrawerScreen
+import com.outervoid.axiom.ui.screens.ContactScreen
 import com.outervoid.axiom.ui.screens.CustomFolderPanel
 import com.outervoid.axiom.ui.screens.FolderAppSelectionScreen
 import com.outervoid.axiom.ui.screens.HiddenAppsScreen
 import com.outervoid.axiom.ui.screens.HomeScreen
 import com.outervoid.axiom.ui.screens.LockedScreen
+import com.outervoid.axiom.ui.screens.PermissionSetupScreen
 import com.outervoid.axiom.ui.screens.SettingsScreen
 import com.outervoid.axiom.ui.screens.SystemPanelScreen
 import com.outervoid.axiom.ui.screens.WidgetPickerScreen
@@ -52,6 +61,7 @@ import com.outervoid.axiom.ui.theme.TextPrimary
 import com.outervoid.axiom.ui.theme.TextSecondary
 import com.outervoid.axiom.vm.LauncherViewModel
 import com.outervoid.axiom.wallpaper.AxiomWallpaperManager
+import com.outervoid.axiom.widgets.AxiomWidgetHost
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.delay
@@ -79,6 +89,45 @@ class MainActivity : ComponentActivity() {
             var shooterDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
             var systemPanelDisabledVisible by remember { mutableStateOf(false) }
             var wallpaperDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
+
+            var widgetPickerPanelIndex by remember { mutableIntStateOf(0) }
+            var pendingWidgetBind by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+            val widgetHost = remember { AxiomWidgetHost(applicationContext) }
+            val appWidgetManager = remember { AppWidgetManager.getInstance(applicationContext) }
+
+            DisposableEffect(Unit) {
+                widgetHost.startListening()
+                onDispose { widgetHost.stopListening() }
+            }
+
+            val bindWidgetLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                val pending = pendingWidgetBind
+                if (pending != null) {
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        vm.setWidgetForPanel(pending.first, pending.second)
+                    } else {
+                        runCatching { widgetHost.deleteAppWidgetId(pending.second) }
+                    }
+                    pendingWidgetBind = null
+                }
+            }
+
+            fun handleWidgetSelect(panelIndex: Int, provider: AppWidgetProviderInfo) {
+                val widgetId = widgetHost.allocateAppWidgetId()
+                val bound = appWidgetManager.bindAppWidgetIdIfAllowed(widgetId, provider.provider)
+                if (bound) {
+                    vm.setWidgetForPanel(panelIndex, widgetId)
+                } else {
+                    pendingWidgetBind = panelIndex to widgetId
+                    val bindIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_BIND).apply {
+                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider.provider)
+                    }
+                    bindWidgetLauncher.launch(bindIntent)
+                }
+            }
 
             DisposableEffect(moduleStatusManager) {
                 moduleStatusManager.register()
@@ -165,18 +214,20 @@ class MainActivity : ComponentActivity() {
                         state == LauncherState.WidgetPicker ||
                         state == LauncherState.LeftFolderApps ||
                         state == LauncherState.RightFolderApps ||
-                        state == LauncherState.AxiomShooterTransition
+                        state == LauncherState.AxiomShooterTransition ||
+                        state == LauncherState.PermissionSetup
                 ) {
                     pickingFavorite = false
                     state = LauncherState.Home
                 }
                 when (state) {
                     LauncherState.Ambient -> AmbientScreen(date, onComplete = { state = LauncherState.Home })
-	                    LauncherState.Home -> HomeScreen(
+                    LauncherState.Home -> HomeScreen(
                         date = date,
                         time = time,
                         favoriteApps = favoriteApps,
                         settings = settings,
+                        widgetHost = widgetHost,
                         onOpenAppDrawer = { state = LauncherState.AppDrawer },
                         onOpenSettings = { state = LauncherState.Settings },
                         onOpenSystemPanel = {
@@ -198,9 +249,14 @@ class MainActivity : ComponentActivity() {
                             pickingFavorite = true
                             state = LauncherState.AppDrawer
                         },
-                        onOpenWidgetPicker = { state = LauncherState.WidgetPicker },
+                        onOpenWidgetPicker = { panelIndex ->
+                            widgetPickerPanelIndex = panelIndex
+                            state = LauncherState.WidgetPicker
+                        },
                         onOpenClock = ::openClock,
-                        onOpenCalendar = ::openCalendar
+                        onOpenCalendar = ::openCalendar,
+                        onPhone = { vm.openDialer(this@MainActivity) },
+                        onMessages = { vm.openMessages(this@MainActivity) }
                     )
                     LauncherState.AppDrawer -> AppDrawerScreen(
                         query = query,
@@ -248,7 +304,7 @@ class MainActivity : ComponentActivity() {
                         },
                         onOpenAppInfo = { app -> vm.openAppInfo(this@MainActivity, app) }
                     )
-	                    LauncherState.Settings -> SettingsScreen(
+                    LauncherState.Settings -> SettingsScreen(
                         settings = settings,
                         voidSysInstalled = voidSysInstalled,
                         onFontSelected = vm::setFont,
@@ -282,6 +338,7 @@ class MainActivity : ComponentActivity() {
                         onOpenPhoneSettings = { openSettingsIntent(Intent(android.provider.Settings.ACTION_SETTINGS)) },
                         onOpenAbout = { state = LauncherState.About },
                         onOpenContact = { state = LauncherState.Contact },
+                        onOpenPermissions = { state = LauncherState.PermissionSetup },
                         onShowAppLabelsChanged = vm::setShowAppLabels,
                         onGridColumnsChanged = vm::setGridColumns,
                         onIconScaleChanged = vm::setIconScale,
@@ -303,9 +360,11 @@ class MainActivity : ComponentActivity() {
                         onOpenAppDrawer = { state = LauncherState.AppDrawer },
                         onOpenLeftFolder = { state = LauncherState.LeftFolder },
                         onOpenRightFolder = { state = LauncherState.RightFolder },
-                        onReturnHome = { state = LauncherState.Home }
+                        onReturnHome = { state = LauncherState.Home },
+                        onPhone = { vm.openDialer(this@MainActivity) },
+                        onMessages = { vm.openMessages(this@MainActivity) }
                     )
-	                    LauncherState.AxiomShooterTransition -> AxiomShooterTransitionScreen(
+                    LauncherState.AxiomShooterTransition -> AxiomShooterTransitionScreen(
                         accentColor = accent,
                         onLaunch = {
                             when (gameLaunchManager.launch(entitlementState)) {
@@ -341,20 +400,35 @@ class MainActivity : ComponentActivity() {
                         settings = settings,
                         onChanged = vm::setRightFolderApps
                     )
-                    LauncherState.WidgetPicker -> WidgetPickerScreen(settings = settings)
+                    LauncherState.WidgetPicker -> WidgetPickerScreen(
+                        settings = settings,
+                        panelIndex = widgetPickerPanelIndex,
+                        onSelectProvider = { provider ->
+                            handleWidgetSelect(widgetPickerPanelIndex, provider)
+                            state = LauncherState.Home
+                        }
+                    )
                     LauncherState.About -> AboutScreen(
                         settings = settings,
-                        title = "ABOUT AXIOM",
+                        onOpenOuterVoid = { openUrl("https://github.com/Outer-Void") },
+                        onOpenJustadude = { openUrl("https://github.com/Justadudeinspace") }
+                    )
+                    LauncherState.Contact -> ContactScreen(
+                        settings = settings,
                         onOpenOuterVoid = { openUrl("https://github.com/Outer-Void") },
                         onOpenJustadude = { openUrl("https://github.com/Justadudeinspace") },
                         onEmail = ::openEmail
                     )
-                    LauncherState.Contact -> AboutScreen(
+                    LauncherState.PermissionSetup -> PermissionSetupScreen(
                         settings = settings,
-                        title = "CONTACT",
-                        onOpenOuterVoid = { openUrl("https://github.com/Outer-Void") },
-                        onOpenJustadude = { openUrl("https://github.com/Justadudeinspace") },
-                        onEmail = ::openEmail
+                        voidSysInstalled = voidSysInstalled,
+                        onChooseDefaultLauncher = ::openDefaultLauncherSettings,
+                        onOpenWidgetSettings = {
+                            SystemSettingsNavigator.openSpecificSettings(
+                                this@MainActivity,
+                                android.provider.Settings.ACTION_APPLICATION_SETTINGS
+                            )
+                        }
                     )
                 }
 
@@ -399,17 +473,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun openDefaultLauncherSettings() {
-        val intents = listOf(
-            Intent(android.provider.Settings.ACTION_HOME_SETTINGS),
-            Intent(android.provider.Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS),
-            Intent(android.provider.Settings.ACTION_SETTINGS)
-        )
-        intents.firstNotNullOfOrNull { intent ->
-            runCatching {
-                startActivity(intent)
-                true
-            }.getOrNull()
-        }
+        SystemSettingsNavigator.openDefaultLauncherSettings(this)
     }
 
     private fun openUrl(url: String) {

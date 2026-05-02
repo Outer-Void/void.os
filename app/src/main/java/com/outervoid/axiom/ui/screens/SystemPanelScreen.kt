@@ -41,7 +41,9 @@ fun SystemPanelScreen(
     onOpenAppDrawer: () -> Unit,
     onOpenLeftFolder: () -> Unit,
     onOpenRightFolder: () -> Unit,
-    onReturnHome: () -> Unit
+    onReturnHome: () -> Unit,
+    onPhone: () -> Unit = {},
+    onMessages: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
@@ -105,11 +107,14 @@ fun SystemPanelScreen(
             }
             Spacer(Modifier.height(if (settings.compactMode) 10.dp else 16.dp))
             DockBar(
+                onPhone = { haptic(); onPhone() },
                 onLeftFolder = { haptic(); onOpenLeftFolder() },
                 onSettings = { haptic(); onOpenSettings() },
                 onAppDrawer = { haptic(); onOpenAppDrawer() },
                 onSystem = { haptic(); onReturnHome() },
+                onLongClickSystem = { haptic(); onReturnHome() },
                 onRightFolder = { haptic(); onOpenRightFolder() },
+                onMessages = { haptic(); onMessages() },
                 compactMode = settings.compactMode,
                 accentColor = accent
             )

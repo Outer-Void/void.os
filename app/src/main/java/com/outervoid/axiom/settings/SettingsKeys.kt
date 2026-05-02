@@ -36,4 +36,5 @@ object SettingsKeys {
     val SystemPanelEnabled = booleanPreferencesKey("system_panel_enabled")
     val TerminalPanelEnabled = booleanPreferencesKey("terminal_panel_enabled")
     val HapticFeedbackEnabled = booleanPreferencesKey("haptic_feedback_enabled")
+    val PanelWidgets = stringSetPreferencesKey("panel_widgets")
 }

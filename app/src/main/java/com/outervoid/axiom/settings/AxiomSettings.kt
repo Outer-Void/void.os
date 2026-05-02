@@ -31,8 +31,13 @@ data class AxiomSettings(
     val searchOnSwipeUp: Boolean = true,
     val systemPanelEnabled: Boolean = false,
     val terminalPanelEnabled: Boolean = false,
-    val hapticFeedbackEnabled: Boolean = true
+    val hapticFeedbackEnabled: Boolean = true,
+    val panelWidgets: Set<String> = emptySet()
 ) {
+    fun widgetForPanel(panelIndex: Int): Int? =
+        panelWidgets.firstOrNull { it.startsWith("$panelIndex:") }
+            ?.substringAfter(":")?.toIntOrNull()
+
     companion object {
         const val DEFAULT_FONT_KEY = "jetbrains_mono"
         const val DEFAULT_ICON_PACK_PACKAGE = "com.outervoid.voidsys"

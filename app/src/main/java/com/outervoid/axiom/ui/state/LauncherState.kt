@@ -14,5 +14,6 @@ enum class LauncherState {
     WidgetPicker,
     LeftFolderApps,
     RightFolderApps,
-    AxiomShooterTransition
+    AxiomShooterTransition,
+    PermissionSetup
 }

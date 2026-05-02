@@ -62,6 +62,7 @@ fun SettingsScreen(
     onOpenPhoneSettings: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenContact: () -> Unit,
+    onOpenPermissions: () -> Unit,
     onShowAppLabelsChanged: (Boolean) -> Unit,
     onGridColumnsChanged: (Int) -> Unit,
     onIconScaleChanged: (Float) -> Unit,
@@ -287,6 +288,10 @@ fun SettingsScreen(
                     subtitle = "Planned for v1.1"
                 )
                 SettingsRow("Custom dock folders", value = "PLANNED", subtitle = "Folder slots open placeholders for now.")
+            }
+
+            SettingsSection("Setup") {
+                SettingsRow("Permissions & Setup", value = "OPEN", subtitle = "Default launcher, widget binding, wallpaper.", onClick = { haptic(); onOpenPermissions() })
             }
 
             SettingsSection("About") {

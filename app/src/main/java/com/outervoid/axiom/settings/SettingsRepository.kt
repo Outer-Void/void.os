@@ -51,7 +51,8 @@ class SettingsRepository(private val context: Context) {
                 searchOnSwipeUp = preferences[SettingsKeys.SearchOnSwipeUp] ?: true,
                 systemPanelEnabled = preferences[SettingsKeys.SystemPanelEnabled] ?: false,
                 terminalPanelEnabled = preferences[SettingsKeys.TerminalPanelEnabled] ?: false,
-                hapticFeedbackEnabled = preferences[SettingsKeys.HapticFeedbackEnabled] ?: true
+                hapticFeedbackEnabled = preferences[SettingsKeys.HapticFeedbackEnabled] ?: true,
+                panelWidgets = preferences[SettingsKeys.PanelWidgets] ?: emptySet()
             )
         }
 
@@ -107,6 +108,15 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun updateHapticFeedback(enabled: Boolean) =
         update { it[SettingsKeys.HapticFeedbackEnabled] = enabled }
+
+    suspend fun updatePanelWidget(panelIndex: Int, widgetId: Int?) {
+        context.axiomSettingsStore.edit { prefs ->
+            val current = (prefs[SettingsKeys.PanelWidgets] ?: emptySet()).toMutableSet()
+            current.removeAll { it.startsWith("$panelIndex:") }
+            if (widgetId != null) current.add("$panelIndex:$widgetId")
+            prefs[SettingsKeys.PanelWidgets] = current
+        }
+    }
 
     suspend fun reset() {
         context.axiomSettingsStore.edit { it.clear() }
