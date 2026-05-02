@@ -1,5 +1,15 @@
 # Changelog
 
+## Feed Gesture, Wallpaper Fallback, and Mockup Visual Sync
+
+- Changed AXIOM Feed navigation to avoid widget-panel conflicts: swipe right from the Home favorites panel opens Feed, while left swipe remains reserved for Home widget panels.
+- Updated AXIOM Feed return gesture: swipe left from Feed returns Home; Back still returns Home.
+- Replaced the static Home clock/date block with an At a Glance panel that swipes between Clock/Date/System Online and Now Playing.
+- Added notification-listener setup for At a Glance media sessions; AXIOM shows `MUSIC ACCESS REQUIRED` until Android grants access, then reads active media sessions instead of faking track data.
+- Added `SET_WALLPAPER` support and a generated-wallpaper system handoff fallback when direct lock-screen wallpaper install is blocked by the phone.
+- Deepened AXIOM matte surfaces, app icon tile beveling, dock tile depth, and controlled accent behavior toward the supplied AXIOM mockup.
+- Synced the rebuilt VOID.SYS mockup-aligned native assets into AXIOM: 578 bundled PNG icons across Android densities, backed by 590 source SVG icons and 1,908 icon-map lookups.
+
 ## Shooter Launch + VOID.SYS 500+ Sync
 
 - Hardened Axiom Shooter launch to use the live Activity context, explicit internal component/package routing, foreground reuse flags, fullscreen game theme, keep-screen-on flag, and diagnostic logging.
@@ -9,7 +19,7 @@
 
 ## AXIOM Feed Module System
 
-- Added `LauncherState.AxiomFeed`, left-swipe Home gesture, right-swipe/back return to Home, and AXIOM-styled `AxiomFeedScreen`.
+- Added `LauncherState.AxiomFeed`, Home gesture navigation, Back return to Home, and AXIOM-styled `AxiomFeedScreen`.
 - Added feed architecture under `com.outervoid.axiom.feed`: module types, categories, config, registry, renderer, and DataStore-backed repository.
 - Added Feed Configuration and Module Library screens with enable/disable, collapse/expand, remove, re-add, and Up/Down reorder controls.
 - Added Settings > AXIOM FEED rows: Enable AXIOM Feed, Configure Feed, Reset Feed Layout, and Minimal Feed Mode.

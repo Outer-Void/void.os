@@ -1,6 +1,7 @@
 package com.outervoid.axiom.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -29,6 +31,7 @@ import com.outervoid.axiom.ui.iconshape.IconShape
 import com.outervoid.axiom.ui.iconshape.iconShapeMask
 import com.outervoid.axiom.ui.theme.BorderAlt
 import com.outervoid.axiom.ui.theme.IconBackground
+import com.outervoid.axiom.ui.theme.TextDim
 import com.outervoid.axiom.ui.theme.TextSecondary
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -61,10 +64,36 @@ fun AppIconCell(
                 .border(1.dp, BorderAlt.copy(alpha = 0.72f), shape),
             contentAlignment = Alignment.Center
         ) {
+            Canvas(Modifier.fillMaxSize()) {
+                drawLine(
+                    color = BorderAlt.copy(alpha = 0.44f),
+                    start = Offset(size.width * 0.18f, size.height * 0.18f),
+                    end = Offset(size.width * 0.82f, size.height * 0.18f),
+                    strokeWidth = 1.dp.toPx()
+                )
+                drawLine(
+                    color = TextDim.copy(alpha = 0.5f),
+                    start = Offset(size.width * 0.14f, size.height * 0.86f),
+                    end = Offset(size.width * 0.86f, size.height * 0.86f),
+                    strokeWidth = 1.4.dp.toPx()
+                )
+                drawLine(
+                    color = BorderAlt.copy(alpha = 0.36f),
+                    start = Offset(size.width * 0.72f, size.height * 0.12f),
+                    end = Offset(size.width * 0.9f, size.height * 0.28f),
+                    strokeWidth = 0.9.dp.toPx()
+                )
+                drawLine(
+                    color = TextDim.copy(alpha = 0.34f),
+                    start = Offset(size.width * 0.88f, size.height * 0.28f),
+                    end = Offset(size.width * 0.78f, size.height * 0.42f),
+                    strokeWidth = 0.9.dp.toPx()
+                )
+            }
             Image(
                 bitmap = iconBitmap,
                 contentDescription = app.label,
-                modifier = Modifier.fillMaxSize(iconScale.coerceIn(0.55f, 0.95f)),
+                modifier = Modifier.fillMaxSize(iconScale.coerceIn(0.72f, 1.0f)),
                 contentScale = ContentScale.Fit
             )
         }

@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -46,11 +47,11 @@ import com.outervoid.axiom.settings.AxiomSettings
 import com.outervoid.axiom.settings.accentColor
 import com.outervoid.axiom.settings.appKey
 import com.outervoid.axiom.ui.components.AppIconCell
+import com.outervoid.axiom.ui.components.AtAGlancePanel
 import com.outervoid.axiom.ui.components.AxiomWordmark
 import com.outervoid.axiom.ui.components.CornerBrackets
 import com.outervoid.axiom.ui.components.DockBar
 import com.outervoid.axiom.ui.components.EmptyWidgetPanel
-import com.outervoid.axiom.ui.components.SystemOnlineIndicator
 import com.outervoid.axiom.ui.theme.*
 import com.outervoid.axiom.widgets.AxiomWidgetHost
 
@@ -77,6 +78,7 @@ fun HomeScreen(
     onOpenWidgetPicker: (Int) -> Unit,
     onOpenClock: () -> Unit,
     onOpenCalendar: () -> Unit,
+    onOpenNotificationAccess: () -> Unit,
     onPhone: () -> Unit,
     onMessages: () -> Unit,
     onOpenPhoneSettings: () -> Unit
@@ -84,6 +86,7 @@ fun HomeScreen(
     val haptics = LocalHapticFeedback.current
     val accent = settings.accentColor()
     val outerPadding = if (settings.compactMode) 12.dp else 18.dp
+    val glanceGestureCutoffPx = with(LocalDensity.current) { (if (settings.compactMode) 218.dp else 244.dp).toPx() }
     var panel by remember(settings.homePanelCount) { mutableIntStateOf(0) }
     var selectedFavorite by remember { mutableStateOf<AppInfo?>(null) }
     fun haptic() {
@@ -108,19 +111,25 @@ fun HomeScreen(
                     }
                 }
             }
-            .pointerInput(settings.homePanelCount, feedEnabled, panel) {
-                detectHorizontalDragGestures { _, dragAmount ->
-                    if (feedEnabled && panel == 0 && dragAmount < -28f) {
-                        haptic()
-                        onOpenAxiomFeed()
-                    } else if (settings.homePanelCount > 1 && kotlin.math.abs(dragAmount) > 18f) {
-                        panel = if (dragAmount < 0) {
-                            (panel + 1).coerceAtMost(settings.homePanelCount - 1)
-                        } else {
-                            (panel - 1).coerceAtLeast(0)
+            .pointerInput(settings.homePanelCount, feedEnabled, panel, glanceGestureCutoffPx) {
+                var allowHomePanelGesture = true
+                detectHorizontalDragGestures(
+                    onDragStart = { offset -> allowHomePanelGesture = offset.y > glanceGestureCutoffPx },
+                    onHorizontalDrag = { _, dragAmount ->
+                        if (allowHomePanelGesture) {
+                            if (feedEnabled && panel == 0 && dragAmount > 28f) {
+                                haptic()
+                                onOpenAxiomFeed()
+                            } else if (settings.homePanelCount > 1 && kotlin.math.abs(dragAmount) > 18f) {
+                                panel = if (dragAmount < 0) {
+                                    (panel + 1).coerceAtMost(settings.homePanelCount - 1)
+                                } else {
+                                    (panel - 1).coerceAtLeast(0)
+                                }
+                            }
                         }
                     }
-                }
+                )
             }
     ) {
         Column(
@@ -133,21 +142,16 @@ fun HomeScreen(
                 onLaunchShooter()
             })
             Spacer(Modifier.height(if (settings.compactMode) 8.dp else 12.dp))
-            Text(
-                date,
-                color = TextSecondary,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.combinedClickable(onClick = { haptic(); onOpenCalendar() })
+            AtAGlancePanel(
+                date = date,
+                time = time,
+                showSystemOnline = settings.showSystemOnline,
+                accentColor = accent,
+                compactMode = settings.compactMode,
+                onOpenClock = { haptic(); onOpenClock() },
+                onOpenCalendar = { haptic(); onOpenCalendar() },
+                onOpenNotificationAccess = { haptic(); onOpenNotificationAccess() }
             )
-            Text(
-                time,
-                color = accent,
-                style = MaterialTheme.typography.displayLarge,
-                modifier = Modifier.combinedClickable(onClick = { haptic(); onOpenClock() })
-            )
-            if (settings.showSystemOnline) {
-                SystemOnlineIndicator(accentColor = accent)
-            }
             Spacer(
                 Modifier
                     .padding(top = if (settings.compactMode) 10.dp else 14.dp, bottom = if (settings.compactMode) 12.dp else 18.dp)

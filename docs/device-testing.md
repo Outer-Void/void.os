@@ -43,6 +43,9 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Change Clock Format and confirm Home clock follows System / 12 hour / 24 hour.
 - Tap the clock and confirm a clock/alarm app or supported fallback opens.
 - Tap the date and confirm a calendar app opens when present.
+- Swipe the Home At a Glance panel and confirm it switches between Clock/Date and Now Playing without opening AXIOM Feed or widget panels.
+- On Now Playing, confirm `MUSIC ACCESS REQUIRED` appears until Android notification access is granted for AXIOM.
+- After granting notification access, start music in a media app and confirm At a Glance shows the active track/app from Android media sessions.
 - Change Favorites Count to 5, 10, 15, 20, and 25 and confirm Home changes slot count.
 - Enable Lock Favorites and confirm favorite long-press edit actions are blocked.
 - Set Home Panels to 2-5, swipe horizontally, and confirm widget panels appear.
@@ -52,17 +55,18 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Use About AXIOM, GitHub links, and Email and confirm external intents open.
 - Use Phone Settings actions and confirm each opens an Android settings screen or falls back to general Settings.
 - Select apps for left/right dock folders and confirm those panels show and launch selected apps.
-- Set AXIOM Lock Screen Wallpaper and confirm success or `WALLPAPER UNAVAILABLE`.
+- Set AXIOM Lock Screen Wallpaper and confirm direct success, Android wallpaper setup handoff, or `WALLPAPER UNAVAILABLE`.
 - Confirm System Panel opens only when `System panel enabled` is on.
 - Turn `System panel enabled` off and confirm the dock system control shows `SYSTEM PANEL DISABLED` with `Enable it in Settings to access the AXIOM system control panel.`
-- Swipe left from Home and confirm AXIOM Feed opens when enabled.
-- Swipe right from AXIOM Feed and confirm Home returns.
+- Swipe right from the Home favorites panel and confirm AXIOM Feed opens when enabled.
+- Swipe left from AXIOM Feed and confirm Home returns.
+- Set Home Panels to 2-5 and confirm left swipe still opens widget panels instead of AXIOM Feed.
 - Press Back from AXIOM Feed and confirm Home returns.
 
 ## 2. VOID.SYS
 
 - Confirm AXIOM native icons exist without standalone VOID.SYS installed.
-- Confirm the APK contains the expanded native VOID.SYS icon map and matte drawable assets, including 500+ bundled source icons synced into AXIOM.
+- Confirm the APK contains the expanded native VOID.SYS icon map and matte drawable assets, including 590 bundled source icons / 578 unique drawable icons synced into AXIOM.
 - Confirm Settings shows `Native: Included`.
 - Optionally install standalone VOID.SYS and confirm Settings shows the standalone package as installed.
 - Uninstall standalone VOID.SYS and confirm AXIOM native icons remain available.
@@ -127,8 +131,8 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 ## 9. AXIOM Feed
 
 - Open Settings > AXIOM FEED.
-- Toggle Enable AXIOM Feed off and confirm left-swipe no longer opens the feed.
-- Toggle Enable AXIOM Feed on and confirm left-swipe opens `AXIOM FEED / CONTROL LAYER`.
+- Toggle Enable AXIOM Feed off and confirm right-swipe no longer opens the feed.
+- Toggle Enable AXIOM Feed on and confirm right-swipe opens `AXIOM FEED / CONTROL LAYER`.
 - Open Configure Feed and confirm Active Feed Layout appears.
 - Use Up / Down controls and confirm module order changes.
 - Toggle a module row and confirm it enables/disables.

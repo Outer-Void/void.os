@@ -13,13 +13,14 @@ AXIOM provides a controlled Android environment, not just a launcher: a separate
 - **AXIOM Launcher**: core paid product and launcher shell.
 - **Bundled fonts**: the active font selector uses packaged open-license font resources under `app/src/main/res/font`.
 - **Customization controls**: accent color, icon shape, clock format, favorites count/lock, home panels, hidden apps, lock-screen wallpaper, default-launcher chooser, and expanded phone settings shortcuts.
-- **VOID.SYS native icon system**: 578 bundled matte system icons and 1,908 lookup mappings inside AXIOM. Users do not install the standalone VOID.SYS package for AXIOM to have native icons.
+- **At a Glance**: Home clock/date is a wired control surface that can swipe between clock/date/system status and currently playing Android media sessions after notification access setup.
+- **VOID.SYS native icon system**: 578 bundled matte drawable icons, 590 source SVG icons, and 1,908 lookup mappings inside AXIOM. Users do not install the standalone VOID.SYS package for AXIOM to have native icons.
 - **AXIOM fallback icons**: unmatched apps use generated dark symbolic fallback icons by default. Colorful Android system icons appear only when the user selects `System Icons`.
 - **Axiom Shooter / VOID.GAME**: hidden protected Easter egg bundled inside AXIOM and launched by long-pressing the AXIOM wordmark/name. Users do not install Axiom Shooter separately.
-- **Wallpaper setup**: bundled `res/drawable-nodpi/axiom_logo.png` is used to generate a matte black AXIOM lock-screen wallpaper at runtime. Devices that block direct lock-screen wallpaper writes show a clear AXIOM-styled failure message.
+- **Wallpaper setup**: bundled `res/drawable-nodpi/axiom_logo.png` is used to generate a matte black AXIOM lock-screen wallpaper at runtime. Devices that block direct lock-screen wallpaper writes get a system wallpaper setup handoff when Android allows it, otherwise AXIOM shows a clear failure message.
 - **Widget setup**: widget panels use Android `AppWidgetHost`, real installed widget providers, platform bind/configuration flows, and persisted widget IDs per panel.
 - **Seven-slot dock**: Phone, Left Folder, AXIOM Settings, App Drawer, System/Phone Settings, Right Folder, and Messages.
-- **AXIOM Feed**: optional left-swipe user-built control layer, not a news feed. Default modules are System Status, Weather setup, Calendar setup, Focus Panel, and Quick Actions. Users can configure, reorder, collapse, remove, and re-add modules from the module library.
+- **AXIOM Feed**: optional right-swipe user-built control layer, not a news feed. Default modules are System Status, Weather setup, Calendar setup, Focus Panel, and Quick Actions. Users can configure, reorder, collapse, remove, and re-add modules from the module library.
 - **VOID.SYS standalone**: separate proprietary `$1.99` icon pack for Nova, Lawnchair, and other compatible launchers.
 
 ## Security Foundation

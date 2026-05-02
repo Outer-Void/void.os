@@ -48,7 +48,7 @@ fun AxiomFeedScreen(
             .background(Background)
             .pointerInput(Unit) {
                 detectHorizontalDragGestures { _, dragAmount ->
-                    if (dragAmount > 28f) onReturnHome()
+                    if (dragAmount < -28f) onReturnHome()
                 }
             }
             .padding(horizontal = 18.dp, vertical = 22.dp)

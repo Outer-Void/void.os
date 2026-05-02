@@ -59,7 +59,7 @@ VOID.SYS is the native default icon system:
 
 - Default package: `com.outervoid.voidsys`
 - Native bundled icon assets are included in AXIOM.
-- Default mode is `VOID.SYS Native`: bundled/native icons first, AXIOM symbolic fallback when no match exists. Current bundled coverage is 578 PNG icons and 1,908 lookup mappings.
+- Default mode is `VOID.SYS Native`: bundled/native icons first, AXIOM symbolic fallback when no match exists. Current bundled coverage is 578 PNG drawable icons, 590 source SVG icons, and 1,908 lookup mappings.
 - `AXIOM Fallback` uses generated matte symbolic fallback icons for every app.
 - `System Icons` is the only mode that uses colorful installed app launcher icons.
 - If standalone VOID.SYS is installed, AXIOM reports the standalone package as installed.
@@ -72,15 +72,24 @@ VOID.SYS is the native default icon system:
 - Favorites are real Home items. Empty favorites auto-fill from installed apps until the user pins explicit favorites; locked favorites block edit/remove actions.
 - Home panels support one Favorites panel plus up to four widget panels. Widget discovery uses Android `AppWidgetManager`, binding uses the platform approval flow when needed, configuration activities are handled, and replacement deletes the old widget host ID.
 - Hidden apps are stored as package/activity keys and filtered from App Drawer/Search only.
-- Lock-screen wallpaper uses the bundled `axiom_logo.png` resource and Android `WallpaperManager.FLAG_LOCK` where supported. Restricted devices show `WALLPAPER UNAVAILABLE`.
+- Lock-screen wallpaper uses the bundled `axiom_logo.png` resource and Android `WallpaperManager.FLAG_LOCK` where supported. Restricted devices get a generated-image handoff to Android's wallpaper setter when available; otherwise AXIOM shows `WALLPAPER UNAVAILABLE`.
 - Folder customization stores left/right folder app sets and an icon style key. Folder panels launch selected apps.
 - AXIOM Feed settings expose Enable AXIOM Feed, Configure Feed, Reset Feed Layout, and Minimal Feed Mode. Feed module configuration is stored separately in `FeedRepository` using DataStore Preferences.
 
+## At a Glance
+
+Home At a Glance replaces the static clock/date block with a swipeable control surface:
+
+- Clock/Date page: opens Clock and Calendar through the existing Home actions.
+- Now Playing page: reads active Android media sessions only after the user grants AXIOM notification access.
+- Setup state: shows `MUSIC ACCESS REQUIRED` and opens Android notification listener settings.
+- Gesture guard: swipes that begin on At a Glance are reserved for the panel so they do not trigger AXIOM Feed or Home widget panels.
+
 ## AXIOM Feed Settings
 
-Settings > AXIOM FEED controls the optional left-swipe control layer:
+Settings > AXIOM FEED controls the optional right-swipe control layer:
 
-- `Enable AXIOM Feed`: controls whether left-swipe from Home opens the feed.
+- `Enable AXIOM Feed`: controls whether right-swipe from Home opens the feed.
 - `Configure Feed`: opens active layout controls for reorder, enable/disable, collapse/expand, remove, and add module.
 - `Reset Feed Layout`: restores System Status, Weather, Calendar, Focus Panel, and Quick Actions.
 - `Minimal Feed Mode`: replaces active modules with Minimal Clock, System Dot Indicator, and Focus Only Panel.

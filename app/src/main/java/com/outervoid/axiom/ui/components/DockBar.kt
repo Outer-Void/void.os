@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -23,6 +24,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.Border
+import com.outervoid.axiom.ui.theme.BorderAlt
 import com.outervoid.axiom.ui.theme.BorderDim
 import com.outervoid.axiom.ui.theme.Surface
 import com.outervoid.axiom.ui.theme.SurfaceAlt
@@ -50,8 +52,8 @@ fun DockBar(
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         Row(
             modifier = Modifier
-                .background(SurfaceAlt, RoundedCornerShape(20.dp))
-                .border(1.dp, BorderDim, RoundedCornerShape(20.dp))
+            .background(SurfaceAlt, RoundedCornerShape(20.dp))
+            .border(1.dp, BorderDim, RoundedCornerShape(20.dp))
                 .padding(horizontal = padH, vertical = padV),
             horizontalArrangement = Arrangement.spacedBy(spacing),
             verticalAlignment = Alignment.CenterVertically
@@ -123,6 +125,19 @@ private fun DockButton(
             ),
         contentAlignment = Alignment.Center
     ) {
+        Canvas(Modifier.size(size)) {
+            drawLine(
+                color = BorderAlt.copy(alpha = 0.42f),
+                start = Offset(size.toPx() * 0.22f, size.toPx() * 0.2f),
+                end = Offset(size.toPx() * 0.78f, size.toPx() * 0.2f),
+                strokeWidth = 1.dp.toPx()
+            )
+            drawRoundRect(
+                color = BorderDim.copy(alpha = 0.7f),
+                topLeft = Offset(2.dp.toPx(), this.size.height - 5.dp.toPx()),
+                size = Size(this.size.width - 4.dp.toPx(), 2.dp.toPx())
+            )
+        }
         icon(accentColor)
         if (focal) {
             Canvas(Modifier.size(size)) {

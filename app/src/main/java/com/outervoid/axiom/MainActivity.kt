@@ -336,6 +336,9 @@ class MainActivity : ComponentActivity() {
                         },
                         onOpenClock = ::openClock,
                         onOpenCalendar = ::openCalendar,
+                        onOpenNotificationAccess = {
+                            openSettingsIntent(Intent(android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                        },
                         onPhone = { vm.openDialer(this@MainActivity) },
                         onMessages = { vm.openMessages(this@MainActivity) },
                         onOpenPhoneSettings = { SystemSettingsNavigator.openPhoneSettings(this@MainActivity) }
@@ -418,17 +421,28 @@ class MainActivity : ComponentActivity() {
                         onAccentColorSelected = vm::setAccentColor,
                         onClockFormatSelected = vm::setClockFormat,
                         onLockScreenWallpaper = {
-                            when (AxiomWallpaperManager(this@MainActivity).setLockScreenWallpaper()) {
+                            val wallpaperManager = AxiomWallpaperManager(this@MainActivity)
+                            when (wallpaperManager.setLockScreenWallpaper()) {
                                 AxiomWallpaperManager.Result.Applied -> {
                                     vm.setLockScreenWallpaperEnabled(true)
                                     wallpaperDialog = AxiomDialogState("LOCK SCREEN WALLPAPER", "AXIOM lock-screen wallpaper applied.")
                                 }
                                 AxiomWallpaperManager.Result.Restricted -> {
-                                    vm.setLockScreenWallpaperEnabled(false)
-                                    wallpaperDialog = AxiomDialogState(
-                                        "WALLPAPER UNAVAILABLE",
-                                        "This device does not allow AXIOM to set lock-screen wallpaper directly."
-                                    )
+                                    val fallbackOpened = wallpaperManager.createSystemSetterIntent()
+                                        ?.let(::openWallpaperSetter)
+                                        ?: false
+                                    if (fallbackOpened) {
+                                        wallpaperDialog = AxiomDialogState(
+                                            "WALLPAPER SETUP OPENED",
+                                            "Android blocked direct lock-screen install, so AXIOM opened the system wallpaper setter with the generated AXIOM wallpaper. Choose lock screen if your phone offers it."
+                                        )
+                                    } else {
+                                        vm.setLockScreenWallpaperEnabled(false)
+                                        wallpaperDialog = AxiomDialogState(
+                                            "WALLPAPER UNAVAILABLE",
+                                            "This device does not allow AXIOM to set the lock screen wallpaper directly, and no supported system wallpaper setup screen accepted the generated AXIOM wallpaper."
+                                        )
+                                    }
                                 }
                             }
                         },
@@ -602,6 +616,17 @@ class MainActivity : ComponentActivity() {
     private fun openSettingsIntent(intent: Intent) {
         runCatching { startActivity(intent) }
             .recoverCatching { startActivity(Intent(android.provider.Settings.ACTION_SETTINGS)) }
+    }
+
+    private fun openWallpaperSetter(intent: Intent): Boolean {
+        return try {
+            startActivity(intent)
+            true
+        } catch (_: ActivityNotFoundException) {
+            false
+        } catch (_: SecurityException) {
+            false
+        }
     }
 
     private fun openDefaultLauncherSettings() {

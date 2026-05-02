@@ -1,11 +1,11 @@
 # AXIOM Feed
 
-AXIOM Feed is a user-designed modular left-swipe control panel. It is not Google Discover, a news feed, an ad surface, a recommendations panel, or infinite scroll.
+AXIOM Feed is a user-designed modular right-swipe control panel. It is not Google Discover, a news feed, an ad surface, a recommendations panel, or infinite scroll.
 
 ## Navigation
 
-- Swipe left from Home to open AXIOM Feed when enabled.
-- Swipe right from AXIOM Feed to return Home.
+- Swipe right from the Home favorites panel to open AXIOM Feed when enabled.
+- Swipe left from AXIOM Feed to return Home.
 - Back from AXIOM Feed returns Home.
 
 ## Default Modules
