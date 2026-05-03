@@ -83,7 +83,8 @@ fun SettingsScreen(
     onSystemPanelChanged: (Boolean) -> Unit,
     onHapticFeedbackChanged: (Boolean) -> Unit,
     onReloadApps: () -> Unit,
-    onResetSettings: () -> Unit
+    onResetSettings: () -> Unit,
+    onOpenTerminal: () -> Unit = {}
 ) {
     var resetConfirmVisible by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
@@ -303,8 +304,9 @@ fun SettingsScreen(
             SettingsSection("Developer") {
                 SettingsRow(
                     title = "Terminal Panel",
-                    value = "PLANNED",
-                    subtitle = "Planned for v1.1"
+                    value = "OPEN",
+                    subtitle = "AXIOM embedded shell — or Termux bridge if installed.",
+                    onClick = { haptic(); onOpenTerminal() }
                 )
                 SettingsRow("Custom dock folders", value = "ACTIVE", subtitle = "Left and right dock folders use selected app sets.")
             }

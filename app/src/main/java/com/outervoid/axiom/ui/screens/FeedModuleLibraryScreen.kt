@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.feed.FeedModuleCategory
+import com.outervoid.axiom.feed.FeedModuleStatus
 import com.outervoid.axiom.feed.FeedModuleType
 import com.outervoid.axiom.feed.FeedState
 import com.outervoid.axiom.ui.components.SettingsRow
@@ -29,6 +30,9 @@ fun FeedModuleLibraryScreen(
     onAddModule: (FeedModuleType) -> Unit
 ) {
     val activeTypes = feedState.modules.map { it.type }.toSet()
+    val activeModules = FeedModuleType.entries.filter { it.status != FeedModuleStatus.Planned }
+    val plannedModules = FeedModuleType.entries.filter { it.status == FeedModuleStatus.Planned }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -41,22 +45,47 @@ fun FeedModuleLibraryScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             Text("MODULE LIBRARY", color = TextPrimary, style = MaterialTheme.typography.titleLarge)
-            Text("USER SELECTABLE CONTROL MODULES", color = TextSecondary, style = MaterialTheme.typography.labelLarge)
+            Text("V1.0 ACTIVE MODULES", color = TextSecondary, style = MaterialTheme.typography.labelLarge)
             Spacer(Modifier.height(14.dp))
+
             FeedModuleCategory.entries.forEach { category ->
+                val modulesInCategory = activeModules.filter { it.category == category }
+                if (modulesInCategory.isEmpty()) return@forEach
                 SettingsSection(category.label) {
-                    FeedModuleType.entries
-                        .filter { it.category == category }
-                        .forEach { type ->
-                            SettingsRow(
-                                title = type.label,
-                                subtitle = type.status.name.uppercase(),
-                                value = if (type in activeTypes) "ADDED" else "ADD",
-                                onClick = { onAddModule(type) }
-                            )
-                        }
+                    modulesInCategory.forEach { type ->
+                        SettingsRow(
+                            title = type.label,
+                            subtitle = when (type.status) {
+                                FeedModuleStatus.Functional -> "Functional"
+                                FeedModuleStatus.SetupRequired -> "Setup required — tap to enable then grant permission"
+                                FeedModuleStatus.Planned -> ""
+                            },
+                            value = if (type in activeTypes) "ADDED" else "ADD",
+                            onClick = { onAddModule(type) }
+                        )
+                    }
                 }
             }
+
+            Spacer(Modifier.height(18.dp))
+            Text("FUTURE MODULES (v2.0)", color = TextSecondary, style = MaterialTheme.typography.titleSmall)
+            Text("Not available in v1.0. Listed for roadmap visibility.", color = TextSecondary, style = MaterialTheme.typography.labelSmall)
+            Spacer(Modifier.height(10.dp))
+
+            FeedModuleCategory.entries.forEach { category ->
+                val planned = plannedModules.filter { it.category == category }
+                if (planned.isEmpty()) return@forEach
+                SettingsSection(category.label) {
+                    planned.forEach { type ->
+                        SettingsRow(
+                            title = type.label,
+                            subtitle = "Planned — v2.0",
+                            value = "v2.0"
+                        )
+                    }
+                }
+            }
+
             Spacer(Modifier.height(18.dp))
         }
     }

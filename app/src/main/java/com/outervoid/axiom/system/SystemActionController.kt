@@ -39,6 +39,7 @@ class SystemActionController(private val context: Context) {
             SystemAction.DoNotDisturb -> open(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
             SystemAction.Sound -> open(Settings.ACTION_SOUND_SETTINGS)
             SystemAction.Display -> open(Settings.ACTION_DISPLAY_SETTINGS)
+            SystemAction.Brightness -> openBrightness()
             SystemAction.Wallpaper -> open(Intent.ACTION_SET_WALLPAPER)
             SystemAction.Apps -> open(Settings.ACTION_APPLICATION_SETTINGS)
             SystemAction.Notifications -> open("android.settings.NOTIFICATION_SETTINGS")
@@ -109,6 +110,21 @@ class SystemActionController(private val context: Context) {
         context.getSystemService(BluetoothManager::class.java)?.adapter?.isEnabled == true
     } catch (_: SecurityException) {
         false
+    }
+
+    private fun openBrightness() {
+        val actions = buildList {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                add("android.settings.panel.action.BRIGHTNESS")
+            }
+            add(Settings.ACTION_DISPLAY_SETTINGS)
+        }
+        for (action in actions) {
+            try {
+                context.startActivity(Intent(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                return
+            } catch (_: Exception) {}
+        }
     }
 
     private fun open(action: String) {

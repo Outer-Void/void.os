@@ -25,7 +25,12 @@ import com.outervoid.voidgame.entities.Patch
 import com.outervoid.voidgame.entities.PatchType
 import com.outervoid.voidgame.entities.VoidCore
 
-class GameScreen(private val game: VoidGame) : Screen {
+class GameScreen(
+    private val game: VoidGame,
+    private val survival: Boolean = false,
+    private val campaignMission: Int = 0,
+    private val campaignWaves: Int = 0
+) : Screen {
     private val camera = OrthographicCamera()
     private val viewport = FitViewport(GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT, camera)
     private val shapeRenderer = ShapeRenderer()
@@ -244,8 +249,22 @@ class GameScreen(private val game: VoidGame) : Screen {
     }
 
     private fun nextCycle() {
+        if (campaignMission > 0 && campaignWaves > 0 && cycle >= campaignWaves) {
+            completeCampaignMission()
+            return
+        }
         cycle += 1
         spawnWave()
+    }
+
+    private fun completeCampaignMission() {
+        val prefs = Gdx.app.getPreferences("axiom_shooter")
+        val done = prefs.getInteger("missions_complete", 0)
+        if (campaignMission > done) {
+            prefs.putInteger("missions_complete", campaignMission)
+            prefs.flush()
+        }
+        game.setScreen(ScoreScreen(game, signal, cycle))
     }
 
     private fun spawnWave() {

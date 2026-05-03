@@ -32,6 +32,7 @@ fun FeedModuleRenderer(
     onLaunchApp: (AppInfo) -> Unit,
     onOpenSystemPanel: () -> Unit,
     onOpenAppDrawer: () -> Unit,
+    onOpenTerminal: () -> Unit,
     onUpdatePriorities: (List<String>) -> Unit,
     onUpdateTasks: (List<String>) -> Unit,
     onUpdateNextAction: (String) -> Unit,
@@ -57,6 +58,9 @@ fun FeedModuleRenderer(
         }
         FeedModuleType.AppShortcuts -> AppShortcutsModule(config, apps, state.appShortcutKeys, onLaunchApp, onOpenAppDrawer)
         FeedModuleType.SystemPanelShortcut -> QuickActionsModule(config, listOf("SystemPanelShortcut"), onOpenSystemPanel, onOpenAppDrawer) {}
+        FeedModuleType.TerminalShortcut -> QuickActionsModule(config, listOf("TerminalShortcut"), onOpenSystemPanel, onOpenAppDrawer) { action ->
+            if (action == "TerminalShortcut") onOpenTerminal()
+        }
         FeedModuleType.Notes,
         FeedModuleType.NotesFeed -> NotesModule(config, state.notes, onUpdateNotes)
         FeedModuleType.MinimalClock,

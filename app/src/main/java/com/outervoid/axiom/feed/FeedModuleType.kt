@@ -50,7 +50,7 @@ enum class FeedModuleType(
     ContactShortcuts("Contact Shortcuts", FeedModuleCategory.QuickAction, FeedModuleStatus.SetupRequired),
     MediaControls("Media Controls", FeedModuleCategory.QuickAction, FeedModuleStatus.SetupRequired),
     SystemPanelShortcut("System Panel Shortcut", FeedModuleCategory.QuickAction, FeedModuleStatus.Functional),
-    TerminalShortcut("Terminal Shortcut", FeedModuleCategory.QuickAction, FeedModuleStatus.Planned),
+    TerminalShortcut("Terminal Shortcut", FeedModuleCategory.QuickAction, FeedModuleStatus.Functional),
 
     ScreenTimeToday("Screen Time Today", FeedModuleCategory.BehaviorMetrics, FeedModuleStatus.SetupRequired),
     TopApps("Top Apps", FeedModuleCategory.BehaviorMetrics, FeedModuleStatus.SetupRequired),

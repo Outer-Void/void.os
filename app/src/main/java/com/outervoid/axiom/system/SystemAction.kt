@@ -13,6 +13,7 @@ enum class SystemAction(val label: String) {
     DoNotDisturb("Do Not Disturb"),
     Sound("Sound"),
     Display("Display"),
+    Brightness("Brightness"),
     Wallpaper("Wallpaper"),
     Apps("Apps"),
     Notifications("Notifications"),

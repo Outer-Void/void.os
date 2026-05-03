@@ -18,5 +18,6 @@ enum class LauncherState {
     LeftFolderApps,
     RightFolderApps,
     AxiomShooterTransition,
-    PermissionSetup
+    PermissionSetup,
+    TerminalPanel
 }

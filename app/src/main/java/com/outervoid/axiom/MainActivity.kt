@@ -1,5 +1,6 @@
 package com.outervoid.axiom
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlarmManager
 import android.appwidget.AppWidgetManager
@@ -7,6 +8,7 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.AlarmClock
 import androidx.activity.ComponentActivity
@@ -58,6 +60,7 @@ import com.outervoid.axiom.ui.screens.LockedScreen
 import com.outervoid.axiom.ui.screens.PermissionSetupScreen
 import com.outervoid.axiom.ui.screens.SettingsScreen
 import com.outervoid.axiom.ui.screens.SystemPanelScreen
+import com.outervoid.axiom.ui.screens.TerminalPanelScreen
 import com.outervoid.axiom.ui.screens.WidgetPickerScreen
 import com.outervoid.axiom.ui.state.LauncherState
 import com.outervoid.axiom.ui.theme.Amber
@@ -205,6 +208,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            val calendarPermLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { /* permission result handled reactively in PermissionSetupScreen via lifecycle observer */ }
+
+            val contactsPermLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { }
+
+            val locationPermLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions()
+            ) { }
+
+            val notificationsPermLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { }
+
             DisposableEffect(moduleStatusManager) {
                 moduleStatusManager.register()
                 onDispose { moduleStatusManager.unregister() }
@@ -242,7 +261,7 @@ class MainActivity : ComponentActivity() {
                 val accent = settings.accentColor()
                 val appByKey = allApps.associateBy { appKey(it.packageName, it.activityName) }
                 val favoriteApps = if (settings.favoriteAppKeys.isEmpty()) {
-                    allApps.take(settings.favoritesCount)
+                    emptyList()
                 } else {
                     settings.favoriteAppKeys.mapNotNull { appByKey[it] }.take(settings.favoritesCount)
                 }
@@ -294,7 +313,8 @@ class MainActivity : ComponentActivity() {
                         state == LauncherState.LeftFolderApps ||
                         state == LauncherState.RightFolderApps ||
                         state == LauncherState.AxiomShooterTransition ||
-                        state == LauncherState.PermissionSetup
+                        state == LauncherState.PermissionSetup ||
+                        state == LauncherState.TerminalPanel
                 ) {
                     pickingFavorite = false
                     state = LauncherState.Home
@@ -361,6 +381,7 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         onOpenAppDrawer = { state = LauncherState.AppDrawer },
+                        onOpenTerminal = { state = LauncherState.TerminalPanel },
                         onUpdatePriorities = { values -> scope.launch { feedRepository.setPriorities(values) } },
                         onUpdateTasks = { values -> scope.launch { feedRepository.setTasks(values) } },
                         onUpdateNextAction = { value -> scope.launch { feedRepository.setNextAction(value) } },
@@ -373,12 +394,10 @@ class MainActivity : ComponentActivity() {
                         onQueryChange = vm::setQuery,
                         onLaunch = { app ->
                             if (pickingFavorite) {
-                                val effectiveKeys = if (settings.favoriteAppKeys.isEmpty()) {
-                                    favoriteApps.map { appKey(it.packageName, it.activityName) }.toSet()
-                                } else {
-                                    settings.favoriteAppKeys
-                                }
-                                vm.setFavoriteAppKeys((effectiveKeys + appKey(app.packageName, app.activityName)).take(settings.favoritesCount).toSet())
+                                vm.setFavoriteAppKeys(
+                                    (settings.favoriteAppKeys + appKey(app.packageName, app.activityName))
+                                        .take(settings.favoritesCount).toSet()
+                                )
                                 pickingFavorite = false
                             } else {
                                 vm.launchApp(this@MainActivity, app)
@@ -478,7 +497,8 @@ class MainActivity : ComponentActivity() {
                         onSystemPanelChanged = vm::setSystemPanel,
                         onHapticFeedbackChanged = vm::setHapticFeedback,
                         onReloadApps = vm::loadApps,
-                        onResetSettings = vm::resetSettings
+                        onResetSettings = vm::resetSettings,
+                        onOpenTerminal = { state = LauncherState.TerminalPanel }
                     )
                     LauncherState.FeedConfiguration -> FeedConfigurationScreen(
                         feedState = feedState,
@@ -567,7 +587,26 @@ class MainActivity : ComponentActivity() {
                         onChooseDefaultLauncher = ::openDefaultLauncherSettings,
                         onOpenWidgetSettings = {
                             SystemSettingsNavigator.openDefaultLauncherSettings(this@MainActivity)
+                        },
+                        onRequestCalendar = { calendarPermLauncher.launch(android.Manifest.permission.READ_CALENDAR) },
+                        onRequestContacts = { contactsPermLauncher.launch(android.Manifest.permission.READ_CONTACTS) },
+                        onRequestLocation = {
+                            locationPermLauncher.launch(
+                                arrayOf(
+                                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                                )
+                            )
+                        },
+                        onRequestNotifications = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                notificationsPermLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                            }
                         }
+                    )
+                    LauncherState.TerminalPanel -> TerminalPanelScreen(
+                        settings = settings,
+                        onClose = { state = LauncherState.Home }
                     )
                 }
 

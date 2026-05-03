@@ -12,9 +12,11 @@ class Carrier {
     var y = 44f
     var active = true
     var fireTimer = 0f
+    var thrusterTimer = 0f
 
     fun update(delta: Float, targetCenterX: Float?) {
         if (!active) return
+        thrusterTimer += delta
         if (targetCenterX != null) {
             val targetX = targetCenterX - width * 0.5f
             x = MathUtils.clamp(targetX, 0f, GameConfig.WORLD_WIDTH - width)
