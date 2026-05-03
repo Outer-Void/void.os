@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.outervoid.voidgame.GameConfig
+import com.outervoid.voidgame.ShooterVisuals
 import com.outervoid.voidgame.VoidGame
 import com.outervoid.voidgame.entities.Bullet
 import com.outervoid.voidgame.entities.Carrier
@@ -330,7 +331,13 @@ class GameScreen(
     }
 
     private fun drawShapes() {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        ShooterVisuals.drawSpaceBackdrop(shapeRenderer, elapsed)
+        shapeRenderer.end()
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+        ShooterVisuals.drawSpaceLineDetails(shapeRenderer, elapsed)
+        drawCombatFrame()
         drawGrid()
         bullets.forEach { it.draw(shapeRenderer) }
         enemyBullets.forEach { it.draw(shapeRenderer) }
@@ -339,6 +346,7 @@ class GameScreen(
         carrier.draw(shapeRenderer)
         particles.forEach { it.draw(shapeRenderer) }
         drawIntegrityBar()
+        drawControlOverlay()
         if (firewallActive) drawFirewallEdges()
         shapeRenderer.end()
 
@@ -351,28 +359,55 @@ class GameScreen(
 
     private fun drawGrid() {
         val alpha = if (gridPulseTimer > 0f) 0.08f else 0.03f
-        shapeRenderer.color = GameConfig.COLOR_SURFACE.cpy().also { it.a = alpha }
+        shapeRenderer.color = GameConfig.COLOR_AMBER.cpy().also { it.a = alpha }
         var x = 0f
         while (x <= GameConfig.WORLD_WIDTH) {
-            shapeRenderer.line(x, 0f, x, GameConfig.WORLD_HEIGHT)
+            shapeRenderer.line(x, 116f, x, GameConfig.WORLD_HEIGHT - 70f)
             x += 20f
         }
-        var y = 0f
-        while (y <= GameConfig.WORLD_HEIGHT) {
+        var y = 120f
+        while (y <= GameConfig.WORLD_HEIGHT - 70f) {
             shapeRenderer.line(0f, y, GameConfig.WORLD_WIDTH, y)
             y += 20f
         }
+    }
+
+    private fun drawCombatFrame() {
+        shapeRenderer.color = GameConfig.COLOR_DIM.cpy().also { it.a = 0.38f }
+        ShooterVisuals.drawCornerBrackets(shapeRenderer, 12f, 12f, GameConfig.WORLD_WIDTH - 24f, GameConfig.WORLD_HEIGHT - 24f, 18f)
+        ShooterVisuals.drawPanelFrame(shapeRenderer, 12f, GameConfig.WORLD_HEIGHT - 62f, 102f, 42f)
+        ShooterVisuals.drawPanelFrame(shapeRenderer, GameConfig.WORLD_WIDTH - 114f, GameConfig.WORLD_HEIGHT - 62f, 102f, 42f)
+        shapeRenderer.color = GameConfig.COLOR_AMBER.cpy().also { it.a = 0.5f }
+        shapeRenderer.line(136f, GameConfig.WORLD_HEIGHT - 42f, 224f, GameConfig.WORLD_HEIGHT - 42f)
     }
 
     private fun drawIntegrityBar() {
         val left = 22f
         val right = GameConfig.WORLD_WIDTH - 22f
         val y = 96f
-        shapeRenderer.color = GameConfig.COLOR_DIM
-        shapeRenderer.line(left, y, right, y)
-        shapeRenderer.color = if (integrity <= 25) GameConfig.COLOR_DANGER else GameConfig.COLOR_AMBER
-        val fillRight = left + (right - left) * (integrity / GameConfig.INTEGRITY_MAX.toFloat())
-        shapeRenderer.line(left, y, fillRight, y)
+        shapeRenderer.color = GameConfig.COLOR_DIM.cpy().also { it.a = 0.5f }
+        shapeRenderer.rect(left, y - 4f, right - left, 8f)
+        val segments = 20
+        val activeSegments = (segments * (integrity / GameConfig.INTEGRITY_MAX.toFloat())).toInt()
+        for (i in 0 until segments) {
+            shapeRenderer.color = when {
+                i >= activeSegments -> GameConfig.COLOR_SURFACE
+                integrity <= 25 -> GameConfig.COLOR_DANGER
+                else -> GameConfig.COLOR_AMBER
+            }
+            val sx = left + 4f + i * ((right - left - 8f) / segments)
+            shapeRenderer.line(sx, y, sx + 8f, y)
+        }
+    }
+
+    private fun drawControlOverlay() {
+        ShooterVisuals.drawControlRing(shapeRenderer, 58f, 54f, 30f, Gdx.input.isTouched)
+        ShooterVisuals.drawControlRing(shapeRenderer, GameConfig.WORLD_WIDTH - 58f, 54f, 30f, active = true)
+        ShooterVisuals.drawControlRing(shapeRenderer, GameConfig.WORLD_WIDTH - 106f, 36f, 17f)
+        ShooterVisuals.drawControlRing(shapeRenderer, GameConfig.WORLD_WIDTH - 20f, 36f, 17f)
+        shapeRenderer.color = GameConfig.COLOR_AMBER.cpy().also { it.a = 0.72f }
+        shapeRenderer.line(GameConfig.WORLD_WIDTH - 58f, 42f, GameConfig.WORLD_WIDTH - 58f, 66f)
+        shapeRenderer.line(GameConfig.WORLD_WIDTH - 70f, 54f, GameConfig.WORLD_WIDTH - 46f, 54f)
     }
 
     private fun drawFirewallEdges() {
@@ -397,16 +432,22 @@ class GameScreen(
         batch.begin()
         font.data.setScale(0.9f)
         font.color = GameConfig.COLOR_GRAY
-        font.draw(batch, "SIGNAL", 18f, GameConfig.WORLD_HEIGHT - 18f)
+        font.draw(batch, "SCORE", 22f, GameConfig.WORLD_HEIGHT - 30f)
         font.color = GameConfig.COLOR_AMBER
-        font.draw(batch, signal.toString(), 18f, GameConfig.WORLD_HEIGHT - 36f)
+        font.draw(batch, signal.toString(), 22f, GameConfig.WORLD_HEIGHT - 48f)
         font.color = GameConfig.COLOR_GRAY
-        drawRight("CYCLE", GameConfig.WORLD_WIDTH - 18f, GameConfig.WORLD_HEIGHT - 18f)
+        drawRight("WAVE", GameConfig.WORLD_WIDTH - 22f, GameConfig.WORLD_HEIGHT - 30f)
         font.color = GameConfig.COLOR_AMBER
-        drawRight(cycle.toString(), GameConfig.WORLD_WIDTH - 18f, GameConfig.WORLD_HEIGHT - 36f)
+        drawRight(cycle.toString(), GameConfig.WORLD_WIDTH - 22f, GameConfig.WORLD_HEIGHT - 48f)
         font.color = GameConfig.COLOR_GRAY
         font.draw(batch, "INTEGRITY", 22f, 82f)
         drawRight("$integrity%", GameConfig.WORLD_WIDTH - 22f, 82f)
+        font.data.setScale(0.62f)
+        font.color = GameConfig.COLOR_DIM
+        font.draw(batch, "MOVE", 38f, 20f)
+        drawRight("FIRE", GameConfig.WORLD_WIDTH - 38f, 20f)
+        font.draw(batch, "MSL", GameConfig.WORLD_WIDTH - 116f, 18f)
+        font.draw(batch, "BMB", GameConfig.WORLD_WIDTH - 30f, 18f)
         drawPowerups()
         if (corePurgeTimer > 0f) {
             font.color = GameConfig.COLOR_AMBER

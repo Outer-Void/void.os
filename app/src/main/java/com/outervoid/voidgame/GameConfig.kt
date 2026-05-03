@@ -23,4 +23,6 @@ object GameConfig {
     val COLOR_DIM: Color = Color.valueOf("777777FF")
     val COLOR_SURFACE: Color = Color.valueOf("111111FF")
     val COLOR_DANGER: Color = Color.valueOf("E53935FF")
+    val COLOR_ORANGE: Color = Color.valueOf("FF7A1AFF")
+    val COLOR_ASTEROID: Color = Color.valueOf("24201CFF")
 }

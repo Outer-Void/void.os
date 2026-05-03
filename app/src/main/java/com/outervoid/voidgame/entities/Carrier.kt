@@ -36,11 +36,21 @@ class Carrier {
 
     fun draw(renderer: ShapeRenderer) {
         if (!active) return
+        val cx = x + width * 0.5f
         renderer.color = GameConfig.COLOR_GRAY
-        renderer.rectLine(x, y, x + width * 0.5f, y + height, 2.5f)
-        renderer.rectLine(x + width, y, x + width * 0.5f, y + height, 2.5f)
-        renderer.rectLine(x + width * 0.28f, y + height * 0.45f, x + width * 0.72f, y + height * 0.45f, 2.5f)
+        renderer.rectLine(cx, y + height + 4f, x + 8f, y + 5f, 2.4f)
+        renderer.rectLine(cx, y + height + 4f, x + width - 8f, y + 5f, 2.4f)
+        renderer.rectLine(x + 4f, y + 6f, x + width * 0.34f, y + height * 0.42f, 2.2f)
+        renderer.rectLine(x + width - 4f, y + 6f, x + width * 0.66f, y + height * 0.42f, 2.2f)
+        renderer.rectLine(cx, y + height + 2f, cx, y + 8f, 2.8f)
+        renderer.color = GameConfig.COLOR_DIM
+        renderer.line(x + 12f, y + 15f, x + width - 12f, y + 15f)
+        renderer.line(x + 16f, y + 4f, x + width - 16f, y + 4f)
         renderer.color = GameConfig.COLOR_AMBER
-        renderer.circle(x + width * 0.5f, y + height, 3f, 16)
+        renderer.circle(cx, y + height * 0.72f, 3.5f, 16)
+        renderer.color = GameConfig.COLOR_ORANGE
+        val flare = 4f + (MathUtils.sin(thrusterTimer * 18f) + 1f) * 2.5f
+        renderer.line(cx - 6f, y + 3f, cx - 2f, y - flare)
+        renderer.line(cx + 6f, y + 3f, cx + 2f, y - flare)
     }
 }

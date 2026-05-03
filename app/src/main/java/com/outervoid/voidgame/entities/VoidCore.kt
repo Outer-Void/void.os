@@ -41,15 +41,21 @@ class VoidCore {
 
     fun draw(renderer: ShapeRenderer) {
         if (!active) return
+        renderer.color = GameConfig.COLOR_DIM.cpy().also { it.a = 0.42f }
+        renderer.line(x - 40f, y - 12f, x - 18f, y + 18f)
+        renderer.line(x + 40f, y - 12f, x + 18f, y + 18f)
+        renderer.line(x - 40f, y - 12f, x + 40f, y - 12f)
         renderer.color = GameConfig.COLOR_SURFACE
-        renderer.circle(x, y, size * 0.42f, 36)
+        renderer.circle(x, y, size * 0.44f, 36)
         renderer.color = GameConfig.COLOR_AMBER
         for (i in 0 until 6) {
             renderer.arc(x, y, size * 0.5f, i * 60f + 8f, 38f, 12)
         }
         renderer.color = GameConfig.COLOR_GRAY
-        renderer.circle(x, y, size * 0.19f, 24)
+        renderer.circle(x, y, size * 0.21f, 24)
         renderer.line(x - 12f, y, x + 12f, y)
         renderer.line(x, y - 12f, x, y + 12f)
+        renderer.color = GameConfig.COLOR_ORANGE
+        renderer.circle(x, y, size * 0.08f, 16)
     }
 }

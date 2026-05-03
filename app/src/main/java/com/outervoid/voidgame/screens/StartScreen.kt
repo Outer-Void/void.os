@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.outervoid.voidgame.GameConfig
+import com.outervoid.voidgame.ShooterVisuals
 import com.outervoid.voidgame.VoidGame
 
 class StartScreen(private val game: VoidGame) : Screen {
@@ -26,14 +27,20 @@ class StartScreen(private val game: VoidGame) : Screen {
     private val touch = Vector3()
     private var elapsed = 0f
 
-    private data class MenuItem(val label: String, val y: Float, val bounds: Rectangle, val active: Boolean = false)
+    private data class MenuItem(
+        val label: String,
+        val subtitle: String,
+        val y: Float,
+        val bounds: Rectangle,
+        val active: Boolean = false
+    )
 
     private val menuItems = listOf(
-        MenuItem("CAMPAIGN",     317f, Rectangle(62f, 295f, 236f, 38f), active = true),
-        MenuItem("SURVIVAL",     267f, Rectangle(62f, 245f, 236f, 38f)),
-        MenuItem("TRAINING",     217f, Rectangle(62f, 195f, 236f, 38f)),
-        MenuItem("SETTINGS",     167f, Rectangle(62f, 145f, 236f, 38f)),
-        MenuItem("EXIT TO AXIOM",117f, Rectangle(62f, 95f,  236f, 38f))
+        MenuItem("CAMPAIGN", "MISSION ROUTE", 324f, Rectangle(58f, 296f, 244f, 44f), active = true),
+        MenuItem("SURVIVAL", "ENDLESS SIGNAL", 272f, Rectangle(58f, 244f, 244f, 44f)),
+        MenuItem("TRAINING", "CONTROL RANGE", 220f, Rectangle(58f, 192f, 244f, 44f)),
+        MenuItem("SETTINGS", "SHIP / HUD", 168f, Rectangle(58f, 140f, 244f, 44f)),
+        MenuItem("EXIT TO AXIOM", "RETURN HOME", 116f, Rectangle(58f, 88f, 244f, 44f))
     )
 
     override fun show() {
@@ -71,7 +78,12 @@ class StartScreen(private val game: VoidGame) : Screen {
     private fun drawFrame() {
         val w = GameConfig.WORLD_WIDTH
         val h = GameConfig.WORLD_HEIGHT
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        ShooterVisuals.drawSpaceBackdrop(shapeRenderer, elapsed)
+        shapeRenderer.end()
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+        ShooterVisuals.drawSpaceLineDetails(shapeRenderer, elapsed)
         shapeRenderer.color = GameConfig.COLOR_SURFACE
         shapeRenderer.rect(10f, 10f, w - 20f, h - 20f)
         shapeRenderer.color = GameConfig.COLOR_DIM
@@ -83,18 +95,15 @@ class StartScreen(private val game: VoidGame) : Screen {
         shapeRenderer.line(28f, h - 118f, w - 28f, h - 118f)
         shapeRenderer.color = GameConfig.COLOR_SURFACE
         shapeRenderer.line(28f, 80f, w - 28f, 80f)
-        shapeRenderer.color = GameConfig.COLOR_AMBER.cpy().also { it.a = 0.22f }
-        shapeRenderer.rect(62f, 295f, 236f, 36f)
-        shapeRenderer.color = GameConfig.COLOR_SURFACE
-        for (sep in listOf(283f, 233f, 183f, 133f)) {
-            shapeRenderer.line(72f, sep, w - 72f, sep)
+        menuItems.forEach { item ->
+            ShooterVisuals.drawPanelFrame(shapeRenderer, item.bounds.x, item.bounds.y, item.bounds.width, item.bounds.height, item.active)
         }
         drawShipPreview(w * 0.5f, h - 74f)
         shapeRenderer.end()
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         val pulse = (MathUtils.sin(elapsed * 2.8f) + 1f) * 0.5f
         shapeRenderer.color = GameConfig.COLOR_AMBER.cpy().also { it.a = 0.04f + pulse * 0.04f }
-        shapeRenderer.rect(62f, 295f, 236f, 36f)
+        shapeRenderer.rect(menuItems.first().bounds.x, menuItems.first().bounds.y, menuItems.first().bounds.width, menuItems.first().bounds.height)
         shapeRenderer.end()
     }
 
@@ -130,11 +139,14 @@ class StartScreen(private val game: VoidGame) : Screen {
             font.color = if (item.active) GameConfig.COLOR_AMBER else GameConfig.COLOR_GRAY
             if (item.active) {
                 font.data.setScale(0.85f); font.color = GameConfig.COLOR_AMBER
-                font.draw(batch, ">", 68f, item.y)
+                font.draw(batch, ">", 70f, item.y - 3f)
             }
             font.data.setScale(1.15f)
             font.color = if (item.active) GameConfig.COLOR_AMBER else GameConfig.COLOR_GRAY
             drawCentered(item.label, w * 0.5f, item.y)
+            font.data.setScale(0.55f)
+            font.color = GameConfig.COLOR_DIM
+            drawCentered(item.subtitle, w * 0.5f, item.y - 16f)
         }
         font.data.setScale(0.72f); font.color = GameConfig.COLOR_DIM
         drawCentered("VOID  /  AXIOM  /  SYSTEM", w * 0.5f, 28f)

@@ -82,15 +82,13 @@ class Fragment(
 
     private fun drawShard(renderer: ShapeRenderer) {
         renderer.color = GameConfig.COLOR_GRAY
-        val x1 = x - 12f
-        val y1 = y - 8f
-        val x2 = x + 10f
-        val y2 = y - 12f
-        val x3 = x + 4f
-        val y3 = y + 14f
-        renderer.line(x1, y1, x2, y2)
-        renderer.line(x2, y2, x3, y3)
-        renderer.line(x3, y3, x1, y1)
+        renderer.line(x - 14f, y - 9f, x, y + 13f)
+        renderer.line(x + 14f, y - 9f, x, y + 13f)
+        renderer.line(x - 14f, y - 9f, x + 14f, y - 9f)
+        renderer.color = GameConfig.COLOR_DIM
+        renderer.line(x - 8f, y - 3f, x + 8f, y - 3f)
+        renderer.color = GameConfig.COLOR_ORANGE
+        renderer.circle(x, y - 1f, 2f, 10)
     }
 
     private fun drawPulse(renderer: ShapeRenderer, elapsed: Float) {
@@ -108,23 +106,30 @@ class Fragment(
         }
         renderer.color = GameConfig.COLOR_AMBER
         renderer.circle(x, y, 2f + (MathUtils.sin(elapsed * 6f) + 1f) * 0.9f, 12)
+        renderer.color = GameConfig.COLOR_DIM
+        renderer.line(x - 17f, y, x - 9f, y)
+        renderer.line(x + 9f, y, x + 17f, y)
     }
 
     private fun drawGlitch(renderer: ShapeRenderer, elapsed: Float) {
         renderer.color = GameConfig.COLOR_DIM
         val flicker = if ((elapsed * 10f).toInt() % 2 == 0) 2f else -2f
-        renderer.rect(x - 10f + flicker, y - 8f, 20f, 16f)
-        renderer.color = GameConfig.COLOR_BACKGROUND
-        renderer.rect(x - 7f + flicker, y - 5f, 14f, 10f)
+        renderer.rect(x - 12f + flicker, y - 8f, 24f, 16f)
+        renderer.line(x - 16f + flicker, y + 10f, x - 6f + flicker, y + 10f)
+        renderer.line(x + 6f + flicker, y - 10f, x + 16f + flicker, y - 10f)
+        renderer.color = GameConfig.COLOR_DANGER
+        renderer.circle(x + flicker, y, 2f, 8)
     }
 
     private fun drawCluster(renderer: ShapeRenderer) {
         renderer.color = GameConfig.COLOR_GRAY
-        renderer.line(x - 8f, y - 4f, x + 8f, y - 4f)
-        renderer.line(x, y + 9f, x - 8f, y - 4f)
-        renderer.line(x, y + 9f, x + 8f, y - 4f)
-        renderer.circle(x - 8f, y - 4f, 5f, 12)
-        renderer.circle(x + 8f, y - 4f, 5f, 12)
-        renderer.circle(x, y + 9f, 5f, 12)
+        renderer.line(x - 16f, y - 5f, x + 16f, y - 5f)
+        renderer.line(x, y + 12f, x - 16f, y - 5f)
+        renderer.line(x, y + 12f, x + 16f, y - 5f)
+        renderer.circle(x - 10f, y - 4f, 5f, 12)
+        renderer.circle(x + 10f, y - 4f, 5f, 12)
+        renderer.circle(x, y + 8f, 5f, 12)
+        renderer.color = GameConfig.COLOR_AMBER
+        renderer.circle(x, y, 2.5f, 10)
     }
 }

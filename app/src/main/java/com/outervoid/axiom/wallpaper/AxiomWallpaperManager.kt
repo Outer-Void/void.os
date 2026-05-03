@@ -6,8 +6,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.RectF
 import android.net.Uri
 import android.os.Build
@@ -68,53 +66,15 @@ class AxiomWallpaperManager(private val context: Context) {
 
     private fun createWallpaper(): Bitmap {
         val (w, h) = screenSize()
-        // Clamp to a sensible minimum so we never create a zero/tiny bitmap
-        val bw = w.coerceAtLeast(720)
-        val bh = h.coerceAtLeast(1280)
+        val bw = minOf(w, h).coerceAtLeast(720)
+        val bh = maxOf(w, h).coerceAtLeast(1280)
+        val wallpaper = BitmapFactory.decodeResource(context.resources, R.drawable.axiom_wallpaper)
+            ?: error("AXIOM wallpaper resource missing")
         val bitmap = Bitmap.createBitmap(bw, bh, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        // Always fill with solid dark color first so the bitmap is never transparent-black
-        canvas.drawColor(Color.rgb(11, 11, 11))
-
-        val wallpaper = BitmapFactory.decodeResource(context.resources, R.drawable.axiom_wallpaper)
-        if (wallpaper != null) {
-            if (wallpaper.height > wallpaper.width * 1.35f) {
-                drawCover(canvas, wallpaper, bw, bh)
-            } else {
-                drawCenteredLogo(canvas, wallpaper, bw, bh)
-                drawSignalLine(canvas, bw, bh)
-            }
-            wallpaper.recycle()
-        } else {
-            // Fallback: programmatic AXIOM wallpaper
-            drawFallbackWallpaper(canvas, bw, bh)
-        }
+        drawCover(canvas, wallpaper, bw, bh)
+        wallpaper.recycle()
         return bitmap
-    }
-
-    private fun drawFallbackWallpaper(canvas: Canvas, w: Int, h: Int) {
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        paint.color = Color.rgb(255, 208, 0)
-        paint.strokeWidth = (h * 0.0018f).coerceAtLeast(2f)
-        val cx = w * 0.5f
-        canvas.drawLine(cx, h * 0.22f, cx, h * 0.78f, paint)
-        paint.textAlign = Paint.Align.CENTER
-        paint.textSize = (w * 0.10f).coerceIn(64f, 140f)
-        paint.letterSpacing = 0.14f
-        canvas.drawText("AXIOM", cx, h * 0.35f, paint)
-        paint.color = Color.rgb(68, 68, 68)
-        paint.textSize = (w * 0.028f).coerceIn(18f, 40f)
-        paint.letterSpacing = 0.06f
-        canvas.drawText("SEE THROUGH. STAY IN CONTROL.", cx, h * 0.70f, paint)
-    }
-
-    private fun drawCenteredLogo(canvas: Canvas, logo: Bitmap, w: Int, h: Int) {
-        val logoW = (w * 0.45f).toInt()
-        val scale = logoW.toFloat() / logo.width
-        val logoH = (logo.height * scale).toInt()
-        val left = (w - logoW) / 2f
-        val top = h * 0.35f - logoH / 2f
-        canvas.drawBitmap(logo, null, RectF(left, top, left + logoW, top + logoH), null)
     }
 
     private fun drawCover(canvas: Canvas, source: Bitmap, w: Int, h: Int) {
@@ -126,21 +86,7 @@ class AxiomWallpaperManager(private val context: Context) {
         canvas.drawBitmap(source, null, RectF(left, top, left + drawW, top + drawH), null)
     }
 
-    private fun drawSignalLine(canvas: Canvas, w: Int, h: Int) {
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        paint.color = Color.rgb(255, 208, 0)
-        paint.strokeWidth = (h * 0.002f).coerceAtLeast(3f)
-        val lineX = w * 0.5f
-        canvas.drawLine(lineX, h * 0.60f, lineX, h * 0.75f, paint)
-    }
-
     private fun screenSize(): Pair<Int, Int> {
-        val wallpaperManager = WallpaperManager.getInstance(context)
-        val desiredWidth = wallpaperManager.desiredMinimumWidth
-        val desiredHeight = wallpaperManager.desiredMinimumHeight
-        if (desiredWidth > 0 && desiredHeight > 0) {
-            return desiredWidth to desiredHeight
-        }
         val wm = context.getSystemService(WindowManager::class.java)
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val bounds = wm.currentWindowMetrics.bounds
