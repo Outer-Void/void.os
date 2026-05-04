@@ -106,9 +106,9 @@ Widget hosting is implemented as far as Android allows for third-party launchers
 
 System Panel access controls whether the AXIOM internal control panel is available from dock tap. Dock long-press opens Android Phone Settings.
 
-## Planned Features
+## v1.0 Boundaries
 
-- Terminal Panel remains planned for v1.1.
+- Terminal Panel is active in v1.0 as an embedded `/system/bin/sh` session with Termux bridge fallback.
 - Drag/drop folder and favorite ordering remain planned.
 
 ## Future Icon Pack Plan

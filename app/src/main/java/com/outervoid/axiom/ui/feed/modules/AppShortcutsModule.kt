@@ -10,12 +10,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.height
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.feed.FeedModuleConfig
+import com.outervoid.axiom.settings.AxiomSettings
 import com.outervoid.axiom.settings.appKey
 import com.outervoid.axiom.ui.components.AppIconCell
 
 @Composable
 fun AppShortcutsModule(
     config: FeedModuleConfig,
+    settings: AxiomSettings,
     apps: List<AppInfo>,
     selectedKeys: Set<String>,
     onLaunchApp: (AppInfo) -> Unit,
@@ -30,7 +32,15 @@ fun AppShortcutsModule(
             modifier = Modifier.height(170.dp)
         ) {
             items(selectedApps.take(8)) { app ->
-                AppIconCell(app = app, onClick = { onLaunchApp(app) }, onLongClick = {}, showLabel = true, compactMode = true)
+                AppIconCell(
+                    app = app,
+                    onClick = { onLaunchApp(app) },
+                    onLongClick = {},
+                    showLabel = settings.showAppLabels,
+                    iconScale = settings.iconScale,
+                    compactMode = true,
+                    iconShape = settings.iconShape
+                )
             }
         }
     }

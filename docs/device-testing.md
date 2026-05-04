@@ -145,5 +145,5 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Enable Minimal Feed Mode and confirm the feed contains Minimal Clock, System Dot Indicator, and Focus Only Panel.
 - Confirm functional modules persist local state: Focus priorities, Task List, Next Action, and Notes.
 - Confirm setup-required modules show clear permission/setup text rather than fake data.
-- Confirm planned modules show `PLANNED` or `PLANNED / V1.1`.
+- Confirm future modules appear only in the separate Future Modules section and are not added to the active feed by default.
 - Confirm the feed does not show algorithmic content, recommendations, ads, trending items, or infinite-scroll news behavior.

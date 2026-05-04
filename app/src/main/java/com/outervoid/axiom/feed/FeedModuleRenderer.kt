@@ -56,8 +56,11 @@ fun FeedModuleRenderer(
                 "PhoneSettings" -> SystemSettingsNavigator.openPhoneSettings(context)
             }
         }
-        FeedModuleType.AppShortcuts -> AppShortcutsModule(config, apps, state.appShortcutKeys, onLaunchApp, onOpenAppDrawer)
+        FeedModuleType.AppShortcuts -> AppShortcutsModule(config, settings, apps, state.appShortcutKeys, onLaunchApp, onOpenAppDrawer)
         FeedModuleType.SystemPanelShortcut -> QuickActionsModule(config, listOf("SystemPanelShortcut"), onOpenSystemPanel, onOpenAppDrawer) {}
+        FeedModuleType.TerminalPanel -> QuickActionsModule(config, listOf("TerminalShortcut"), onOpenSystemPanel, onOpenAppDrawer) { action ->
+            if (action == "TerminalShortcut") onOpenTerminal()
+        }
         FeedModuleType.TerminalShortcut -> QuickActionsModule(config, listOf("TerminalShortcut"), onOpenSystemPanel, onOpenAppDrawer) { action ->
             if (action == "TerminalShortcut") onOpenTerminal()
         }

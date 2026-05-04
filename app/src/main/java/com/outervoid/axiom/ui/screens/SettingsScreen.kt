@@ -51,6 +51,8 @@ fun SettingsScreen(
     onAccentColorSelected: (String) -> Unit,
     onClockFormatSelected: (ClockFormat) -> Unit,
     onLockScreenWallpaper: () -> Unit,
+    onHomeScreenWallpaper: () -> Unit,
+    onBothWallpapers: () -> Unit,
     onFavoritesCountSelected: (Int) -> Unit,
     onFavoritesLockedChanged: (Boolean) -> Unit,
     onHomePanelCountSelected: (Int) -> Unit,
@@ -157,6 +159,8 @@ fun SettingsScreen(
                     onSelected = { haptic(); onClockFormatSelected(it) }
                 )
                 SettingsRow("Lock Screen Wallpaper", value = "SET", onClick = { haptic(); onLockScreenWallpaper() })
+                SettingsRow("Home Screen Wallpaper", value = "SET", onClick = { haptic(); onHomeScreenWallpaper() })
+                SettingsRow("Home + Lock Wallpaper", value = "SET", onClick = { haptic(); onBothWallpapers() })
                 SettingsDropdown(
                     title = "Icon Style Mode",
                     subtitle = "Default: VOID.SYS Native with AXIOM fallback.",

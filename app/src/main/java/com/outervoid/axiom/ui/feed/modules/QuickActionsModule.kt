@@ -38,5 +38,6 @@ private fun String.displayAction(): String = when (this) {
     "Wifi" -> "Wi-Fi"
     "PhoneSettings" -> "Settings"
     "SystemPanelShortcut" -> "System"
+    "TerminalShortcut" -> "Terminal"
     else -> this
 }

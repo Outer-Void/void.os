@@ -40,6 +40,48 @@ class AxiomWallpaperManager(private val context: Context) {
         }
     }
 
+    fun setHomeScreenWallpaper(): Result {
+        return try {
+            val manager = WallpaperManager.getInstance(context)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                manager.setBitmap(createWallpaper(), null, true, WallpaperManager.FLAG_SYSTEM)
+            } else {
+                @Suppress("DEPRECATION")
+                manager.setBitmap(createWallpaper())
+            }
+            Log.i(TAG, "AXIOM home-screen wallpaper applied")
+            Result.Applied
+        } catch (error: SecurityException) {
+            Log.w(TAG, "Device blocked home-screen wallpaper", error)
+            Result.Restricted
+        } catch (error: RuntimeException) {
+            Log.w(TAG, "Unable to apply AXIOM home-screen wallpaper", error)
+            Result.Restricted
+        }
+    }
+
+    fun setBothWallpapers(): Result {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return setHomeScreenWallpaper()
+        }
+        return try {
+            WallpaperManager.getInstance(context).setBitmap(
+                createWallpaper(),
+                null,
+                true,
+                WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK
+            )
+            Log.i(TAG, "AXIOM home and lock wallpapers applied")
+            Result.Applied
+        } catch (error: SecurityException) {
+            Log.w(TAG, "Device blocked combined wallpaper", error)
+            Result.Restricted
+        } catch (error: RuntimeException) {
+            Log.w(TAG, "Unable to apply combined AXIOM wallpaper", error)
+            Result.Restricted
+        }
+    }
+
     fun createSystemSetterIntent(): Intent? {
         return try {
             val uri = writeWallpaperPreview()

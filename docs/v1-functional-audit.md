@@ -1,6 +1,6 @@
 # AXIOM v1.0 Functional Audit
 
-Generated: 2026-05-02
+Generated: 2026-05-04
 
 ---
 
@@ -10,11 +10,14 @@ Generated: 2026-05-02
 |---|---|---|
 | SettingsScreen.kt | Terminal Panel row shows "PLANNED / Planned for v1.1" | Activated — navigates to TerminalPanelScreen |
 | FeedModuleType.kt | TerminalShortcut status = Planned | Changed to Functional |
-| FeedModuleType.kt | TerminalPanel, LogViewer, ModuleDebugInfo, SystemInfoDump, PerformanceMonitor, FeatureFlagsPanel status = Planned | Moved to Future Modules (v2.0) section in library — hidden from active add list |
+| FeedModuleType.kt | LogViewer, ModuleDebugInfo, SystemInfoDump, PerformanceMonitor, FeatureFlagsPanel status = Planned | Moved to Future Modules (v2.0) section in library — hidden from active add list |
 | FeedModuleType.kt | RoutineBlock, GoalTracker, StateIndicator, DriftIndicator, FocusConsistency, SavedArticles, BookmarksPanel, DevBoardFeed, HabitTracker, FinanceSnapshot status = Planned | Moved to Future Modules (v2.0) section in library |
 | FeedModuleLibraryScreen.kt | All modules shown in same list regardless of status | Now shows Active and SetupRequired modules in top section, Planned modules in "Future Modules" section |
 | MainActivity.kt favoriteApps | When favoriteAppKeys is empty, auto-fills from allApps.take(N) | Fixed — returns emptyList() when no favorites selected, so empty slots show |
 | StartScreen.kt (bundled) | Old simple START/HIGH SCORE/EXIT menu | Rebuilt with CAMPAIGN/SURVIVAL/TRAINING/SETTINGS/EXIT TO AXIOM |
+| SettingsScreen.kt | Wallpaper UI only exposed lock-screen set | Added explicit Lock, Home, and Home + Lock wallpaper actions |
+| AxiomWallpaperManager.kt | Single-target wallpaper setter only | Added home-screen and combined home/lock direct setters using packaged wallpaper art |
+| FeedModuleType.kt | Terminal Panel feed module was still marked Planned | Changed to Functional and routes to TerminalPanelScreen |
 
 ---
 
@@ -30,7 +33,7 @@ Generated: 2026-05-02
 | Notification listener | BIND_NOTIFICATION_LISTENER_SERVICE (special) | Settings intent flow implemented |
 | Flashlight | CAMERA | Handled in SystemActionController |
 | Widget hosting | AppWidgetHost bind | Runtime request flow via Activity |
-| Lock screen wallpaper | SET_WALLPAPER | Already handled |
+| Wallpaper | SET_WALLPAPER | Lock, Home, and Home + Lock direct set handled; system picker fallback handled |
 
 ---
 
@@ -45,7 +48,7 @@ Generated: 2026-05-02
 | Location | Check + runtime request implemented |
 | Usage Access | Check + route to settings implemented |
 | Widget Binding | Flow implemented via bindWidgetLauncher |
-| Wallpaper | SET_WALLPAPER always granted at install |
+| Wallpaper | SET_WALLPAPER install permission plus OEM-restricted fallback to Android wallpaper setter |
 
 ---
 
@@ -63,7 +66,6 @@ The following are NOT shown in the active module library add list. They appear i
 - DevBoardFeed
 - HabitTracker
 - FinanceSnapshot
-- TerminalPanel (feed module slot — use Terminal Shortcut instead for v1)
 - LogViewer
 - ModuleDebugInfo
 - SystemInfoDump
@@ -75,6 +77,7 @@ The following are NOT shown in the active module library add list. They appear i
 ## Terminal Panel — v1.0 Status
 
 - Enabled via Settings → Developer → Terminal Panel toggle
+- Opened from AXIOM Feed Terminal Shortcut or Terminal Panel module
 - Shell session via ProcessBuilder /system/bin/sh
 - Output displayed in scrollable list
 - Command input at bottom

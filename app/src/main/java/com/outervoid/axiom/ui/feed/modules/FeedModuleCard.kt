@@ -91,5 +91,5 @@ internal fun ModuleAction(label: String, onClick: () -> Unit) {
 internal fun FeedModuleStatus.label(): String = when (this) {
     FeedModuleStatus.Functional -> "FUNCTIONAL"
     FeedModuleStatus.SetupRequired -> "SETUP REQUIRED"
-    FeedModuleStatus.Planned -> "PLANNED"
+    FeedModuleStatus.Planned -> "FUTURE MODULE"
 }

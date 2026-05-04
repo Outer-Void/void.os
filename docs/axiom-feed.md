@@ -89,9 +89,9 @@ Modules that require Android permissions or user configuration are visibly marke
 
 Usage metrics require Android Usage Access. Notification modules require Notification Listener access. Calendar requires calendar access or external calendar intent handling. Weather requires a manual location/provider setup and no API key is stored in the repo.
 
-## Planned / v1.1 Boundaries
+## Future Module Boundaries
 
-Planned modules are selectable but clearly marked planned:
+Future modules are kept out of the active v1.0 add list and are shown separately for roadmap visibility:
 
 - Routine Block
 - Goal Tracker
@@ -103,12 +103,10 @@ Planned modules are selectable but clearly marked planned:
 - DevBoard Feed
 - Habit Tracker
 - Finance Snapshot
-- Terminal Shortcut
-- Terminal Panel
 - Log Viewer
 - Module Debug Info
 - System Info Dump
 - Performance Monitor
 - Feature Flags Panel
 
-Terminal Panel remains a v1.1 planned feature.
+Terminal Shortcut and Terminal Panel are active v1.0 modules and open the embedded AXIOM Terminal panel.

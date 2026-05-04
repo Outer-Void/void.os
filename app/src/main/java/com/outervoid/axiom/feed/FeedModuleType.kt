@@ -81,7 +81,7 @@ enum class FeedModuleType(
     BlackScreenModule("Black Screen Module", FeedModuleCategory.VoidMinimal, FeedModuleStatus.Functional),
     ObserveMode("Observe Mode", FeedModuleCategory.VoidMinimal, FeedModuleStatus.Functional),
 
-    TerminalPanel("Terminal Panel", FeedModuleCategory.Developer, FeedModuleStatus.Planned),
+    TerminalPanel("Terminal Panel", FeedModuleCategory.Developer, FeedModuleStatus.Functional),
     LogViewer("Log Viewer", FeedModuleCategory.Developer, FeedModuleStatus.Planned),
     ModuleDebugInfo("Module Debug Info", FeedModuleCategory.Developer, FeedModuleStatus.Planned),
     SystemInfoDump("System Info Dump", FeedModuleCategory.Developer, FeedModuleStatus.Planned),
