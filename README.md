@@ -4,7 +4,7 @@ Package: `com.outervoid.axiom`
 
 AXIOM Launcher is proprietary paid Android launcher software by Outer-Void. Planned price: `$4.99`, including the launcher, native VOID.SYS icon assets, and the hidden Axiom Shooter Easter egg.
 
-Status: v1 customization build + device-test ready foundation.
+Status: v2.0.0-dev cockpit build on top of the v1 device-test foundation.
 
 AXIOM provides a controlled Android environment, not just a launcher: a separated home surface, app drawer/search, AXIOM Feed, settings, System Panel, bundled font customization, native VOID.SYS icon integration, real favorites, widget panels, hidden apps, basic dock folder customization, lock-screen wallpaper setup, and hidden bundled Axiom Shooter activation.
 
@@ -32,11 +32,13 @@ Architecture plan: [docs/licensing-backend-plan.md](docs/licensing-backend-plan.
 Current integration hardening includes System Panel disabled-state enforcement, bundled VOID.SYS icon lookup, standalone VOID.SYS package status, protected internal Axiom Shooter launch routing, and locked/unavailable handling for release gates. Device-test instructions are available in [docs/device-testing.md](docs/device-testing.md). Real licensing backend work remains future work after device behavior confirmation.
 
 AXIOM Feed documentation: [docs/axiom-feed.md](docs/axiom-feed.md).
+V2 plan: [docs/v2-plan.md](docs/v2-plan.md). Packaging architecture: [docs/packaging-architecture.md](docs/packaging-architecture.md).
 
-## Planned Features (v1.1)
+## V2 Development Notes
 
-- **AXIOM Terminal Panel**: optional developer feature documented in [docs/terminal-panel.md](docs/terminal-panel.md). It is not included in the current build.
-- **Advanced custom dock folder management**: v1 includes names, icon style, app selection, and launch panels. Drag/drop ordering remains planned.
+- **AXIOM Terminal Panel**: active embedded shell with Termux fallback, documented in [docs/terminal-panel.md](docs/terminal-panel.md).
+- **AXIOM Shooter**: bundled native module remains inside AXIOM; standalone `void.game` now mirrors the same gameplay source for v2 development.
+- **Advanced custom dock folder ordering**: v1/v2 includes names, icon style, app selection, and launch panels. Drag/drop ordering remains future work.
 
 ## Build
 

@@ -1,7 +1,12 @@
 package com.outervoid.axiom.ui.screens
 
 import android.appwidget.AppWidgetManager
+import android.content.Context
+import android.os.BatteryManager
+import android.os.Environment
+import android.os.StatFs
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -83,6 +88,7 @@ fun HomeScreen(
     onMessages: () -> Unit,
     onOpenPhoneSettings: () -> Unit
 ) {
+    val context = LocalContext.current
     val haptics = LocalHapticFeedback.current
     val accent = settings.accentColor()
     val outerPadding = if (settings.compactMode) 12.dp else 18.dp
@@ -152,9 +158,11 @@ fun HomeScreen(
                 onOpenCalendar = { haptic(); onOpenCalendar() },
                 onOpenNotificationAccess = { haptic(); onOpenNotificationAccess() }
             )
+            Spacer(Modifier.height(if (settings.compactMode) 8.dp else 10.dp))
+            SystemMetricsStrip(context = context, accentColor = accent, compactMode = settings.compactMode)
             Spacer(
                 Modifier
-                    .padding(top = if (settings.compactMode) 10.dp else 14.dp, bottom = if (settings.compactMode) 12.dp else 18.dp)
+                    .padding(top = if (settings.compactMode) 8.dp else 12.dp, bottom = if (settings.compactMode) 10.dp else 14.dp)
                     .width(104.dp)
                     .height(1.dp)
                     .background(accent)
@@ -279,6 +287,58 @@ private fun EmptyFavoriteSlot(
         contentAlignment = Alignment.Center
     ) {
         Text(if (locked) "LOCK" else "+", color = accentColor, style = MaterialTheme.typography.titleLarge)
+    }
+}
+
+@Composable
+private fun SystemMetricsStrip(
+    context: Context,
+    accentColor: androidx.compose.ui.graphics.Color,
+    compactMode: Boolean
+) {
+    val metrics = remember {
+        val battery = runCatching {
+            context.getSystemService(BatteryManager::class.java)
+                .getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+                .takeIf { it >= 0 }
+        }.getOrNull()
+        val stat = runCatching { StatFs(Environment.getDataDirectory().path) }.getOrNull()
+        val storage = stat?.let {
+            val total = it.blockCountLong * it.blockSizeLong
+            val free = it.availableBlocksLong * it.blockSizeLong
+            if (total > 0L) (((total - free) * 100) / total).toInt() else null
+        }
+        val runtime = Runtime.getRuntime()
+        val maxMb = runtime.maxMemory() / (1024 * 1024)
+        val usedMb = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)
+        listOf(
+            "BAT" to (battery?.let { "$it%" } ?: "--"),
+            "NET" to "SYS",
+            "STOR" to (storage?.let { "$it%" } ?: "--"),
+            "RAM" to if (maxMb > 0) "${((usedMb * 100) / maxMb).toInt()}%" else "--"
+        )
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Surface, RoundedCornerShape(7.dp))
+            .border(1.dp, Border, RoundedCornerShape(7.dp))
+            .padding(horizontal = if (compactMode) 8.dp else 10.dp, vertical = if (compactMode) 7.dp else 9.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        metrics.forEach { (label, value) ->
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(SurfaceAlt, RoundedCornerShape(5.dp))
+                    .border(1.dp, BorderDim, RoundedCornerShape(5.dp))
+                    .padding(vertical = 6.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(label, color = TextDim, style = MaterialTheme.typography.labelSmall)
+                Text(value, color = accentColor, style = MaterialTheme.typography.labelMedium)
+            }
+        }
     }
 }
 

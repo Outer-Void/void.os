@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.0-dev Cockpit Start
+
+- Started AXIOM Launcher v2.0 cockpit development line and set debug version to `2.0.0-dev`.
+- Added Home dashboard system metrics strip for battery, storage, network status, and process RAM.
+- Added explicit v2 packaging architecture docs for AXIOM, VOID.SYS, and AXIOM Shooter product roles.
+- Updated bundled AXIOM Shooter menu with Leaderboards and the `VOID. FOCUS. DESTROY.` tagline.
+- Preserved native VOID.SYS and native AXIOM Shooter inside AXIOM.
+
 ## Wallpaper Artwork + Shooter Launch Hardening
 
 - Added the recreated AXIOM lock-screen wallpaper artwork at `docs/assets/axiom-launcher-wallpaper.png` and packaged it as `res/drawable-nodpi/axiom_wallpaper.png`.

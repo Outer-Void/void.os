@@ -36,11 +36,12 @@ class StartScreen(private val game: VoidGame) : Screen {
     )
 
     private val menuItems = listOf(
-        MenuItem("CAMPAIGN", "MISSION ROUTE", 324f, Rectangle(58f, 296f, 244f, 44f), active = true),
-        MenuItem("SURVIVAL", "ENDLESS SIGNAL", 272f, Rectangle(58f, 244f, 244f, 44f)),
-        MenuItem("TRAINING", "CONTROL RANGE", 220f, Rectangle(58f, 192f, 244f, 44f)),
-        MenuItem("SETTINGS", "SHIP / HUD", 168f, Rectangle(58f, 140f, 244f, 44f)),
-        MenuItem("EXIT TO AXIOM", "RETURN HOME", 116f, Rectangle(58f, 88f, 244f, 44f))
+        MenuItem("CAMPAIGN", "STORY MISSIONS", 344f, Rectangle(58f, 316f, 244f, 42f), active = true),
+        MenuItem("SURVIVAL", "ENDLESS MODE", 296f, Rectangle(58f, 268f, 244f, 42f)),
+        MenuItem("TRAINING", "PRACTICE RANGE", 248f, Rectangle(58f, 220f, 244f, 42f)),
+        MenuItem("SETTINGS", "SHIP / HUD", 200f, Rectangle(58f, 172f, 244f, 42f)),
+        MenuItem("LEADERBOARDS", "LOCAL RANKING", 152f, Rectangle(58f, 124f, 244f, 42f)),
+        MenuItem("EXIT TO AXIOM", "RETURN HOME", 104f, Rectangle(58f, 76f, 244f, 42f))
     )
 
     override fun show() {
@@ -71,7 +72,8 @@ class StartScreen(private val game: VoidGame) : Screen {
             menuItems[1].bounds.contains(touch.x, touch.y) -> game.setScreen(GameScreen(game, survival = true))
             menuItems[2].bounds.contains(touch.x, touch.y) -> game.setScreen(TrainingScreen(game))
             menuItems[3].bounds.contains(touch.x, touch.y) -> game.setScreen(ShooterSettingsScreen(game))
-            menuItems[4].bounds.contains(touch.x, touch.y) -> game.openAxiom()
+            menuItems[4].bounds.contains(touch.x, touch.y) -> game.setScreen(ScoreScreen(game))
+            menuItems[5].bounds.contains(touch.x, touch.y) -> game.openAxiom()
         }
     }
 
@@ -149,7 +151,7 @@ class StartScreen(private val game: VoidGame) : Screen {
             drawCentered(item.subtitle, w * 0.5f, item.y - 16f)
         }
         font.data.setScale(0.72f); font.color = GameConfig.COLOR_DIM
-        drawCentered("VOID  /  AXIOM  /  SYSTEM", w * 0.5f, 28f)
+        drawCentered("VOID. FOCUS. DESTROY.", w * 0.5f, 28f)
         if ((elapsed % 1.1f) < 0.55f) {
             font.color = GameConfig.COLOR_AMBER; font.data.setScale(0.62f)
             font.draw(batch, "[ ]", 28f, 28f)

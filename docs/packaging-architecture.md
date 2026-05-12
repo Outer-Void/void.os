@@ -1,31 +1,28 @@
-# AXIOM Packaging Architecture
+# AXIOM Ecosystem Packaging Architecture
 
-AXIOM Launcher ships as one paid product.
+## AXIOM Launcher
 
-The AXIOM APK includes:
+Repository: `/home/jadis/void.os`  
+Package: `com.outervoid.axiom`
 
-- AXIOM Launcher.
-- Native VOID.SYS icon assets and `voidsys_icon_map.json`.
-- Bundled Axiom Shooter hidden arcade Easter egg.
+AXIOM Launcher is the shipping home environment. It bundles native VOID.SYS resources and the native AXIOM Shooter module. Users who install AXIOM do not need the standalone icon pack or standalone game.
 
-Users do not install Axiom Shooter separately. Users also do not install the standalone VOID.SYS package for AXIOM to have its native icon system.
+## VOID.SYS
 
-## Icon System
+Repository: `/home/jadis/void.sys`  
+Package: `com.outervoid.voidsys`
 
-AXIOM resolves launcher icons in this order:
+VOID.SYS is also a standalone icon pack product for third-party launchers. It shares the same visual language and generated resources used by AXIOM's bundled native icon system.
 
-1. Bundled VOID.SYS icons packaged inside AXIOM.
-2. External `com.outervoid.voidsys` package when installed and selected.
-3. System icon fallback.
+## AXIOM Shooter
 
-The standalone VOID.SYS package remains proprietary and may be sold separately for other launchers. It is a companion product for Nova, Lawnchair, and compatible icon-pack hosts, not a required AXIOM dependency.
+Repository: `/home/jadis/void.game`  
+Package: `com.outervoid.voidgame`
 
-## Axiom Shooter
+AXIOM Shooter is also a standalone game product. The current v2 development line mirrors gameplay source between `void.game` and AXIOM's bundled native module. The intended next architecture step is a shared Gradle source/module dependency so standalone and bundled builds cannot drift.
 
-Axiom Shooter is a hidden AXIOM Easter egg opened by long-pressing the AXIOM wordmark/logo. Release UX must treat it as included with AXIOM, not as a user-installed module.
+## Launch Behavior
 
-`/home/jadis/void.game` remains the source/module repo and may still build a debug APK for development. Any standalone VOID.GAME APK behavior is development-only and is not a user-facing product.
-
-## Licensing
-
-AXIOM, VOID.SYS, and VOID.GAME remain proprietary. Bundling assets and game code into AXIOM does not weaken release entitlement, integrity, or signature gates. Release behavior should fail closed when real licensing/signature verification is unavailable.
+- Bundled AXIOM Shooter launches inside AXIOM and returns to AXIOM.
+- Standalone AXIOM Shooter launches as a normal Android game and exits normally if AXIOM is not installed.
+- AXIOM keeps signature/entitlement scaffolding for release hardening.
