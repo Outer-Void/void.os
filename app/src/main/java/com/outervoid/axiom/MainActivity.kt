@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -104,9 +105,9 @@ class MainActivity : ComponentActivity() {
             var wallpaperDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
             var widgetDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
 
-            var widgetPickerPanelIndex by remember { mutableIntStateOf(0) }
-            var pendingWidgetBind by remember { mutableStateOf<Pair<Int, Int>?>(null) }
-            var pendingWidgetConfigure by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+            var widgetPickerPanelIndex by rememberSaveable { mutableIntStateOf(0) }
+            var pendingWidgetBind by rememberSaveable { mutableStateOf<Pair<Int, Int>?>(null) }
+            var pendingWidgetConfigure by rememberSaveable { mutableStateOf<Pair<Int, Int>?>(null) }
             val widgetHost = remember { AxiomWidgetHost(applicationContext) }
             val appWidgetManager = remember { AppWidgetManager.getInstance(applicationContext) }
 
@@ -248,9 +249,9 @@ class MainActivity : ComponentActivity() {
             }
 
             AxiomTheme(fontKey = settings.selectedFontKey) {
-                var state by remember { mutableStateOf(if (settings.ambientBootEnabled) LauncherState.Ambient else LauncherState.Home) }
+                var state by rememberSaveable { mutableStateOf(if (settings.ambientBootEnabled) LauncherState.Ambient else LauncherState.Home) }
                 var now by remember { mutableStateOf(LocalDateTime.now()) }
-                var pickingFavorite by remember { mutableStateOf(false) }
+                var pickingFavorite by rememberSaveable { mutableStateOf(false) }
                 val date = now.format(DateTimeFormatter.ofPattern("EEE, MMM d", Locale.US)).uppercase(Locale.US)
                 val use24Hour = when (settings.clockFormat) {
                     ClockFormat.SYSTEM -> android.text.format.DateFormat.is24HourFormat(this@MainActivity)
