@@ -63,6 +63,7 @@ import com.outervoid.axiom.ui.screens.SettingsScreen
 import com.outervoid.axiom.ui.screens.SystemPanelScreen
 import com.outervoid.axiom.ui.screens.TerminalPanelScreen
 import com.outervoid.axiom.ui.screens.WidgetPickerScreen
+import com.outervoid.axiom.ui.state.LauncherNavigationPolicy
 import com.outervoid.axiom.ui.state.LauncherState
 import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.AxiomTheme
@@ -297,28 +298,9 @@ class MainActivity : ComponentActivity() {
                     return@AxiomTheme
                 }
 
-                BackHandler(enabled = state == LauncherState.Home) {}
-                BackHandler(
-                    enabled = state == LauncherState.AppDrawer ||
-                        state == LauncherState.Settings ||
-                        state == LauncherState.AxiomFeed ||
-                        state == LauncherState.FeedConfiguration ||
-                        state == LauncherState.FeedModuleLibrary ||
-                        state == LauncherState.SystemPanel ||
-                        state == LauncherState.LeftFolder ||
-                        state == LauncherState.RightFolder ||
-                        state == LauncherState.HiddenApps ||
-                        state == LauncherState.About ||
-                        state == LauncherState.Contact ||
-                        state == LauncherState.WidgetPicker ||
-                        state == LauncherState.LeftFolderApps ||
-                        state == LauncherState.RightFolderApps ||
-                        state == LauncherState.AxiomShooterTransition ||
-                        state == LauncherState.PermissionSetup ||
-                        state == LauncherState.TerminalPanel
-                ) {
+                BackHandler {
                     pickingFavorite = false
-                    state = LauncherState.Home
+                    LauncherNavigationPolicy.backTarget(state)?.let { state = it }
                 }
                 when (state) {
                     LauncherState.Ambient -> AmbientScreen(date, onComplete = { state = LauncherState.Home })
