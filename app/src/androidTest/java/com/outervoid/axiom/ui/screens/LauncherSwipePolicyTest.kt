@@ -13,7 +13,7 @@ class LauncherSwipePolicyTest : AndroidTestCase() {
     }
 
     fun testDistanceUsesLockedAxis() {
-        assertEquals(-42f, cumulativeSwipeDistance(-42f, 30f, SwipeAxis.Horizontal))
-        assertEquals(30f, cumulativeSwipeDistance(-42f, 30f, SwipeAxis.Vertical))
+        assertTrue(cumulativeSwipeDistance(-42f, 30f, SwipeAxis.Horizontal) == -42f)
+        assertTrue(cumulativeSwipeDistance(-42f, 30f, SwipeAxis.Vertical) == 30f)
     }
 }
