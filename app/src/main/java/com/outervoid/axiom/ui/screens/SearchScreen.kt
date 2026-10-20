@@ -2,7 +2,6 @@ package com.outervoid.axiom.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,13 +29,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.outervoid.axiom.data.AppInfo
@@ -58,6 +57,7 @@ fun SearchScreen(
 ) {
     val focusRequester = androidx.compose.runtime.remember { FocusRequester() }
     val haptics = LocalHapticFeedback.current
+    val swipeTriggerPx = with(LocalDensity.current) { 56.dp.toPx() }
     val accent = settings.accentColor()
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -78,14 +78,12 @@ fun SearchScreen(
             .fillMaxSize()
             .background(Background)
             .padding(horizontal = if (settings.compactMode) 12.dp else 18.dp, vertical = if (settings.compactMode) 16.dp else 22.dp)
-            .pointerInput(Unit) {
-                detectVerticalDragGestures { _, dragAmount ->
-                    if (dragAmount > 28f) {
-                        haptic()
-                        onClose()
-                    }
+            .detectLauncherSwipe(Unit, swipeTriggerPx) { axis, distance, _ ->
+                if (axis == SwipeAxis.Vertical && distance > 0f) {
+                    haptic()
+                    onClose()
                 }
-        }
+            }
     ) {
         Column(Modifier.fillMaxSize()) {
             Row(verticalAlignment = Alignment.CenterVertically) {

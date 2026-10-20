@@ -8,8 +8,6 @@ import android.os.StatFs
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -93,6 +90,7 @@ fun HomeScreen(
     val accent = settings.accentColor()
     val outerPadding = if (settings.compactMode) 12.dp else 18.dp
     val glanceGestureCutoffPx = with(LocalDensity.current) { (if (settings.compactMode) 218.dp else 244.dp).toPx() }
+    val swipeTriggerPx = with(LocalDensity.current) { 56.dp.toPx() }
     var panel by remember(settings.homePanelCount) { mutableIntStateOf(0) }
     var selectedFavorite by remember { mutableStateOf<AppInfo?>(null) }
     fun haptic() {
@@ -109,33 +107,30 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Background)
-            .pointerInput(Unit) {
-                detectVerticalDragGestures { _, dragAmount ->
-                    if (settings.searchOnSwipeUp && dragAmount < -28f) {
+            .detectLauncherSwipe(
+                listOf(settings.homePanelCount, feedEnabled, settings.searchOnSwipeUp, settings.compactMode, panel),
+                swipeTriggerPx
+            ) { axis, distance, startY ->
+                when {
+                    axis == SwipeAxis.Vertical && settings.searchOnSwipeUp && distance < 0f -> {
                         haptic()
                         onOpenAppDrawer()
                     }
-                }
-            }
-            .pointerInput(settings.homePanelCount, feedEnabled, panel, glanceGestureCutoffPx) {
-                var allowHomePanelGesture = true
-                detectHorizontalDragGestures(
-                    onDragStart = { offset -> allowHomePanelGesture = offset.y > glanceGestureCutoffPx },
-                    onHorizontalDrag = { _, dragAmount ->
-                        if (allowHomePanelGesture) {
-                            if (feedEnabled && panel == 0 && dragAmount > 28f) {
-                                haptic()
-                                onOpenAxiomFeed()
-                            } else if (settings.homePanelCount > 1 && kotlin.math.abs(dragAmount) > 18f) {
-                                panel = if (dragAmount < 0) {
-                                    (panel + 1).coerceAtMost(settings.homePanelCount - 1)
-                                } else {
-                                    (panel - 1).coerceAtLeast(0)
-                                }
-                            }
+                    axis == SwipeAxis.Horizontal && distance > 0f && panel == 0 && feedEnabled -> {
+                        val down = startY > glanceGestureCutoffPx
+                        if (down) {
+                            haptic()
+                            onOpenAxiomFeed()
                         }
                     }
-                )
+                    axis == SwipeAxis.Horizontal && settings.homePanelCount > 1 && startY > glanceGestureCutoffPx -> {
+                        panel = if (distance < 0f) {
+                            (panel + 1).coerceAtMost(settings.homePanelCount - 1)
+                        } else {
+                            (panel - 1).coerceAtLeast(0)
+                        }
+                    }
+                }
             }
     ) {
         Column(
