@@ -1,6 +1,5 @@
 package com.outervoid.axiom.vm
 
-import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -11,12 +10,12 @@ import org.junit.runner.RunWith
 class ExternalIntentLaunchTest {
     @Test
     fun testReportsSuccessfulLaunch() {
-        assertTrue(startActivitySafely(Intent("test")) { })
+        assertTrue(safeLaunch { })
     }
 
     @Test
     fun testContainsMissingActivityAndSecurityFailures() {
-        assertFalse(startActivitySafely(Intent("test")) { throw android.content.ActivityNotFoundException() })
-        assertFalse(startActivitySafely(Intent("test")) { throw SecurityException() })
+        assertFalse(safeLaunch { throw android.content.ActivityNotFoundException() })
+        assertFalse(safeLaunch { throw SecurityException() })
     }
 }
