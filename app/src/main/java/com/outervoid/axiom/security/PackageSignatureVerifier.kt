@@ -16,7 +16,7 @@ class PackageSignatureVerifier(private val context: Context) {
             @Suppress("DEPRECATION")
             packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures
         }
-        signatures.firstOrNull()?.toByteArray()?.let(::sha256)
+        signatures?.firstOrNull()?.toByteArray()?.let(::sha256)
     }.getOrNull()
 
     private fun sha256(bytes: ByteArray): String {
