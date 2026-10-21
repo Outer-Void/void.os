@@ -22,6 +22,8 @@ class Fragment(
     var diving = false
     var diveTargetX = x
     var diveTargetY = -20f
+    private var diveVelocityX = 0f
+    private var diveVelocityY = 0f
     var pulseTimer = MathUtils.random(0.4f, 2.5f)
     var glitchTimer = 0.15f
     var glitchOffset = 0f
@@ -36,12 +38,14 @@ class Fragment(
             diving = true
             diveTargetX = carrierX
             diveTargetY = carrierY
+            val angle = MathUtils.atan2(diveTargetY - y, diveTargetX - x)
+            diveVelocityX = MathUtils.cos(angle) * GameConfig.DIVE_SPEED
+            diveVelocityY = MathUtils.sin(angle) * GameConfig.DIVE_SPEED
         }
 
         if (diving) {
-            val angle = MathUtils.atan2(diveTargetY - y, diveTargetX - x)
-            x += MathUtils.cos(angle) * GameConfig.DIVE_SPEED * delta
-            y += MathUtils.sin(angle) * GameConfig.DIVE_SPEED * delta
+            x += diveVelocityX * delta
+            y += diveVelocityY * delta
             if (y < 0f) active = false
         } else {
             y -= descend * delta

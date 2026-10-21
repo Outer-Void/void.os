@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.outervoid.voidgame.GameConfig
 import com.outervoid.voidgame.VoidGame
+import com.outervoid.voidgame.ShooterRules
 import com.outervoid.voidgame.entities.Bullet
 import com.outervoid.voidgame.entities.Carrier
 
@@ -39,9 +40,10 @@ class TrainingScreen(private val game: VoidGame) : Screen {
     }
 
     override fun render(delta: Float) {
-        elapsed += delta
-        handleInput(delta)
-        update(delta)
+        val step = ShooterRules.frameStep(delta)
+        elapsed += step
+        handleInput(step)
+        update(step)
         Gdx.gl.glClearColor(GameConfig.COLOR_BACKGROUND.r, GameConfig.COLOR_BACKGROUND.g, GameConfig.COLOR_BACKGROUND.b, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         shapeRenderer.projectionMatrix = camera.combined

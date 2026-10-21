@@ -20,7 +20,10 @@ import com.outervoid.voidgame.VoidGame
 class ScoreScreen(
     private val game: VoidGame,
     private val finalSignal: Long = 0L,
-    private val cyclesReached: Int = 0
+    private val cyclesReached: Int = 0,
+    private val survival: Boolean = true,
+    private val campaignMission: Int = 0,
+    private val campaignWaves: Int = 0
 ) : Screen {
     private val camera = OrthographicCamera()
     private val viewport = FitViewport(GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT, camera)
@@ -32,6 +35,7 @@ class ScoreScreen(
     private val transmitBounds = Rectangle(72f, 86f, 216f, 42f)
     private val exitBounds = Rectangle(72f, 34f, 216f, 42f)
     private lateinit var preferences: Preferences
+    private val signalLogKey = if (survival) "signal_log_survival" else "signal_log_mission_$campaignMission"
     private var scores = emptyList<Long>()
     private var newRank = -1
     private var elapsed = 0f
@@ -41,7 +45,6 @@ class ScoreScreen(
         preferences = Gdx.app.getPreferences("axiom_shooter")
         val existing = loadScores().toMutableList()
         if (finalSignal > 0L) {
-            existing += finalSignal
             val sorted = ShooterRules.topScores(existing, finalSignal)
             newRank = sorted.indexOfFirst { it == finalSignal }
             scores = sorted
@@ -71,7 +74,7 @@ class ScoreScreen(
         touch.set(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)
         viewport.unproject(touch)
         when {
-            transmitBounds.contains(touch.x, touch.y) -> game.setScreen(GameScreen(game))
+            transmitBounds.contains(touch.x, touch.y) -> game.setScreen(GameScreen(game, survival, campaignMission, campaignWaves))
             exitBounds.contains(touch.x, touch.y) -> game.exit()
         }
     }
@@ -123,12 +126,12 @@ class ScoreScreen(
         batch.end()
     }
 
-    private fun loadScores(): List<Long> = preferences.getString(SIGNAL_LOG_KEY, "")
+    private fun loadScores(): List<Long> = preferences.getString(signalLogKey, if (survival) preferences.getString(SIGNAL_LOG_KEY, "") else "")
         .split(',')
         .mapNotNull { it.trim().takeIf(String::isNotEmpty)?.toLongOrNull() }
 
     private fun saveScores(values: List<Long>) {
-        preferences.putString(SIGNAL_LOG_KEY, values.joinToString(","))
+        preferences.putString(signalLogKey, values.joinToString(","))
         preferences.flush()
     }
 

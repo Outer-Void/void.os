@@ -9,7 +9,7 @@ class Carrier {
     val width = 42f
     val height = 36f
     var x = (GameConfig.WORLD_WIDTH - width) * 0.5f
-    var y = 44f
+    var y = 124f
     var active = true
     var fireTimer = 0f
     var thrusterTimer = 0f
@@ -37,7 +37,7 @@ class Carrier {
     fun bounds(out: Rectangle): Rectangle = out.set(x + 5f, y, width - 10f, height - 4f)
 
     fun registerHit() {
-        damageTimer = 0.18f
+        damageTimer = 0.65f
     }
 
     fun draw(renderer: ShapeRenderer) {

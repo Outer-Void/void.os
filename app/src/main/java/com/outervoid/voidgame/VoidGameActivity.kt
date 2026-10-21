@@ -8,12 +8,15 @@ import android.view.WindowManager
 import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
 import com.outervoid.axiom.BuildConfig
+import com.outervoid.axiom.security.EntitlementState
+import com.outervoid.axiom.security.SignatureGate
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.outervoid.axiom.MainActivity
 import com.outervoid.voidgame.security.LaunchStatus
 
 class VoidGameActivity : AndroidApplication() {
+    private lateinit var activeGame: VoidGame
     private var backInvokedCallback: OnBackInvokedCallback? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,13 +28,16 @@ class VoidGameActivity : AndroidApplication() {
             useAccelerometer = false
             useCompass = false
         }
-        initialize(VoidGame(launchStatus(), onOpenAxiom = { openAxiomLauncher() }), config)
+        activeGame = VoidGame(launchStatus(), onOpenAxiom = { openAxiomLauncher() })
+        initialize(activeGame, config)
     }
 
     override fun onStart() {
         super.onStart()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val callback = OnBackInvokedCallback { onBackPressed() }
+            val callback = OnBackInvokedCallback {
+                com.badlogic.gdx.Gdx.app.postRunnable { activeGame.handleSystemBack() }
+            }
             backInvokedCallback = callback
             onBackInvokedDispatcher.registerOnBackInvokedCallback(
                 OnBackInvokedDispatcher.PRIORITY_DEFAULT,
@@ -57,7 +63,11 @@ class VoidGameActivity : AndroidApplication() {
         val target = intent?.getStringExtra("axiom_target_package")
         val now = System.currentTimeMillis()
         val expiresAt = intent?.getLongExtra("axiom_expires_at", 0L) ?: 0L
-        return if (source == BuildConfig.APPLICATION_ID && target == "com.outervoid.voidgame" && expiresAt > now) {
+        val entitlement = intent?.getStringExtra("axiom_entitlement_state")
+            ?.let { runCatching { EntitlementState.valueOf(it) }.getOrNull() }
+        val authorized = entitlement in setOf(EntitlementState.Licensed, EntitlementState.OfflineGrace) &&
+            entitlement != null && SignatureGate(this).unlocks(entitlement)
+        return if (authorized && source == BuildConfig.APPLICATION_ID && target == "com.outervoid.voidgame" && expiresAt > now) {
             LaunchStatus(unlocked = true)
         } else {
             Log.w(Tag, "Release launch rejected: source=$source target=$target expiresAt=$expiresAt")
@@ -66,9 +76,12 @@ class VoidGameActivity : AndroidApplication() {
     }
 
     private fun openAxiomLauncher() {
-        val intent = packageManager.getLaunchIntentForPackage(packageName) ?: Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        runCatching { startActivity(intent) }
+        runOnUiThread {
+            val intent = Intent(this, MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            runCatching { startActivity(intent) }
+            finish()
+        }
     }
 
     companion object {

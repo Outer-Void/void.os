@@ -17,6 +17,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import com.outervoid.voidgame.GameConfig
 import com.outervoid.voidgame.ShooterVisuals
 import com.outervoid.voidgame.ShooterRules
+import com.outervoid.voidgame.ShooterClock
+import com.outervoid.voidgame.ShooterTouchRole
+import com.outervoid.voidgame.shooterTouchRole
 import com.outervoid.voidgame.VoidGame
 import com.outervoid.voidgame.entities.Bullet
 import com.outervoid.voidgame.entities.Carrier
@@ -26,6 +29,7 @@ import com.outervoid.voidgame.entities.FragmentType
 import com.outervoid.voidgame.entities.Patch
 import com.outervoid.voidgame.entities.PatchType
 import com.outervoid.voidgame.entities.VoidCore
+import com.outervoid.voidgame.entities.SupportMissile
 
 class GameScreen(
     private val game: VoidGame,
@@ -53,6 +57,12 @@ class GameScreen(
     private var signal = 0L
     private var cycle = 1
     private var elapsed = 0f
+    private val clock = ShooterClock()
+    private val pointerRoles = Array(20) { ShooterTouchRole.None }
+    private var movementPointer = -1
+    private var movementX: Float? = null
+    private var finished = false
+    private val reducedEffects = Gdx.app.getPreferences("axiom_shooter_settings").getBoolean("reduced_effects", false)
     private var isPaused = false
     private var backWasDown = false
     private var firewallActive = false
@@ -64,10 +74,12 @@ class GameScreen(
     private var corePurgeTimer = 0f
     private var corePurgeX = 0f
     private var corePurgeY = 0f
+    private val supportMissile = SupportMissile()
+    private var missileFragment: Fragment? = null
+    private var missileCore: VoidCore? = null
     private var missileCharges = 3
     private var bombCharges = 1
     private var movingPressed = false
-    private var firingPressed = false
     private var missilePressed = false
     private var bombPressed = false
     private val resumeBounds = Rectangle(92f, 292f, 176f, 42f)
@@ -82,37 +94,67 @@ class GameScreen(
     }
 
     override fun render(delta: Float) {
-        elapsed += delta
+        elapsed += ShooterRules.frameStep(delta)
         handleGlobalInput()
-        val step = ShooterRules.frameStep(delta)
-        if (!isPaused) update(step)
+        if (!isPaused && !finished) {
+            pollControls()
+            if (!isPaused) clock.advance(delta) { step ->
+                update(step)
+                !finished && !isPaused
+            }
+        } else clock.reset()
         draw()
     }
 
     private fun handleGlobalInput() {
         val backDown = Gdx.input.isKeyPressed(Input.Keys.BACK)
-        if (backDown && !backWasDown) {
+        val newlyPressed = backDown && !backWasDown
+        backWasDown = backDown
+        if (newlyPressed) {
             isPaused = true
             return
         }
-        backWasDown = backDown
 
         if (Gdx.input.justTouched()) {
             val world = worldTouch()
             if (isPaused) {
                 when {
                     resumeBounds.contains(world.x, world.y) -> isPaused = false
-                    restartBounds.contains(world.x, world.y) -> game.setScreen(GameScreen(game))
+                    restartBounds.contains(world.x, world.y) -> game.setScreen(GameScreen(game, survival, campaignMission, campaignWaves))
                     exitBounds.contains(world.x, world.y) -> game.exit()
-                }
-            } else {
-                when {
-                    world.y > GameConfig.WORLD_HEIGHT - 68f && world.x in 126f..234f -> isPaused = true
-                    world.y <= 72f && world.x in (GameConfig.WORLD_WIDTH - 130f)..(GameConfig.WORLD_WIDTH - 78f) -> fireMissile()
-                    world.y <= 60f && world.x >= GameConfig.WORLD_WIDTH - 50f -> detonateBomb()
                 }
             }
         }
+    }
+
+    private fun pollControls() {
+        for (pointer in pointerRoles.indices) {
+            if (!Gdx.input.isTouched(pointer)) {
+                pointerRoles[pointer] = ShooterTouchRole.None
+                if (movementPointer == pointer) movementPointer = -1
+                continue
+            }
+            touch.set(Gdx.input.getX(pointer).toFloat(), Gdx.input.getY(pointer).toFloat(), 0f)
+            viewport.unproject(touch)
+            if (pointerRoles[pointer] == ShooterTouchRole.None) {
+                val role = shooterTouchRole(touch.x, touch.y)
+                pointerRoles[pointer] = if (role == ShooterTouchRole.None) ShooterTouchRole.Ignored else role
+                when (role) {
+                    ShooterTouchRole.Move -> if (movementPointer == -1) movementPointer = pointer
+                    ShooterTouchRole.Missile -> fireMissile()
+                    ShooterTouchRole.Bomb -> detonateBomb()
+                    ShooterTouchRole.Pause -> { isPaused = true; return }
+                    else -> Unit
+                }
+            }
+        }
+        movementX = if (movementPointer >= 0) {
+            touch.set(Gdx.input.getX(movementPointer).toFloat(), Gdx.input.getY(movementPointer).toFloat(), 0f)
+            viewport.unproject(touch).x
+        } else null
+        movingPressed = movementPointer >= 0
+        missilePressed = pointerRoles.any { it == ShooterTouchRole.Missile }
+        bombPressed = pointerRoles.any { it == ShooterTouchRole.Bomb }
     }
 
     private fun update(delta: Float) {
@@ -123,8 +165,7 @@ class GameScreen(
             return
         }
 
-        val touchX = if (Gdx.input.isTouched) worldTouch().let { if (it.y > 76f) it.x else null } else null
-        carrier.update(delta, touchX)
+        carrier.update(delta, movementX)
         val fireScale = if (overclockActive) 0.48f else 1f
         carrier.tryFire(bullets)
         if (overclockActive && carrier.fireTimer > 0f) carrier.fireTimer -= delta * fireScale
@@ -135,13 +176,15 @@ class GameScreen(
         updatePowerups(delta)
         updateFragments(delta)
         updateVoidCore(delta)
+        updateMissile(delta)
         updateCollisions()
         updateEffects(delta)
         patches.removeAll { !it.active }
         fragments.removeAll { !it.active }
 
         if (integrity <= 0) {
-            game.setScreen(ScoreScreen(game, signal, cycle))
+            finished = true
+            game.setScreen(ScoreScreen(game, signal, cycle, survival, campaignMission, campaignWaves))
             return
         }
         if (fragments.none { it.active } && voidCore?.active != true && corePurgeTimer <= 0f) nextCycle()
@@ -244,6 +287,7 @@ class GameScreen(
     }
 
     private fun hitIntegrity(amount: Int) {
+        if (carrier.damageTimer > 0f || firewallActive) return
         integrity = (integrity - amount).coerceAtLeast(0)
         shakeTimer = 0.15f
         gridPulseTimer = 0.3f
@@ -252,25 +296,44 @@ class GameScreen(
     }
 
     private fun fireMissile() {
+        if (supportMissile.active || missileCharges <= 0) return
         val target = fragments.asSequence().filter { it.active }
             .minByOrNull { kotlin.math.abs(it.x - carrier.x) + kotlin.math.abs(it.y - carrier.y) }
-        val coreTarget = voidCore?.takeIf { it.active }
-        if (target == null && coreTarget == null) return
+        val core = voidCore?.takeIf { it.active }
+        if (target == null && core == null) return
+        if (!supportMissile.launch(carrier.x + carrier.width * 0.5f, carrier.y + carrier.height)) return
         missileCharges = ShooterRules.useWeaponCharge(missileCharges) ?: return
+        missileFragment = target
+        missileCore = if (target == null) core else null
+    }
+
+    private fun updateMissile(delta: Float) {
+        if (!supportMissile.active) return
+        val target = missileFragment?.takeIf { it.active }
+        val core = missileCore?.takeIf { it.active }
+        if (target == null && core == null) {
+            supportMissile.cancel()
+            return
+        }
+        val x = target?.x ?: core!!.x
+        val y = target?.y ?: core!!.y
+        if (!supportMissile.advance(delta, x, y)) return
+        burst(x, y, 14)
         if (target != null) {
             target.hp -= 2
-            burst(target.x, target.y, 14)
             if (target.hp <= 0) destroyFragment(target)
-        } else {
-            val core = coreTarget ?: return
+        } else if (core != null) {
             core.hp -= 2
-            burst(core.x, core.y, 14)
             if (core.hp <= 0) purgeCore(core)
         }
+        missileFragment = null
+        missileCore = null
     }
 
     private fun detonateBomb() {
+        if (fragments.none { it.active } && voidCore?.active != true && enemyBullets.none { it.active }) return
         bombCharges = ShooterRules.useWeaponCharge(bombCharges) ?: return
+        enemyBullets.forEach { it.active = false }
         fragments.filter { it.active }.toList().forEach { fragment ->
             fragment.active = false
             signal += fragment.type.signal.toLong()
@@ -314,10 +377,14 @@ class GameScreen(
             prefs.putInteger("missions_complete", campaignMission)
             prefs.flush()
         }
-        game.setScreen(ScoreScreen(game, signal, cycle))
+        finished = true
+        game.setScreen(ScoreScreen(game, signal, cycle, survival, campaignMission, campaignWaves))
     }
 
     private fun spawnWave() {
+        supportMissile.cancel()
+        missileFragment = null
+        missileCore = null
         fragments.clear()
         patches.clear()
         enemyBullets.forEach { it.active = false }
@@ -328,7 +395,7 @@ class GameScreen(
             return
         }
         val cols = 5
-        val rows = 3
+        val rows = if (survival) (3 + cycle / 5).coerceAtMost(5) else 3
         var index = 0
         for (row in 0 until rows) {
             for (col in 0 until cols) {
@@ -347,7 +414,7 @@ class GameScreen(
     }
 
     private fun burst(x: Float, y: Float, count: Int = MathUtils.random(5, 8)) {
-        repeat(count) {
+        repeat(if (reducedEffects) minOf(count, 3) else count) {
             val particle = particles.firstOrNull { !it.active } ?: return@repeat
             val angle = MathUtils.random(0f, MathUtils.PI2)
             val speed = MathUtils.random(45f, 135f)
@@ -362,8 +429,8 @@ class GameScreen(
     }
 
     private fun draw() {
-        val shakeX = if (shakeTimer > 0f) MathUtils.random(-6f, 6f) else 0f
-        val shakeY = if (shakeTimer > 0f) MathUtils.random(-6f, 6f) else 0f
+        val shakeX = if (!reducedEffects && shakeTimer > 0f) MathUtils.random(-6f, 6f) else 0f
+        val shakeY = if (!reducedEffects && shakeTimer > 0f) MathUtils.random(-6f, 6f) else 0f
         camera.position.set(GameConfig.WORLD_WIDTH * 0.5f + shakeX, GameConfig.WORLD_HEIGHT * 0.5f + shakeY, 0f)
         camera.update()
         shapeRenderer.projectionMatrix = camera.combined
@@ -390,6 +457,12 @@ class GameScreen(
         drawGrid()
         bullets.forEach { it.draw(shapeRenderer) }
         enemyBullets.forEach { it.draw(shapeRenderer) }
+        if (supportMissile.active) {
+            shapeRenderer.color = GameConfig.COLOR_GRAY
+            shapeRenderer.rectLine(supportMissile.x, supportMissile.y - 5f, supportMissile.x, supportMissile.y + 9f, 4f)
+            shapeRenderer.color = GameConfig.COLOR_AMBER
+            shapeRenderer.line(supportMissile.x, supportMissile.y - 6f, supportMissile.x, supportMissile.y - 17f)
+        }
         fragments.forEach { it.draw(shapeRenderer, elapsed) }
         voidCore?.draw(shapeRenderer)
         carrier.draw(shapeRenderer)
@@ -399,10 +472,12 @@ class GameScreen(
         if (firewallActive) drawFirewallEdges()
         shapeRenderer.end()
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
         patches.forEach { it.draw(shapeRenderer) }
-        if (overclockActive) drawTint(0.08f)
-        if (corePurgeTimer > 0f) drawCorePurge()
+        shapeRenderer.end()
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
+        if (overclockActive && !reducedEffects) drawTint(0.04f)
+        if (corePurgeTimer > 0f && !reducedEffects) drawCorePurge()
         shapeRenderer.end()
     }
 
@@ -450,22 +525,9 @@ class GameScreen(
     }
 
     private fun drawControlOverlay() {
-        val point = if (Gdx.input.isTouched) worldTouch() else null
-        val moving = point != null && point.y in 24f..92f && point.x < GameConfig.WORLD_WIDTH * 0.48f
-        val firing = point != null && point.y in 24f..92f && point.x >= GameConfig.WORLD_WIDTH * 0.48f
-        val missile = point != null && point.y <= 72f && point.x in (GameConfig.WORLD_WIDTH - 130f)..(GameConfig.WORLD_WIDTH - 78f)
-        val bomb = point != null && point.y <= 60f && point.x >= GameConfig.WORLD_WIDTH - 50f
-        movingPressed = moving
-        firingPressed = firing
-        missilePressed = missile
-        bombPressed = bomb
-        ShooterVisuals.drawControlRing(shapeRenderer, 58f, 54f, 30f, moving)
-        ShooterVisuals.drawControlRing(shapeRenderer, GameConfig.WORLD_WIDTH - 58f, 54f, 30f, active = firing)
-        ShooterVisuals.drawControlRing(shapeRenderer, GameConfig.WORLD_WIDTH - 106f, 36f, 17f, missile)
-        ShooterVisuals.drawControlRing(shapeRenderer, GameConfig.WORLD_WIDTH - 20f, 36f, 17f, bomb)
-        ShooterVisuals.setAlphaColor(shapeRenderer, GameConfig.COLOR_AMBER, 0.72f)
-        shapeRenderer.line(GameConfig.WORLD_WIDTH - 58f, 42f, GameConfig.WORLD_WIDTH - 58f, 66f)
-        shapeRenderer.line(GameConfig.WORLD_WIDTH - 70f, 54f, GameConfig.WORLD_WIDTH - 46f, 54f)
+        ShooterVisuals.drawPanelFrame(shapeRenderer, 16f, 24f, 192f, 48f)
+        ShooterVisuals.drawControlRing(shapeRenderer, 252f, 42f, 27f, missilePressed)
+        ShooterVisuals.drawControlRing(shapeRenderer, 324f, 42f, 27f, bombPressed)
     }
 
     private fun drawFirewallEdges() {
@@ -500,19 +562,17 @@ class GameScreen(
         font.color = GameConfig.COLOR_GRAY
         font.draw(batch, "INTEGRITY", 22f, 82f)
         drawRight("$integrity%", GameConfig.WORLD_WIDTH - 22f, 82f)
+        font.data.setScale(0.72f)
+        font.color = if (movingPressed) GameConfig.COLOR_AMBER else GameConfig.COLOR_GRAY
+        font.draw(batch, "DRAG TO MOVE", 30f, 54f)
         font.data.setScale(0.62f)
-        font.color = if (movingPressed) GameConfig.COLOR_AMBER else GameConfig.COLOR_DIM
-        font.draw(batch, "MOVE", 38f, 20f)
-        font.color = if (firingPressed) GameConfig.COLOR_AMBER else GameConfig.COLOR_DIM
-        drawRight("FIRE", GameConfig.WORLD_WIDTH - 38f, 20f)
-        font.color = if (missilePressed) GameConfig.COLOR_AMBER else GameConfig.COLOR_DIM
-        font.draw(batch, "MSL", GameConfig.WORLD_WIDTH - 116f, 18f)
-        font.color = if (bombPressed) GameConfig.COLOR_AMBER else GameConfig.COLOR_DIM
-        font.draw(batch, "BMB", GameConfig.WORLD_WIDTH - 30f, 18f)
-        font.data.setScale(0.55f)
+        font.draw(batch, "AUTO FIRE", 30f, 36f)
+        font.color = if (missileCharges > 0) GameConfig.COLOR_AMBER else GameConfig.COLOR_DIM
+        font.draw(batch, "MSL $missileCharges", 233f, 47f)
+        font.color = if (bombCharges > 0) GameConfig.COLOR_AMBER else GameConfig.COLOR_DIM
+        font.draw(batch, "BMB $bombCharges", 304f, 47f)
         font.color = GameConfig.COLOR_GRAY
-        font.draw(batch, missileCharges.toString(), GameConfig.WORLD_WIDTH - 110f, 32f)
-        drawRight(bombCharges.toString(), GameConfig.WORLD_WIDTH - 12f, 32f)
+        drawCentered("PAUSE", 180f, GameConfig.WORLD_HEIGHT - 52f)
         drawPowerups()
         if (corePurgeTimer > 0f) {
             font.color = GameConfig.COLOR_AMBER
@@ -579,6 +639,10 @@ class GameScreen(
 
     override fun pause() {
         isPaused = true
+        clock.reset()
+        pointerRoles.fill(ShooterTouchRole.None)
+        movementPointer = -1
+        movementX = null
     }
 
     override fun resume() = Unit
