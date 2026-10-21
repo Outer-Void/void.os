@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import com.outervoid.axiom.settings.IconPackOptions
 import org.json.JSONObject
+import org.json.JSONArray
 import java.util.Locale
 
 class BundledVoidSysIconProvider(
@@ -14,6 +15,7 @@ class BundledVoidSysIconProvider(
     private val systemProvider: IconProvider = SystemIconProvider()
 ) : IconProvider {
     private val iconMap: Map<String, String> by lazy { loadIconMap() }
+    private val genericDrawableNames: Set<String> by lazy { loadGenericDrawableNames() }
 
     override fun iconFor(packageName: String, activityName: String?, fallback: Drawable): Drawable {
         if (selectedIconPackPackage == IconPackOptions.SystemPackage) {
@@ -24,15 +26,21 @@ class BundledVoidSysIconProvider(
             return fallbackProvider.iconFor(packageName, activityName, fallback)
         }
 
-        return findBundledIcon(packageName, activityName)
+        return findBundledIcon(packageName, activityName, fallback)
             ?: externalProvider.findIcon(packageName, activityName)
             ?: fallbackProvider.iconFor(packageName, activityName, fallback)
     }
 
-    private fun findBundledIcon(packageName: String, activityName: String?): Drawable? {
+    private fun findBundledIcon(packageName: String, activityName: String?, fallback: Drawable): Drawable? {
         val drawableName = candidateKeys(packageName, activityName)
             .firstNotNullOfOrNull { key -> iconMap[key] }
             ?: return null
+
+        if (drawableName in genericDrawableNames) {
+            val axiomFallback = fallbackProvider as? AxiomFallbackIconProvider
+            return axiomFallback?.iconForMappedDrawable(packageName, activityName, drawableName)
+                ?: fallbackProvider.iconFor(packageName, activityName, fallback)
+        }
 
         val drawableId = context.resources.getIdentifier(drawableName, "drawable", context.packageName)
         if (drawableId == 0) return null
@@ -71,6 +79,13 @@ class BundledVoidSysIconProvider(
         }.getOrDefault(emptyMap())
     }
 
+    private fun loadGenericDrawableNames(): Set<String> = runCatching {
+        context.assets.open(GENERIC_DRAWABLE_ASSET).bufferedReader().use { reader ->
+            val names = JSONArray(reader.readText())
+            buildSet { for (index in 0 until names.length()) add(names.getString(index)) }
+        }
+    }.getOrDefault(emptySet())
+
     private fun parseIconMap(json: JSONObject): Map<String, String> {
         val mappings = linkedMapOf<String, String>()
         val keys = json.keys()
@@ -89,5 +104,6 @@ class BundledVoidSysIconProvider(
 
     private companion object {
         const val ICON_MAP_ASSET = "voidsys_icon_map.json"
+        const val GENERIC_DRAWABLE_ASSET = "voidsys_generic_drawables.json"
     }
 }
