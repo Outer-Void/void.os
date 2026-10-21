@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import com.outervoid.axiom.settings.IconPackOptions
 import org.json.JSONObject
-import java.util.Locale
 
 class VoidSysIconProvider(
     private val context: Context,
@@ -36,27 +35,8 @@ class VoidSysIconProvider(
             .firstNotNullOfOrNull { key -> iconMap[key] }
     }
 
-    private fun candidateKeys(packageName: String, activityName: String?): List<String> {
-        val normalizedPackage = packageName.trim()
-        val normalizedActivity = activityName?.trim()?.takeIf { it.isNotBlank() }
-        val relativeActivity = normalizedActivity
-            ?.takeIf { it.startsWith(normalizedPackage) }
-            ?.removePrefix(normalizedPackage)
-            ?.takeIf { it.startsWith(".") }
-
-        return buildList {
-            add(normalizedPackage)
-            if (normalizedActivity != null) {
-                add("$normalizedPackage/$normalizedActivity")
-                add("ComponentInfo{$normalizedPackage/$normalizedActivity}")
-            }
-            if (relativeActivity != null) {
-                add("$normalizedPackage/$relativeActivity")
-                add("ComponentInfo{$normalizedPackage/$relativeActivity}")
-            }
-            add(normalizedPackage.lowercase(Locale.US))
-        }.distinct()
-    }
+    private fun candidateKeys(packageName: String, activityName: String?): List<String> =
+        IconMappingKeys.candidates(packageName, activityName)
 
     private fun loadVoidSysContext(): Context? = try {
         packageManager.getPackageInfo(IconPackOptions.VoidSysPackage, 0)

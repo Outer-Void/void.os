@@ -50,6 +50,22 @@ fun AppIconCell(
     compactMode: Boolean = false,
     iconShape: IconShape = IconShape.ROUNDED_SQUARE
 ) {
+    androidx.compose.runtime.key(app.icon) {
+        AppIconCellContent(app, onClick, onLongClick, showLabel, iconScale, compactMode, iconShape)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun AppIconCellContent(
+    app: AppInfo,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    showLabel: Boolean,
+    iconScale: Float,
+    compactMode: Boolean,
+    iconShape: IconShape
+) {
     val iconBitmap by produceState<android.graphics.Bitmap?>(null, app.packageName, app.activityName, app.icon) {
         value = AppIconBitmapCache.get(app.icon)
             ?: withContext(Dispatchers.IO) {

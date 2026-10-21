@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import com.outervoid.axiom.settings.IconPackOptions
 import org.json.JSONObject
 import org.json.JSONArray
-import java.util.Locale
 
 class BundledVoidSysIconProvider(
     private val context: Context,
@@ -49,27 +48,8 @@ class BundledVoidSysIconProvider(
         }.getOrNull()
     }
 
-    private fun candidateKeys(packageName: String, activityName: String?): List<String> {
-        val normalizedPackage = packageName.trim()
-        val normalizedActivity = activityName?.trim()?.takeIf { it.isNotBlank() }
-        val relativeActivity = normalizedActivity
-            ?.takeIf { it.startsWith(normalizedPackage) }
-            ?.removePrefix(normalizedPackage)
-            ?.takeIf { it.startsWith(".") }
-
-        return buildList {
-            add(normalizedPackage)
-            if (normalizedActivity != null) {
-                add("$normalizedPackage/$normalizedActivity")
-                add("ComponentInfo{$normalizedPackage/$normalizedActivity}")
-            }
-            if (relativeActivity != null) {
-                add("$normalizedPackage/$relativeActivity")
-                add("ComponentInfo{$normalizedPackage/$relativeActivity}")
-            }
-            add(normalizedPackage.lowercase(Locale.US))
-        }.distinct()
-    }
+    private fun candidateKeys(packageName: String, activityName: String?): List<String> =
+        IconMappingKeys.candidates(packageName, activityName)
 
     private fun loadIconMap(): Map<String, String> {
         return runCatching {
