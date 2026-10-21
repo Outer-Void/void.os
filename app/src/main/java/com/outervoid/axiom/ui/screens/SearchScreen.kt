@@ -21,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -51,6 +52,8 @@ fun SearchScreen(
     query: String,
     apps: List<AppInfo>,
     settings: AxiomSettings,
+    inventoryLoading: Boolean = false,
+    inventoryError: Boolean = false,
     onQueryChange: (String) -> Unit,
     onLaunch: (AppInfo) -> Unit,
     onClose: () -> Unit
@@ -124,6 +127,25 @@ fun SearchScreen(
                 }
             )
             Spacer(Modifier.height(if (settings.compactMode) 16.dp else 24.dp))
+            if (inventoryError && apps.isEmpty()) {
+                Text(
+                    "APP LIST UNAVAILABLE",
+                    modifier = Modifier.fillMaxWidth(),
+                    color = TextDim,
+                    style = MaterialTheme.typography.labelMedium,
+                    textAlign = TextAlign.Center
+                )
+            } else if (inventoryLoading && apps.isEmpty()) {
+                Text(
+                    "SCANNING APPS…",
+                    modifier = Modifier.fillMaxWidth(),
+                    color = TextDim,
+                    style = MaterialTheme.typography.labelMedium,
+                    textAlign = TextAlign.Center
+                )
+            } else if (inventoryError) {
+                Text("APP LIST MAY BE OUT OF DATE", color = TextDim, style = MaterialTheme.typography.labelSmall)
+            }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(settings.gridColumns),
                 horizontalArrangement = Arrangement.spacedBy(if (settings.compactMode) 6.dp else 10.dp),
@@ -151,6 +173,8 @@ fun AppDrawerScreen(
     query: String,
     apps: List<AppInfo>,
     settings: AxiomSettings,
+    inventoryLoading: Boolean = false,
+    inventoryError: Boolean = false,
     onQueryChange: (String) -> Unit,
     onLaunch: (AppInfo) -> Unit,
     onClose: () -> Unit
@@ -159,6 +183,8 @@ fun AppDrawerScreen(
         query = query,
         apps = apps,
         settings = settings,
+        inventoryLoading = inventoryLoading,
+        inventoryError = inventoryError,
         onQueryChange = onQueryChange,
         onLaunch = onLaunch,
         onClose = onClose

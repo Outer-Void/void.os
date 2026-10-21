@@ -33,6 +33,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.feed.FeedRepository
 import com.outervoid.axiom.feed.FeedState
@@ -81,7 +84,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-
 class MainActivity : ComponentActivity() {
     private val vm: LauncherViewModel by viewModels()
 
@@ -98,6 +100,8 @@ class MainActivity : ComponentActivity() {
             val settings by vm.settings.collectAsState()
             val feedState by feedRepository.state.collectAsState(initial = FeedState())
             val allApps by vm.apps.collectAsState()
+            val appInventoryLoading by vm.appInventoryLoading.collectAsState()
+            val appInventoryError by vm.appInventoryError.collectAsState()
             val filteredApps by vm.filteredApps.collectAsState()
             val query by vm.query.collectAsState()
             val voidSysInstalled by moduleStatusManager.voidSysInstalled.collectAsState()
@@ -386,6 +390,8 @@ class MainActivity : ComponentActivity() {
                         query = query,
                         apps = filteredApps,
                         settings = settings,
+                        inventoryLoading = appInventoryLoading,
+                        inventoryError = appInventoryError,
                         onQueryChange = vm::setQuery,
                         onLaunch = { app ->
                             if (pickingFavorite) {
@@ -541,7 +547,7 @@ class MainActivity : ComponentActivity() {
                         onSearchOnSwipeUpChanged = vm::setSearchOnSwipeUp,
                         onSystemPanelChanged = vm::setSystemPanel,
                         onHapticFeedbackChanged = vm::setHapticFeedback,
-                        onReloadApps = vm::loadApps,
+                        onReloadApps = vm::reloadApps,
                         onResetSettings = vm::resetSettings,
                         onOpenTerminal = { state = LauncherState.TerminalPanel }
                     )

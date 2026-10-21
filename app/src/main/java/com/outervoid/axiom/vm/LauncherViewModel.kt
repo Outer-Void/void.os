@@ -1,13 +1,13 @@
 package com.outervoid.axiom.vm
 
 import android.app.Application
-import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.os.SystemClock
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,6 +18,7 @@ import com.outervoid.axiom.settings.ClockFormat
 import com.outervoid.axiom.settings.SettingsRepository
 import com.outervoid.axiom.settings.appKey
 import com.outervoid.axiom.ui.iconshape.IconShape
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +34,10 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _apps = MutableStateFlow<List<AppInfo>>(emptyList())
     val apps: StateFlow<List<AppInfo>> = _apps.asStateFlow()
+    private val _appInventoryLoading = MutableStateFlow(true)
+    val appInventoryLoading: StateFlow<Boolean> = _appInventoryLoading.asStateFlow()
+    private val _appInventoryError = MutableStateFlow(false)
+    val appInventoryError: StateFlow<Boolean> = _appInventoryError.asStateFlow()
 
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
@@ -52,11 +57,13 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     val voidSysInstalled: StateFlow<Boolean> = _voidSysInstalled.asStateFlow()
 
     private var receiverRegistered = false
+    private var inventoryRefresh: Job? = null
+    private var lastSuccessfulInventoryRefresh = 0L
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             _voidSysInstalled.value = settingsRepository.isVoidSysInstalled()
-            loadApps()
+            refreshApps()
         }
     }
 
@@ -69,12 +76,12 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         }
         ContextCompat.registerReceiver(app, receiver, filter, ContextCompat.RECEIVER_EXPORTED)
         receiverRegistered = true
-        loadApps()
+        refreshApps()
         viewModelScope.launch {
             settings
                 .map { it.selectedIconPackPackage }
                 .distinctUntilChanged()
-                .collect { loadApps() }
+                .collect { refreshApps() }
         }
     }
 
@@ -86,27 +93,50 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         super.onCleared()
     }
 
-    fun loadApps() = viewModelScope.launch {
-        val application = getApplication<Application>()
-        val pm = application.packageManager
-        val iconProvider = BundledVoidSysIconProvider(application, settings.value.selectedIconPackPackage)
-        val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-        _apps.value = pm.queryIntentActivities(intent, 0)
-            .mapNotNull { resolveInfo ->
-                val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
-                AppInfo(
-                    packageName = activityInfo.packageName,
-                    activityName = activityInfo.name,
-                    label = resolveInfo.loadLabel(pm).toString(),
-                    icon = iconProvider.iconFor(
-                        packageName = activityInfo.packageName,
-                        activityName = activityInfo.name,
-                        fallback = resolveInfo.loadIcon(pm)
-                    )
-                )
+    fun refreshAppsIfStale() {
+        if (AppInventoryRefreshPolicy.isDue(lastSuccessfulInventoryRefresh, SystemClock.elapsedRealtime())) {
+            refreshApps()
+        }
+    }
+
+    fun reloadApps() = refreshApps()
+
+    private fun refreshApps() {
+        if (inventoryRefresh?.isActive == true) return
+        inventoryRefresh = viewModelScope.launch {
+            _appInventoryLoading.value = true
+            val application = getApplication<Application>()
+            val pm = application.packageManager
+            val result = runCatching {
+                val iconProvider = BundledVoidSysIconProvider(application, settings.value.selectedIconPackPackage)
+                val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+                pm.queryIntentActivities(intent, 0)
+                    .mapNotNull { resolveInfo ->
+                        val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
+                        AppInfo(
+                            packageName = activityInfo.packageName,
+                            activityName = activityInfo.name,
+                            label = resolveInfo.loadLabel(pm).toString(),
+                            icon = iconProvider.iconFor(
+                                packageName = activityInfo.packageName,
+                                activityName = activityInfo.name,
+                                fallback = resolveInfo.loadIcon(pm)
+                            )
+                        )
+                    }
+                    .filter { it.packageName != application.packageName }
+                    .sortedBy { it.label.lowercase() }
             }
-            .filter { it.packageName != application.packageName }
-            .sortedBy { it.label.lowercase() }
+            result.onSuccess { discovered ->
+                _apps.value = discovered
+                _appInventoryError.value = false
+                lastSuccessfulInventoryRefresh = SystemClock.elapsedRealtime()
+            }.onFailure {
+                // Keep a previously loaded inventory usable if package queries temporarily fail.
+                _appInventoryError.value = true
+            }
+            _appInventoryLoading.value = false
+        }
     }
 
     fun setQuery(q: String) {
@@ -194,6 +224,13 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (!startActivitySafely(intent) { context.startActivity(it) }) openAppInfo(context, app)
     }
+}
+
+internal object AppInventoryRefreshPolicy {
+    private const val REFRESH_INTERVAL_MS = 30_000L
+
+    fun isDue(lastSuccessfulRefreshMillis: Long, nowMillis: Long): Boolean =
+        nowMillis - lastSuccessfulRefreshMillis >= REFRESH_INTERVAL_MS
 }
 
 internal fun startActivitySafely(intent: Intent, launch: (Intent) -> Unit): Boolean =
