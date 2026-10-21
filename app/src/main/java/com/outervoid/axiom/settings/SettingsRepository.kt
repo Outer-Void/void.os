@@ -20,41 +20,7 @@ class SettingsRepository(private val context: Context) {
         .catch { error ->
             if (error is IOException) emit(androidx.datastore.preferences.core.emptyPreferences()) else throw error
         }
-        .map { preferences ->
-            AxiomSettings(
-                selectedFontKey = preferences[SettingsKeys.SelectedFontKey] ?: AxiomSettings.DEFAULT_FONT_KEY,
-                selectedIconPackPackage = preferences[SettingsKeys.SelectedIconPackPackage]
-                    ?: AxiomSettings.DEFAULT_ICON_PACK_PACKAGE,
-                iconShape = enumValue(preferences[SettingsKeys.IconShape], IconShape.ROUNDED_SQUARE),
-                favoritesCount = (preferences[SettingsKeys.FavoritesCount] ?: 10).coerceIn(5, 25),
-                accentColorKey = preferences[SettingsKeys.AccentColorKey] ?: AccentColorOptions.DefaultKey,
-                favoritesLocked = preferences[SettingsKeys.FavoritesLocked] ?: false,
-                homePanelCount = (preferences[SettingsKeys.HomePanelCount] ?: 1).coerceIn(1, 5),
-                hiddenApps = preferences[SettingsKeys.HiddenApps] ?: emptySet(),
-                clockFormat = enumValue(preferences[SettingsKeys.ClockFormat], ClockFormat.SYSTEM),
-                lockScreenWallpaperEnabled = preferences[SettingsKeys.LockScreenWallpaperEnabled] ?: false,
-                leftFolderName = preferences[SettingsKeys.LeftFolderName] ?: "CUSTOM FOLDER",
-                rightFolderName = preferences[SettingsKeys.RightFolderName] ?: "CUSTOM FOLDER",
-                leftFolderAppPackages = preferences[SettingsKeys.LeftFolderAppPackages] ?: emptySet(),
-                rightFolderAppPackages = preferences[SettingsKeys.RightFolderAppPackages] ?: emptySet(),
-                folderIconStyle = preferences[SettingsKeys.FolderIconStyle] ?: "FOLDER",
-                favoriteAppKeys = preferences[SettingsKeys.FavoriteAppKeys] ?: emptySet(),
-                showAppLabels = preferences[SettingsKeys.ShowAppLabels] ?: true,
-                gridColumns = (preferences[SettingsKeys.GridColumns] ?: 4).coerceIn(3, 6),
-                iconScale = (preferences[SettingsKeys.IconScale] ?: 0.72f).coerceIn(0.55f, 0.95f),
-                showSystemOnline = preferences[SettingsKeys.ShowSystemOnline] ?: true,
-                ambientBootEnabled = preferences[SettingsKeys.AmbientBootEnabled] ?: true,
-                amberAccentEnabled = preferences[SettingsKeys.AmberAccentEnabled] ?: true,
-                compactMode = preferences[SettingsKeys.CompactMode] ?: false,
-                hideStatusBar = preferences[SettingsKeys.HideStatusBar] ?: false,
-                hideNavigationBar = preferences[SettingsKeys.HideNavigationBar] ?: false,
-                searchOnSwipeUp = preferences[SettingsKeys.SearchOnSwipeUp] ?: true,
-                systemPanelEnabled = preferences[SettingsKeys.SystemPanelEnabled] ?: false,
-                terminalPanelEnabled = preferences[SettingsKeys.TerminalPanelEnabled] ?: false,
-                hapticFeedbackEnabled = preferences[SettingsKeys.HapticFeedbackEnabled] ?: true,
-                panelWidgets = preferences[SettingsKeys.PanelWidgets] ?: emptySet()
-            )
-        }
+        .map(::decodeAxiomSettings)
 
     suspend fun updateFont(key: String) = update { it[SettingsKeys.SelectedFontKey] = key }
 
@@ -83,7 +49,7 @@ class SettingsRepository(private val context: Context) {
         update { it[SettingsKeys.GridColumns] = columns.coerceIn(3, 6) }
 
     suspend fun updateIconScale(scale: Float) =
-        update { it[SettingsKeys.IconScale] = scale.coerceIn(0.55f, 0.95f) }
+        update { it[SettingsKeys.IconScale] = sanitizeIconScale(scale) }
 
     suspend fun updateShowSystemOnline(enabled: Boolean) =
         update { it[SettingsKeys.ShowSystemOnline] = enabled }
@@ -132,9 +98,6 @@ class SettingsRepository(private val context: Context) {
     private suspend fun update(block: (MutablePreferencesEditor) -> Unit) {
         context.axiomSettingsStore.edit { preferences -> block(MutablePreferencesEditor(preferences)) }
     }
-
-    private inline fun <reified T : Enum<T>> enumValue(value: String?, fallback: T): T =
-        value?.let { runCatching { enumValueOf<T>(it) }.getOrNull() } ?: fallback
 }
 
 class MutablePreferencesEditor internal constructor(
