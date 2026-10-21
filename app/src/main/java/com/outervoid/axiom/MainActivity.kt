@@ -64,6 +64,7 @@ import com.outervoid.axiom.ui.screens.SystemPanelScreen
 import com.outervoid.axiom.ui.screens.TerminalPanelScreen
 import com.outervoid.axiom.ui.screens.WidgetPickerScreen
 import com.outervoid.axiom.ui.state.LauncherNavigationPolicy
+import com.outervoid.axiom.ui.state.LauncherSearchPolicy
 import com.outervoid.axiom.ui.state.LauncherState
 import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.AxiomTheme
@@ -251,6 +252,17 @@ class MainActivity : ComponentActivity() {
 
             AxiomTheme(fontKey = settings.selectedFontKey) {
                 var state by rememberSaveable { mutableStateOf(if (settings.ambientBootEnabled) LauncherState.Ambient else LauncherState.Home) }
+                val lifecycle = LocalLifecycleOwner.current.lifecycle
+                DisposableEffect(lifecycle, vm) {
+                    val observer = LifecycleEventObserver { _, event ->
+                        if (event == Lifecycle.Event.ON_RESUME) vm.refreshAppsIfStale()
+                    }
+                    lifecycle.addObserver(observer)
+                    onDispose { lifecycle.removeObserver(observer) }
+                }
+                LaunchedEffect(state) {
+                    if (LauncherSearchPolicy.shouldResetQuery(state)) vm.setQuery("")
+                }
                 var now by remember { mutableStateOf(LocalDateTime.now()) }
                 var pickingFavorite by rememberSaveable { mutableStateOf(false) }
                 val date = now.format(DateTimeFormatter.ofPattern("EEE, MMM d", Locale.US)).uppercase(Locale.US)
