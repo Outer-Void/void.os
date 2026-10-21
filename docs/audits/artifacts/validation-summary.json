@@ -1,0 +1,188 @@
+{
+  "validated_implementation_commit": "9d25e57",
+  "jvm_suites": [
+    {
+      "name": "com.outervoid.axiom.feed.FeedAvailabilityTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.icon.IconCategoryTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.icon.IconMappingKeysTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.settings.SettingsDecoderTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.ui.components.DockBarLayoutTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.ui.components.SystemMetricsTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.ui.screens.DrawerLayoutPolicyTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.ui.screens.LauncherGesturePolicyTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.ui.screens.WidgetPickerPolicyTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.ui.state.LauncherPolicyTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.ui.state.ShooterAccessPolicyTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.vm.AppInventoryOrderingTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.vm.CoalescingRefreshRunnerTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.vm.SafeLaunchTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.axiom.widgets.WidgetOperationPolicyTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.voidgame.CarrierTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.voidgame.ShooterInputTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.voidgame.ShooterRulesTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.voidgame.SupportMissileTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.outervoid.voidgame.VoidGameLifecycleTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "total_tests": 39,
+  "apk": {
+    "name": "app-debug.apk",
+    "bytes": 58604984,
+    "sha256": "2f7fac4e11eb9435fbb99a5278fb148ed43844eaac717af58aa25db628a40295"
+  },
+  "device_tests": "not run; available adb is x86-64 in ARM64 PRoot",
+  "preexisting_signature_nullability_fix_preserved_verbatim_in_commit": "2fa558d",
+  "release": {
+    "task": ":app:assembleRelease",
+    "result": "passed; R8 and resource shrinking enabled",
+    "unsigned_apk": "app-release-unsigned.apk",
+    "bytes": 36716372,
+    "sha256": "caf316ab4d96ff16cd79aa84ffd395d790f666de207afce67499725a736a3ab6",
+    "direct_icon_resources_expected": 98,
+    "direct_icon_resources_missing": []
+  },
+  "lint": {
+    "severity_counts": {
+      "Warning": 585
+    },
+    "issue_counts": {
+      "AndroidGradlePluginVersion": 1,
+      "GradleDependency": 7,
+      "LockedOrientationActivity": 2,
+      "DiscouragedApi": 4,
+      "DataExtractionRules": 1,
+      "ObsoleteSdkInt": 1,
+      "UnusedResources": 485,
+      "MonochromeLauncherIcon": 2,
+      "IconDuplicates": 71,
+      "UseKtx": 11
+    }
+  },
+  "verification_command_tasks": [
+    ":app:assembleDebug",
+    ":app:testDebugUnitTest",
+    ":app:lintDebug",
+    ":app:compileDebugAndroidTestKotlin",
+    ":app:assembleRelease"
+  ],
+  "combined_build_result": "BUILD SUCCESSFUL in 7m 15s",
+  "negative_shrinker_regression": "old APK: 58 missing direct names, QA exit 1"
+}

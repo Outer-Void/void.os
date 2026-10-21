@@ -1,0 +1,71 @@
+{
+  "source_libraries": {
+    "app/src/main/jniLibs/arm64-v8a/libgdx.so": [
+      4096,
+      4096,
+      4096
+    ],
+    "app/src/main/jniLibs/armeabi-v7a/libgdx.so": [
+      4096,
+      4096,
+      4096
+    ],
+    "app/src/main/jniLibs/x86/libgdx.so": [
+      4096,
+      4096,
+      4096
+    ],
+    "app/src/main/jniLibs/x86_64/libgdx.so": [
+      4096,
+      4096,
+      4096
+    ]
+  },
+  "apk": {
+    "name": "app-debug.apk",
+    "bytes": 58604984,
+    "libraries": {
+      "lib/arm64-v8a/libgdx.so": {
+        "elf_load_alignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "stored": true,
+        "data_offset": 10108928,
+        "zip_16kb_aligned": true
+      },
+      "lib/armeabi-v7a/libgdx.so": {
+        "elf_load_alignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "stored": true,
+        "data_offset": 10289152,
+        "zip_16kb_aligned": true
+      },
+      "lib/x86/libgdx.so": {
+        "elf_load_alignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "stored": true,
+        "data_offset": 10452992,
+        "zip_16kb_aligned": true
+      },
+      "lib/x86_64/libgdx.so": {
+        "elf_load_alignments": [
+          4096,
+          4096,
+          4096
+        ],
+        "stored": true,
+        "data_offset": 10649600,
+        "zip_16kb_aligned": true
+      }
+    }
+  },
+  "passes_source_16kb_elf_alignment": false
+}
