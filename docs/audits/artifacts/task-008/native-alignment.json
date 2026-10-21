@@ -1,0 +1,26 @@
+{
+  "source_libraries": {
+    "app/src/main/jniLibs/arm64-v8a/libgdx.so": [
+      4096,
+      4096,
+      4096
+    ],
+    "app/src/main/jniLibs/armeabi-v7a/libgdx.so": [
+      4096,
+      4096,
+      4096
+    ],
+    "app/src/main/jniLibs/x86/libgdx.so": [
+      4096,
+      4096,
+      4096
+    ],
+    "app/src/main/jniLibs/x86_64/libgdx.so": [
+      4096,
+      4096,
+      4096
+    ]
+  },
+  "apk": null,
+  "passes_source_16kb_elf_alignment": false
+}

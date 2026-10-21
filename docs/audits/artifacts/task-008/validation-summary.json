@@ -1,0 +1,44 @@
+{
+  "branch": "feat/task-008-stabilization",
+  "baseline": "d5bfb4a",
+  "implementation_commit": "93d5ad9877c126d4b05bf92a6ab9f6b166dd70b3",
+  "requested_debug_tasks": "PASS",
+  "duration": "9m 54s",
+  "unit_tests": {
+    "tests": 48,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Warning": 585
+  },
+  "instrumentation": "compiled; not executed",
+  "device_execution": "not performed; SDK adb incompatible with host, native Termux adb absent",
+  "python_tests": {
+    "tests": 2,
+    "failures": 0
+  },
+  "source_icon_audit": "PASS",
+  "native_16kb_audit": {
+    "exit_code": 1,
+    "passes": false
+  },
+  "debug_apk": {
+    "bytes": 58605601,
+    "sha256": "55935a131a3064f76d9aeeac82cf82297cd237c4c11be002fa70a4a01466c1f8"
+  },
+  "release_validation": {
+    "result": "PASS",
+    "tasks": [
+      ":app:assembleRelease"
+    ],
+    "extra_flag": "--offline",
+    "duration": "8m 7s",
+    "bytes": 36810026,
+    "sha256": "96931300e4ba0b85c52c51a03e87394173604e5b5eff41324df725b8c3458347",
+    "dedicated_icon_names_retained": 101,
+    "missing_dedicated_icon_names": [],
+    "signed": false
+  }
+}
