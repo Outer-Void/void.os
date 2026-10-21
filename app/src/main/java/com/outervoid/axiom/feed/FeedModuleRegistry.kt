@@ -5,7 +5,6 @@ object FeedModuleRegistry {
 
     fun defaultModules(): List<FeedModuleConfig> = listOf(
         FeedModuleType.SystemStatus,
-        FeedModuleType.Weather,
         FeedModuleType.Calendar,
         FeedModuleType.FocusPanel,
         FeedModuleType.QuickActions

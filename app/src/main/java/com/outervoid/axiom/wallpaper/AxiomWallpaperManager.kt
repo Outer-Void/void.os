@@ -19,14 +19,19 @@ import java.io.FileOutputStream
 class AxiomWallpaperManager(private val context: Context) {
     fun setLockScreenWallpaper(): Result {
         return try {
-            WallpaperManager.getInstance(context).setBitmap(
-                createWallpaper(),
-                null,
-                true,
-                WallpaperManager.FLAG_LOCK
-            )
+            createWallpaper().use { bitmap ->
+                WallpaperManager.getInstance(context).setBitmap(
+                    bitmap,
+                    null,
+                    true,
+                    WallpaperManager.FLAG_LOCK
+                )
+            }
             Log.i(TAG, "AXIOM lock-screen wallpaper applied")
             Result.Applied
+        } catch (error: java.io.IOException) {
+            Log.w(TAG, "Wallpaper I/O failed", error)
+            Result.Restricted
         } catch (error: SecurityException) {
             Log.w(TAG, "Device blocked lock-screen wallpaper", error)
             Result.Restricted
@@ -39,9 +44,14 @@ class AxiomWallpaperManager(private val context: Context) {
     fun setHomeScreenWallpaper(): Result {
         return try {
             val manager = WallpaperManager.getInstance(context)
-            manager.setBitmap(createWallpaper(), null, true, WallpaperManager.FLAG_SYSTEM)
+            createWallpaper().use { bitmap ->
+                manager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM)
+            }
             Log.i(TAG, "AXIOM home-screen wallpaper applied")
             Result.Applied
+        } catch (error: java.io.IOException) {
+            Log.w(TAG, "Wallpaper I/O failed", error)
+            Result.Restricted
         } catch (error: SecurityException) {
             Log.w(TAG, "Device blocked home-screen wallpaper", error)
             Result.Restricted
@@ -53,14 +63,19 @@ class AxiomWallpaperManager(private val context: Context) {
 
     fun setBothWallpapers(): Result {
         return try {
-            WallpaperManager.getInstance(context).setBitmap(
-                createWallpaper(),
-                null,
-                true,
-                WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK
-            )
+            createWallpaper().use { bitmap ->
+                WallpaperManager.getInstance(context).setBitmap(
+                    bitmap,
+                    null,
+                    true,
+                    WallpaperManager.FLAG_SYSTEM or WallpaperManager.FLAG_LOCK
+                )
+            }
             Log.i(TAG, "AXIOM home and lock wallpapers applied")
             Result.Applied
+        } catch (error: java.io.IOException) {
+            Log.w(TAG, "Wallpaper I/O failed", error)
+            Result.Restricted
         } catch (error: SecurityException) {
             Log.w(TAG, "Device blocked combined wallpaper", error)
             Result.Restricted
@@ -77,6 +92,9 @@ class AxiomWallpaperManager(private val context: Context) {
                 setDataAndType(uri, "image/png")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
+        } catch (error: java.io.IOException) {
+            Log.w(TAG, "Unable to write wallpaper handoff", error)
+            null
         } catch (error: RuntimeException) {
             Log.w(TAG, "Unable to prepare AXIOM wallpaper handoff", error)
             null

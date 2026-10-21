@@ -41,7 +41,7 @@ fun FeedModuleRenderer(
 ) {
     when (config.type) {
         FeedModuleType.SystemStatus -> SystemStatusModule(config, settings)
-        FeedModuleType.Weather -> WeatherModule(config)
+        FeedModuleType.Weather -> PlannedModule(config)
         FeedModuleType.Calendar -> CalendarModule(config, context)
         FeedModuleType.ClockPanel -> ClockPanelModule(config)
         FeedModuleType.FocusPanel -> FocusPanelModule(config, state.priorities, onUpdatePriorities)
@@ -75,26 +75,11 @@ fun FeedModuleRenderer(
         FeedModuleType.TopApps,
         FeedModuleType.UnlockCount,
         FeedModuleType.SessionDuration,
-        FeedModuleType.NotificationLoad -> MetricsModule(config, context)
+        FeedModuleType.NotificationLoad -> PlannedModule(config)
         else -> when (config.type.status) {
-            FeedModuleStatus.SetupRequired -> SetupRequiredModule(config) { openSetupFor(config.type, context) }
+            FeedModuleStatus.SetupRequired -> PlannedModule(config)
             FeedModuleStatus.Planned -> PlannedModule(config)
             FeedModuleStatus.Functional -> PlannedModule(config)
         }
     }
-}
-
-private fun openSetupFor(type: FeedModuleType, context: Context) {
-    val action = when (type) {
-        FeedModuleType.NotificationsSummary,
-        FeedModuleType.NotificationLoad -> "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"
-        FeedModuleType.Calendar -> Settings.ACTION_APPLICATION_SETTINGS
-        FeedModuleType.ScreenTimeToday,
-        FeedModuleType.TopApps,
-        FeedModuleType.UnlockCount,
-        FeedModuleType.SessionDuration -> Settings.ACTION_USAGE_ACCESS_SETTINGS
-        FeedModuleType.LocationTravel -> Settings.ACTION_LOCATION_SOURCE_SETTINGS
-        else -> Settings.ACTION_SETTINGS
-    }
-    context.startActivity(Intent(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 }

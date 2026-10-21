@@ -27,6 +27,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -86,7 +87,7 @@ fun HomeScreen(
     val outerPadding = if (settings.compactMode) 12.dp else 18.dp
     val glanceGestureCutoffPx = with(LocalDensity.current) { (if (settings.compactMode) 218.dp else 244.dp).toPx() }
     val swipeTriggerPx = with(LocalDensity.current) { 56.dp.toPx() }
-    var panel by remember(settings.homePanelCount) { mutableIntStateOf(0) }
+    var panel by rememberSaveable(settings.homePanelCount) { mutableIntStateOf(0) }
     var selectedFavorite by remember { mutableStateOf<AppInfo?>(null) }
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -310,6 +311,7 @@ private fun BoundWidgetPanel(
             .fillMaxSize()
             .combinedClickable(onLongClick = onLongPress, onClick = {})
     ) {
+        androidx.compose.runtime.key(widgetId) {
         AndroidView(
             factory = { ctx ->
                 widgetHost.createBoundView(ctx, widgetId, info).apply {
@@ -318,5 +320,6 @@ private fun BoundWidgetPanel(
             },
             modifier = Modifier.fillMaxSize()
         )
+        }
     }
 }

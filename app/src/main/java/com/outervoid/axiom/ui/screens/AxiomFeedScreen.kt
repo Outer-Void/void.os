@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalDensity
 import com.outervoid.axiom.data.AppInfo
 import com.outervoid.axiom.feed.FeedModuleRenderer
 import com.outervoid.axiom.feed.FeedState
@@ -43,14 +44,24 @@ fun AxiomFeedScreen(
     onUpdateNextAction: (String) -> Unit,
     onUpdateNotes: (List<String>) -> Unit
 ) {
+    val returnThreshold = with(LocalDensity.current) { 56.dp.toPx() }
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Background)
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures { _, dragAmount ->
-                    if (dragAmount < -28f) onReturnHome()
-                }
+            .pointerInput(onReturnHome, returnThreshold) {
+                var distance = 0f
+                var dispatched = false
+                detectHorizontalDragGestures(
+                    onDragStart = { distance = 0f; dispatched = false },
+                    onHorizontalDrag = { _, amount ->
+                        distance += amount
+                        if (!dispatched && distance <= -returnThreshold) {
+                            dispatched = true
+                            onReturnHome()
+                        }
+                    }
+                )
             }
             .padding(horizontal = 18.dp, vertical = 22.dp)
     ) {

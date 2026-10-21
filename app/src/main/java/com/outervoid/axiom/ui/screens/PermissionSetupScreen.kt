@@ -36,11 +36,7 @@ fun PermissionSetupScreen(
     settings: AxiomSettings,
     voidSysInstalled: Boolean,
     onChooseDefaultLauncher: () -> Unit,
-    onOpenWidgetSettings: () -> Unit,
-    onRequestCalendar: () -> Unit = {},
-    onRequestContacts: () -> Unit = {},
-    onRequestLocation: () -> Unit = {},
-    onRequestNotifications: () -> Unit = {}
+    onOpenWidgetSettings: () -> Unit
 ) {
     val context = LocalContext.current
     val accent = settings.accentColor()
@@ -49,22 +45,12 @@ fun PermissionSetupScreen(
 
     var isDefault by remember { mutableStateOf(permManager.isDefaultLauncher()) }
     var hasNotifListener by remember { mutableStateOf(permManager.hasNotificationListenerAccess()) }
-    var hasCalendar by remember { mutableStateOf(permManager.hasCalendarPermission()) }
-    var hasContacts by remember { mutableStateOf(permManager.hasContactsPermission()) }
-    var hasLocation by remember { mutableStateOf(permManager.hasLocationPermission()) }
-    var hasUsageStats by remember { mutableStateOf(permManager.hasUsageStatsAccess()) }
-    var hasNotifs by remember { mutableStateOf(permManager.hasNotificationsPermission()) }
 
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 isDefault = permManager.isDefaultLauncher()
                 hasNotifListener = permManager.hasNotificationListenerAccess()
-                hasCalendar = permManager.hasCalendarPermission()
-                hasContacts = permManager.hasContactsPermission()
-                hasLocation = permManager.hasLocationPermission()
-                hasUsageStats = permManager.hasUsageStatsAccess()
-                hasNotifs = permManager.hasNotificationsPermission()
             }
         }
         lifecycle.addObserver(observer)
@@ -100,58 +86,19 @@ fun PermissionSetupScreen(
 
         SettingsSection("Notifications") {
             SettingsRow(
-                title = "Post Notifications",
-                value = if (hasNotifs) "GRANTED" else "REQUEST",
-                subtitle = if (hasNotifs) "AXIOM can post system notifications."
-                else "Required for notification alerts from AXIOM.",
-                onClick = if (!hasNotifs) onRequestNotifications else null
-            )
-            SettingsRow(
                 title = "Notification Listener",
                 value = if (hasNotifListener) "ACTIVE" else "SETUP",
-                subtitle = if (hasNotifListener) "AXIOM can read notification summaries for the Feed."
-                else "Required for Notifications Summary feed module. Opens Android Notification Access settings.",
-                onClick = if (!hasNotifListener) {{ permManager.openNotificationListenerSettings() }} else null
+                subtitle = if (hasNotifListener) "AXIOM can read active media sessions for Home."
+                else "Optional for Home media titles. Grants access to notifications; enable only if you want this feature.",
+                onClick = if (hasNotifListener) null else ({ permManager.openNotificationListenerSettings() })
             )
         }
 
-        SettingsSection("Calendar") {
+        SettingsSection("Feed data") {
             SettingsRow(
-                title = "Calendar Access",
-                value = if (hasCalendar) "GRANTED" else "REQUEST",
-                subtitle = if (hasCalendar) "AXIOM Feed can show today's calendar events."
-                else "Required for Calendar feed module.",
-                onClick = if (!hasCalendar) onRequestCalendar else null
-            )
-        }
-
-        SettingsSection("Contacts") {
-            SettingsRow(
-                title = "Contacts Access",
-                value = if (hasContacts) "GRANTED" else "REQUEST",
-                subtitle = if (hasContacts) "AXIOM Feed can show contact shortcuts."
-                else "Required for Contact Shortcuts feed module.",
-                onClick = if (!hasContacts) onRequestContacts else null
-            )
-        }
-
-        SettingsSection("Location") {
-            SettingsRow(
-                title = "Location Access",
-                value = if (hasLocation) "GRANTED" else "REQUEST",
-                subtitle = if (hasLocation) "AXIOM Feed weather uses device location."
-                else "Optional — required for automatic weather location. You can also enter location manually.",
-                onClick = if (!hasLocation) onRequestLocation else null
-            )
-        }
-
-        SettingsSection("Usage Stats") {
-            SettingsRow(
-                title = "Usage Access",
-                value = if (hasUsageStats) "ACTIVE" else "SETUP",
-                subtitle = if (hasUsageStats) "Screen time, top apps, and metrics modules are active."
-                else "Required for Screen Time, Top Apps, Unlock Count, and metrics modules. Opens Usage Access settings.",
-                onClick = if (!hasUsageStats) {{ permManager.openUsageAccessSettings() }} else null
+                title = "Calendar, weather, contacts and usage metrics",
+                value = "PLANNED",
+                subtitle = "These data integrations are not implemented. AXIOM does not request permissions for them."
             )
         }
 

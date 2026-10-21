@@ -177,11 +177,15 @@ class MainActivity : ComponentActivity() {
                             }
                             runCatching { widgetConfigLauncher.launch(configureIntent) }
                                 .onFailure {
-                                    saveWidgetForPanel(pending.first, pending.second)
+                                    runCatching { widgetHost.deleteAppWidgetId(pending.second) }
                                     pendingWidgetConfigure = null
+                                    widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "The provider could not open widget setup.")
                                 }
-                        } else {
+                        } else if (provider != null) {
                             saveWidgetForPanel(pending.first, pending.second)
+                        } else {
+                            runCatching { widgetHost.deleteAppWidgetId(pending.second) }
+                            widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "The widget provider is no longer available.")
                         }
                     } else {
                         WidgetOperationPolicy.abandonedWidgetId(pending.second, operationAccepted = false)
@@ -196,8 +200,15 @@ class MainActivity : ComponentActivity() {
             }
 
             fun handleWidgetSelect(panelIndex: Int, provider: AppWidgetProviderInfo) {
-                val widgetId = widgetHost.allocateAppWidgetId()
-                val bound = appWidgetManager.bindAppWidgetIdIfAllowed(widgetId, provider.provider)
+                val widgetId = runCatching { widgetHost.allocateAppWidgetId() }.getOrElse {
+                    widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "This device could not allocate a widget.")
+                    return
+                }
+                val bound = runCatching { appWidgetManager.bindAppWidgetIdIfAllowed(widgetId, provider.provider) }.getOrElse {
+                    runCatching { widgetHost.deleteAppWidgetId(widgetId) }
+                    widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "The widget provider could not be bound.")
+                    return
+                }
                 if (bound) {
                     if (provider.configure != null) {
                         pendingWidgetConfigure = panelIndex to widgetId
@@ -207,8 +218,9 @@ class MainActivity : ComponentActivity() {
                         }
                         runCatching { widgetConfigLauncher.launch(configureIntent) }
                             .onFailure {
-                                saveWidgetForPanel(panelIndex, widgetId)
+                                runCatching { widgetHost.deleteAppWidgetId(widgetId) }
                                 pendingWidgetConfigure = null
+                                widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "The provider could not open widget setup.")
                             }
                     } else {
                         saveWidgetForPanel(panelIndex, widgetId)
@@ -234,22 +246,6 @@ class MainActivity : ComponentActivity() {
                         }
                 }
             }
-
-            val calendarPermLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { /* permission result handled reactively in PermissionSetupScreen via lifecycle observer */ }
-
-            val contactsPermLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { }
-
-            val locationPermLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestMultiplePermissions()
-            ) { }
-
-            val notificationsPermLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { }
 
             DisposableEffect(moduleStatusManager) {
                 moduleStatusManager.register()
@@ -655,22 +651,9 @@ class MainActivity : ComponentActivity() {
                         voidSysInstalled = voidSysInstalled,
                         onChooseDefaultLauncher = ::openDefaultLauncherSettings,
                         onOpenWidgetSettings = {
-                            SystemSettingsNavigator.openDefaultLauncherSettings(this@MainActivity)
-                        },
-                        onRequestCalendar = { calendarPermLauncher.launch(android.Manifest.permission.READ_CALENDAR) },
-                        onRequestContacts = { contactsPermLauncher.launch(android.Manifest.permission.READ_CONTACTS) },
-                        onRequestLocation = {
-                            locationPermLauncher.launch(
-                                arrayOf(
-                                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                                )
-                            )
-                        },
-                        onRequestNotifications = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                notificationsPermLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                            }
+                            vm.setHomePanelCount(maxOf(2, settings.homePanelCount))
+                            widgetPickerPanelIndex = 1
+                            state = LauncherState.WidgetPicker
                         }
                     )
                     LauncherState.TerminalPanel -> TerminalPanelScreen(

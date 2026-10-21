@@ -11,7 +11,7 @@ import com.outervoid.axiom.ui.theme.TextSecondary
 
 @Composable
 fun CalendarModule(config: FeedModuleConfig, context: Context) {
-    FeedModuleCard(config, status = "SETUP REQUIRED", trailing = {
+    FeedModuleCard(config, status = "CALENDAR SHORTCUT", trailing = {
         ModuleAction("Open") {
             runCatching {
                 context.startActivity(
@@ -22,7 +22,7 @@ fun CalendarModule(config: FeedModuleConfig, context: Context) {
             }
         }
     }) {
-        Text("CALENDAR ACCESS REQUIRED", color = TextSecondary, style = MaterialTheme.typography.bodyMedium)
-        Text("Enable calendar access before AXIOM can show schedule data here.", color = TextSecondary, style = MaterialTheme.typography.bodySmall)
+        Text("OPEN SYSTEM CALENDAR", color = TextSecondary, style = MaterialTheme.typography.bodyMedium)
+        Text("Opens your calendar app. Event summaries are not implemented.", color = TextSecondary, style = MaterialTheme.typography.bodySmall)
     }
 }
