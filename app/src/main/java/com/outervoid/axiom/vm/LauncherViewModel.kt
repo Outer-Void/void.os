@@ -151,7 +151,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
             component = ComponentName(app.packageName, app.activityName)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
         }
-        runCatching { context.startActivity(intent) }
+        startActivitySafely(intent) { context.startActivity(it) }
     }
 
     fun openAppInfo(context: Context, app: AppInfo) {
@@ -159,7 +159,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
             android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.parse("package:${app.packageName}")
         ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        startActivitySafely(intent) { context.startActivity(it) }
     }
 
     fun setWidgetForPanel(panelIndex: Int, widgetId: Int?) =
@@ -167,7 +167,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
 
     fun openDialer(context: Context) {
         val intent = Intent(Intent.ACTION_DIAL).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        runCatching { context.startActivity(intent) }
+        startActivitySafely(intent) { context.startActivity(it) }
     }
 
     fun openMessages(context: Context) {
@@ -185,17 +185,21 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
         for (intent in candidates) {
-            if (runCatching { context.startActivity(intent); true }.getOrDefault(false)) return
+            if (startActivitySafely(intent) { context.startActivity(it) }) return
         }
     }
 
     fun uninstallApp(context: Context, app: AppInfo) {
         val intent = Intent(Intent.ACTION_DELETE, Uri.parse("package:${app.packageName}"))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        try {
-            context.startActivity(intent)
-        } catch (_: ActivityNotFoundException) {
-            openAppInfo(context, app)
-        }
+        if (!startActivitySafely(intent) { context.startActivity(it) }) openAppInfo(context, app)
     }
 }
+
+internal fun startActivitySafely(intent: Intent, launch: (Intent) -> Unit): Boolean =
+    try {
+        launch(intent)
+        true
+    } catch (_: Exception) {
+        false
+    }
