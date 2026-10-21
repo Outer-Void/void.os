@@ -63,7 +63,7 @@ fun SearchScreen(
     val swipeTriggerPx = with(LocalDensity.current) { 56.dp.toPx() }
     val accent = settings.accentColor()
     val screenWidth = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp
-    val columns = drawerColumnCount(screenWidth, LocalDensity.current.fontScale, settings.gridColumns)
+    val columns = drawerColumnCount(screenWidth, LocalDensity.current.fontScale, settings.gridColumns, settings.compactMode)
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
     }

@@ -89,6 +89,10 @@ import com.outervoid.axiom.widgets.AxiomWidgetHost
 import com.outervoid.axiom.widgets.WidgetOperationPolicy
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -113,6 +117,7 @@ class MainActivity : ComponentActivity() {
             val moduleStatusManager = remember { ModuleStatusManager(applicationContext) }
             val feedRepository = remember { FeedRepository(applicationContext) }
             val scope = rememberCoroutineScope()
+            val wallpaperMutex = remember { Mutex() }
             val entitlementState by entitlementManager.state.collectAsState()
             val settings by vm.settings.collectAsState()
             val feedState by feedRepository.state.collectAsState(initial = FeedState())
@@ -456,77 +461,89 @@ class MainActivity : ComponentActivity() {
                         onAccentColorSelected = vm::setAccentColor,
                         onClockFormatSelected = vm::setClockFormat,
                         onLockScreenWallpaper = {
-                            val wallpaperManager = AxiomWallpaperManager(this@MainActivity)
-                            when (wallpaperManager.setLockScreenWallpaper()) {
-                                AxiomWallpaperManager.Result.Applied -> {
-                                    vm.setLockScreenWallpaperEnabled(true)
-                                    wallpaperDialog = AxiomDialogState("LOCK SCREEN WALLPAPER", "AXIOM lock-screen wallpaper applied.")
-                                }
-                                AxiomWallpaperManager.Result.Restricted -> {
-                                    val fallbackOpened = wallpaperManager.createSystemSetterIntent()
-                                        ?.let(::openWallpaperSetter)
-                                        ?: false
-                                    if (fallbackOpened) {
-                                        wallpaperDialog = AxiomDialogState(
-                                            "WALLPAPER SETUP OPENED",
-                                            "Android blocked direct lock-screen install, so AXIOM opened the system wallpaper setter with the generated AXIOM wallpaper. Choose lock screen if your phone offers it."
-                                        )
-                                    } else {
-                                        vm.setLockScreenWallpaperEnabled(false)
-                                        wallpaperDialog = AxiomDialogState(
-                                            "WALLPAPER UNAVAILABLE",
-                                            "This device does not allow AXIOM to set the lock screen wallpaper directly, and no supported system wallpaper setup screen accepted the generated AXIOM wallpaper."
-                                        )
+                            scope.launch {
+                                wallpaperMutex.withLock {
+                                    val wallpaperManager = AxiomWallpaperManager(this@MainActivity)
+                                    when (withContext(Dispatchers.IO) { wallpaperManager.setLockScreenWallpaper() }) {
+                                        AxiomWallpaperManager.Result.Applied -> {
+                                            vm.setLockScreenWallpaperEnabled(true)
+                                            wallpaperDialog = AxiomDialogState("LOCK SCREEN WALLPAPER", "AXIOM lock-screen wallpaper applied.")
+                                        }
+                                        AxiomWallpaperManager.Result.Restricted -> {
+                                            val fallbackOpened = withContext(Dispatchers.IO) { wallpaperManager.createSystemSetterIntent() }
+                                                ?.let(::openWallpaperSetter)
+                                                ?: false
+                                            if (fallbackOpened) {
+                                                wallpaperDialog = AxiomDialogState(
+                                                    "WALLPAPER SETUP OPENED",
+                                                    "Android blocked direct lock-screen install, so AXIOM opened the system wallpaper setter with the generated AXIOM wallpaper. Choose lock screen if your phone offers it."
+                                                )
+                                            } else {
+                                                vm.setLockScreenWallpaperEnabled(false)
+                                                wallpaperDialog = AxiomDialogState(
+                                                    "WALLPAPER UNAVAILABLE",
+                                                    "This device does not allow AXIOM to set the lock screen wallpaper directly, and no supported system wallpaper setup screen accepted the generated AXIOM wallpaper."
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
                         },
                         onHomeScreenWallpaper = {
-                            val wallpaperManager = AxiomWallpaperManager(this@MainActivity)
-                            when (wallpaperManager.setHomeScreenWallpaper()) {
-                                AxiomWallpaperManager.Result.Applied -> {
-                                    wallpaperDialog = AxiomDialogState("HOME SCREEN WALLPAPER", "AXIOM home-screen wallpaper applied.")
-                                }
-                                AxiomWallpaperManager.Result.Restricted -> {
-                                    val fallbackOpened = wallpaperManager.createSystemSetterIntent()
-                                        ?.let(::openWallpaperSetter)
-                                        ?: false
-                                    wallpaperDialog = if (fallbackOpened) {
-                                        AxiomDialogState(
-                                            "WALLPAPER SETUP OPENED",
-                                            "Android blocked direct home-screen install, so AXIOM opened the system wallpaper setter with the AXIOM wallpaper."
-                                        )
-                                    } else {
-                                        AxiomDialogState(
-                                            "WALLPAPER UNAVAILABLE",
-                                            "This device does not allow AXIOM to set the home-screen wallpaper directly, and no supported system wallpaper setup screen accepted the AXIOM wallpaper."
-                                        )
+                            scope.launch {
+                                wallpaperMutex.withLock {
+                                    val wallpaperManager = AxiomWallpaperManager(this@MainActivity)
+                                    when (withContext(Dispatchers.IO) { wallpaperManager.setHomeScreenWallpaper() }) {
+                                        AxiomWallpaperManager.Result.Applied -> {
+                                            wallpaperDialog = AxiomDialogState("HOME SCREEN WALLPAPER", "AXIOM home-screen wallpaper applied.")
+                                        }
+                                        AxiomWallpaperManager.Result.Restricted -> {
+                                            val fallbackOpened = withContext(Dispatchers.IO) { wallpaperManager.createSystemSetterIntent() }
+                                                ?.let(::openWallpaperSetter)
+                                                ?: false
+                                            wallpaperDialog = if (fallbackOpened) {
+                                                AxiomDialogState(
+                                                    "WALLPAPER SETUP OPENED",
+                                                    "Android blocked direct home-screen install, so AXIOM opened the system wallpaper setter with the AXIOM wallpaper."
+                                                )
+                                            } else {
+                                                AxiomDialogState(
+                                                    "WALLPAPER UNAVAILABLE",
+                                                    "This device does not allow AXIOM to set the home-screen wallpaper directly, and no supported system wallpaper setup screen accepted the AXIOM wallpaper."
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
                         },
                         onBothWallpapers = {
-                            val wallpaperManager = AxiomWallpaperManager(this@MainActivity)
-                            when (wallpaperManager.setBothWallpapers()) {
-                                AxiomWallpaperManager.Result.Applied -> {
-                                    vm.setLockScreenWallpaperEnabled(true)
-                                    wallpaperDialog = AxiomDialogState("AXIOM WALLPAPER", "AXIOM wallpaper applied to home and lock screens.")
-                                }
-                                AxiomWallpaperManager.Result.Restricted -> {
-                                    val fallbackOpened = wallpaperManager.createSystemSetterIntent()
-                                        ?.let(::openWallpaperSetter)
-                                        ?: false
-                                    if (fallbackOpened) {
-                                        wallpaperDialog = AxiomDialogState(
-                                            "WALLPAPER SETUP OPENED",
-                                            "Android blocked direct wallpaper install, so AXIOM opened the system wallpaper setter. Choose home, lock, or both if your phone offers it."
-                                        )
-                                    } else {
-                                        vm.setLockScreenWallpaperEnabled(false)
-                                        wallpaperDialog = AxiomDialogState(
-                                            "WALLPAPER UNAVAILABLE",
-                                            "This device does not allow AXIOM to set wallpaper directly, and no supported system wallpaper setup screen accepted the AXIOM wallpaper."
-                                        )
+                            scope.launch {
+                                wallpaperMutex.withLock {
+                                    val wallpaperManager = AxiomWallpaperManager(this@MainActivity)
+                                    when (withContext(Dispatchers.IO) { wallpaperManager.setBothWallpapers() }) {
+                                        AxiomWallpaperManager.Result.Applied -> {
+                                            vm.setLockScreenWallpaperEnabled(true)
+                                            wallpaperDialog = AxiomDialogState("AXIOM WALLPAPER", "AXIOM wallpaper applied to home and lock screens.")
+                                        }
+                                        AxiomWallpaperManager.Result.Restricted -> {
+                                            val fallbackOpened = withContext(Dispatchers.IO) { wallpaperManager.createSystemSetterIntent() }
+                                                ?.let(::openWallpaperSetter)
+                                                ?: false
+                                            if (fallbackOpened) {
+                                                wallpaperDialog = AxiomDialogState(
+                                                    "WALLPAPER SETUP OPENED",
+                                                    "Android blocked direct wallpaper install, so AXIOM opened the system wallpaper setter. Choose home, lock, or both if your phone offers it."
+                                                )
+                                            } else {
+                                                vm.setLockScreenWallpaperEnabled(false)
+                                                wallpaperDialog = AxiomDialogState(
+                                                    "WALLPAPER UNAVAILABLE",
+                                                    "This device does not allow AXIOM to set wallpaper directly, and no supported system wallpaper setup screen accepted the AXIOM wallpaper."
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
