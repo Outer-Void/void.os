@@ -11,9 +11,11 @@ import org.junit.runner.RunWith
 class MainActivitySavedStateTest {
     @Test
     fun testPendingWidgetOperationSurvivesBundleRoundTrip() {
-        val pendingOperation = 2 to 413
+        val pendingBind = 2 to 413
+        val pendingConfigure = 1 to 414
         val savedState = Bundle().apply {
-            putSerializable(PENDING_WIDGET_OPERATION, pendingOperation)
+            putSerializable(PENDING_WIDGET_BIND, pendingBind)
+            putSerializable(PENDING_WIDGET_CONFIGURE, pendingConfigure)
         }
         val parcel = Parcel.obtain()
         try {
@@ -21,13 +23,15 @@ class MainActivitySavedStateTest {
             parcel.setDataPosition(0)
             val restoredState = parcel.readBundle(javaClass.classLoader)!!
 
-            assertEquals(pendingOperation, restoredState.getSerializable(PENDING_WIDGET_OPERATION))
+            assertEquals(pendingBind, restoredState.getSerializable(PENDING_WIDGET_BIND))
+            assertEquals(pendingConfigure, restoredState.getSerializable(PENDING_WIDGET_CONFIGURE))
         } finally {
             parcel.recycle()
         }
     }
 
     companion object {
-        private const val PENDING_WIDGET_OPERATION = "pending_widget_operation"
+        private const val PENDING_WIDGET_BIND = "pending_widget_bind"
+        private const val PENDING_WIDGET_CONFIGURE = "pending_widget_configure"
     }
 }

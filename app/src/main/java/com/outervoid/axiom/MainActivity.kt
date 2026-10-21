@@ -77,6 +77,7 @@ import com.outervoid.axiom.ui.theme.TextSecondary
 import com.outervoid.axiom.vm.LauncherViewModel
 import com.outervoid.axiom.wallpaper.AxiomWallpaperManager
 import com.outervoid.axiom.widgets.AxiomWidgetHost
+import com.outervoid.axiom.widgets.WidgetOperationPolicy
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.delay
@@ -136,9 +137,11 @@ class MainActivity : ComponentActivity() {
                 if (pending != null) {
                     if (result.resultCode == Activity.RESULT_OK) {
                         saveWidgetForPanel(pending.first, pending.second)
-                    } else {
-                        runCatching { widgetHost.deleteAppWidgetId(pending.second) }
                     }
+                    WidgetOperationPolicy.abandonedWidgetId(
+                        pending.second,
+                        operationAccepted = result.resultCode == Activity.RESULT_OK
+                    )?.let { widgetId -> runCatching { widgetHost.deleteAppWidgetId(widgetId) } }
                     pendingWidgetConfigure = null
                 }
             }
@@ -165,7 +168,8 @@ class MainActivity : ComponentActivity() {
                             saveWidgetForPanel(pending.first, pending.second)
                         }
                     } else {
-                        runCatching { widgetHost.deleteAppWidgetId(pending.second) }
+                        WidgetOperationPolicy.abandonedWidgetId(pending.second, operationAccepted = false)
+                            ?.let { widgetId -> runCatching { widgetHost.deleteAppWidgetId(widgetId) } }
                         widgetDialog = AxiomDialogState(
                             "WIDGET PERMISSION REQUIRED",
                             "AXIOM needs permission to host widgets on home panels."
