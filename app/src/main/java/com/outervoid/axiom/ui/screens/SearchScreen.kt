@@ -62,6 +62,8 @@ fun SearchScreen(
     val haptics = LocalHapticFeedback.current
     val swipeTriggerPx = with(LocalDensity.current) { 56.dp.toPx() }
     val accent = settings.accentColor()
+    val screenWidth = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp
+    val columns = drawerColumnCount(screenWidth, LocalDensity.current.fontScale, settings.gridColumns)
     fun haptic() {
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
     }
@@ -146,8 +148,16 @@ fun SearchScreen(
             } else if (inventoryError) {
                 Text("APP LIST MAY BE OUT OF DATE", color = TextDim, style = MaterialTheme.typography.labelSmall)
             }
+            if (apps.isEmpty() && !inventoryLoading && !inventoryError) {
+                Text(
+                    if (query.isBlank()) "NO VISIBLE APPS" else "NO MATCHING APPS",
+                    color = TextSecondary,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
             LazyVerticalGrid(
-                columns = GridCells.Fixed(settings.gridColumns),
+                columns = GridCells.Fixed(columns),
                 horizontalArrangement = Arrangement.spacedBy(if (settings.compactMode) 6.dp else 10.dp),
                 verticalArrangement = Arrangement.spacedBy(if (settings.compactMode) 8.dp else 12.dp)
             ) {
