@@ -26,25 +26,17 @@ class ShooterSettingsScreen(private val game: VoidGame) : Screen {
     private val touch = Vector3()
     private lateinit var prefs: Preferences
 
-    private var audioEnabled = true
-    private var sensitivity = 1
-    private var hudStyle = 0
+    private var reducedEffects = false
 
     private val audioRow = Rectangle(36f, 440f, 288f, 48f)
-    private val sensRow = Rectangle(36f, 368f, 288f, 48f)
-    private val hudRow = Rectangle(36f, 296f, 288f, 48f)
     private val shipRow = Rectangle(36f, 200f, 288f, 48f)
     private val backBounds = Rectangle(36f, 40f, 136f, 42f)
 
-    private val sensitivityLabels = listOf("LOW", "MEDIUM", "HIGH")
-    private val hudLabels = listOf("FULL", "MINIMAL", "VOID")
 
     override fun show() {
         camera.setToOrtho(false, GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT)
         prefs = Gdx.app.getPreferences("axiom_shooter_settings")
-        audioEnabled = prefs.getBoolean("audio", true)
-        sensitivity = prefs.getInteger("sensitivity", 1)
-        hudStyle = prefs.getInteger("hud_style", 0)
+        reducedEffects = prefs.getBoolean("reduced_effects", false)
     }
 
     override fun render(delta: Float) {
@@ -64,17 +56,13 @@ class ShooterSettingsScreen(private val game: VoidGame) : Screen {
         viewport.unproject(touch)
         when {
             backBounds.contains(touch.x, touch.y) -> { save(); game.setScreen(StartScreen(game)) }
-            audioRow.contains(touch.x, touch.y) -> audioEnabled = !audioEnabled
-            sensRow.contains(touch.x, touch.y) -> sensitivity = (sensitivity + 1) % sensitivityLabels.size
-            hudRow.contains(touch.x, touch.y) -> hudStyle = (hudStyle + 1) % hudLabels.size
+            audioRow.contains(touch.x, touch.y) -> { reducedEffects = !reducedEffects; save() }
             shipRow.contains(touch.x, touch.y) -> { save(); game.setScreen(ShipScreen(game)) }
         }
     }
 
     private fun save() {
-        prefs.putBoolean("audio", audioEnabled)
-        prefs.putInteger("sensitivity", sensitivity)
-        prefs.putInteger("hud_style", hudStyle)
+        prefs.putBoolean("reduced_effects", reducedEffects)
         prefs.flush()
     }
 
@@ -86,7 +74,7 @@ class ShooterSettingsScreen(private val game: VoidGame) : Screen {
         shapeRenderer.rect(10f, 10f, w - 20f, h - 20f)
         shapeRenderer.color = GameConfig.COLOR_AMBER
         shapeRenderer.line(28f, h - 72f, w - 28f, h - 72f)
-        for (row in listOf(audioRow, sensRow, hudRow, shipRow, backBounds)) {
+        for (row in listOf(audioRow, shipRow, backBounds)) {
             shapeRenderer.color = GameConfig.COLOR_SURFACE
             shapeRenderer.rect(row.x, row.y, row.width, row.height)
         }
@@ -102,9 +90,7 @@ class ShooterSettingsScreen(private val game: VoidGame) : Screen {
         font.data.setScale(0.72f); font.color = GameConfig.COLOR_DIM
         drawCentered("AXIOM SHOOTER CONFIGURATION", w * 0.5f, h - 55f)
 
-        drawRow(audioRow, "AUDIO", if (audioEnabled) "ON" else "OFF", if (audioEnabled) GameConfig.COLOR_AMBER else GameConfig.COLOR_GRAY)
-        drawRow(sensRow, "SENSITIVITY", sensitivityLabels[sensitivity], GameConfig.COLOR_GRAY)
-        drawRow(hudRow, "HUD STYLE", hudLabels[hudStyle], GameConfig.COLOR_GRAY)
+        drawRow(audioRow, "REDUCED EFFECTS", if (reducedEffects) "ON" else "OFF", GameConfig.COLOR_AMBER)
         drawRow(shipRow, "SHIP — AXIOM-01", "VIEW", GameConfig.COLOR_AMBER)
 
         font.data.setScale(0.9f); font.color = GameConfig.COLOR_GRAY

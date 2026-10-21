@@ -31,11 +31,11 @@ class ShipScreen(private val game: VoidGame) : Screen {
     private val touch = Vector3()
 
     private val stats = listOf(
-        "HULL" to 0.88f,
-        "SHIELD" to 0.62f,
-        "SPEED" to 0.76f,
-        "FIREPOWER" to 0.80f,
-        "MANEUVER" to 0.72f
+        "INTEGRITY" to "${GameConfig.INTEGRITY_MAX}",
+        "PRIMARY" to "AUTO FIRE",
+        "SHOT INTERVAL" to "${(GameConfig.BULLET_COOLDOWN * 1000).toInt()} MS",
+        "MISSILE CHARGES" to "3",
+        "BOMB CHARGES" to "1"
     )
 
     override fun show() {
@@ -74,23 +74,8 @@ class ShipScreen(private val game: VoidGame) : Screen {
         shapeRenderer.line(28f, h - 72f, w - 28f, h - 72f)
         shapeRenderer.line(28f, 380f, w - 28f, 380f)
 
-        // Stats bars background
-        stats.forEachIndexed { index, (_, value) ->
-            val y = 350f - index * 44f
-            shapeRenderer.color = GameConfig.COLOR_SURFACE
-            shapeRenderer.rect(36f, y, 288f, 20f)
-        }
         shapeRenderer.color = GameConfig.COLOR_SURFACE
         shapeRenderer.rect(backBounds.x, backBounds.y, backBounds.width, backBounds.height)
-        shapeRenderer.end()
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        stats.forEachIndexed { index, (_, statValue) ->
-            val y = 350f - index * 44f
-            val pulse = if (index == 0) (MathUtils.sin(elapsed * 1.8f) + 1f) * 0.5f else 0f
-            ShooterVisuals.setAlphaColor(shapeRenderer, GameConfig.COLOR_AMBER, 0.7f + pulse * 0.3f)
-            shapeRenderer.rect(36f, y, 288f * statValue, 20f)
-        }
         shapeRenderer.end()
 
         // Ship preview in center
@@ -135,7 +120,7 @@ class ShipScreen(private val game: VoidGame) : Screen {
             font.data.setScale(0.72f); font.color = GameConfig.COLOR_DIM
             font.draw(batch, label, 42f, y)
             font.data.setScale(0.72f); font.color = GameConfig.COLOR_AMBER
-            layout.setText(font, "${(statValue * 100).toInt()}%")
+            layout.setText(font, statValue)
             font.draw(batch, layout, 36f + 288f - layout.width - 6f, y)
         }
         font.data.setScale(0.9f); font.color = GameConfig.COLOR_GRAY

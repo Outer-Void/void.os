@@ -39,7 +39,7 @@ class StartScreen(private val game: VoidGame) : Screen {
         MenuItem("CAMPAIGN", "STORY MISSIONS", 344f, Rectangle(58f, 316f, 244f, 42f), active = true),
         MenuItem("SURVIVAL", "ENDLESS MODE", 296f, Rectangle(58f, 268f, 244f, 42f)),
         MenuItem("TRAINING", "PRACTICE RANGE", 248f, Rectangle(58f, 220f, 244f, 42f)),
-        MenuItem("SETTINGS", "SHIP / HUD", 200f, Rectangle(58f, 172f, 244f, 42f)),
+        MenuItem("SETTINGS", "SHIP / EFFECTS", 200f, Rectangle(58f, 172f, 244f, 42f)),
         MenuItem("LEADERBOARDS", "LOCAL RANKING", 152f, Rectangle(58f, 124f, 244f, 42f)),
         MenuItem("EXIT TO AXIOM", "RETURN HOME", 104f, Rectangle(58f, 76f, 244f, 42f))
     )
@@ -135,7 +135,7 @@ class StartScreen(private val game: VoidGame) : Screen {
         font.data.setScale(1.4f); font.color = GameConfig.COLOR_GRAY
         drawCentered("SHOOTER", w * 0.5f, h - 60f)
         font.data.setScale(0.72f); font.color = GameConfig.COLOR_DIM
-        drawRight("v1.0", w - 26f, h - 18f)
+        drawRight("2.0 DEV", w - 26f, h - 18f)
         menuItems.forEach { item ->
             font.data.setScale(1.15f)
             font.color = if (item.active) GameConfig.COLOR_AMBER else GameConfig.COLOR_GRAY

@@ -37,7 +37,7 @@ class CampaignScreen(private val game: VoidGame) : Screen {
     )
 
     private val missions = listOf(
-        Mission(1, "M-01  FIRST CONTACT",    "3 waves — basic void cores", 3,  Rectangle(36f, 430f, 288f, 52f)),
+        Mission(1, "M-01  FIRST CONTACT",    "3 waves - first contact", 3,  Rectangle(36f, 430f, 288f, 52f)),
         Mission(2, "M-02  SIGNAL BREACH",    "5 waves — faster hostiles",  5,  Rectangle(36f, 358f, 288f, 52f)),
         Mission(3, "M-03  CORE COLLAPSE",    "7 waves — elite threat",     7,  Rectangle(36f, 286f, 288f, 52f))
     )
