@@ -76,7 +76,7 @@ internal fun SystemMetricsStrip(
                     context,
                     receiver,
                     filter,
-                    ContextCompat.RECEIVER_NOT_EXPORTED
+                    ContextCompat.RECEIVER_EXPORTED
                 )
                 sticky?.let { receiver.onReceive(context, it) }
 
