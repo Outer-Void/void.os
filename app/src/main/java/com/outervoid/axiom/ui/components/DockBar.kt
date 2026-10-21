@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.Border
 import com.outervoid.axiom.ui.theme.BorderAlt
@@ -44,12 +46,11 @@ fun DockBar(
     compactMode: Boolean = false,
     accentColor: Color = Amber
 ) {
-    val buttonSize = if (compactMode) 36.dp else 40.dp
-    val spacing = if (compactMode) 4.dp else 5.dp
     val padH = if (compactMode) 6.dp else 8.dp
     val padV = if (compactMode) 6.dp else 8.dp
 
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        val (buttonSize, spacing) = dockLayoutMetrics(maxWidth, compactMode)
         Row(
             modifier = Modifier
             .background(SurfaceAlt, RoundedCornerShape(20.dp))
@@ -99,6 +100,18 @@ fun DockBar(
             }
         }
     }
+}
+
+internal fun dockLayoutMetrics(maxWidth: Dp, compactMode: Boolean): Pair<Dp, Dp> {
+    val preferredButtonSize = if (compactMode) 36.dp else 40.dp
+    val preferredSpacing = if (compactMode) 4.dp else 5.dp
+    val horizontalPadding = if (compactMode) 6.dp else 8.dp
+    val spacing = minOf(preferredSpacing, maxWidth / 42)
+    val buttonSize = minOf(
+        preferredButtonSize,
+        (maxWidth - horizontalPadding * 2 - spacing * 6).coerceAtLeast(0.dp) / 7
+    )
+    return buttonSize to spacing
 }
 
 @OptIn(ExperimentalFoundationApi::class)
