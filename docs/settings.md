@@ -59,7 +59,7 @@ VOID.SYS is the native default icon system:
 
 - Default package: `com.outervoid.voidsys`
 - Native bundled icon assets are included in AXIOM.
-- Default mode is `VOID.SYS Native`: bundled/native icons first, AXIOM symbolic fallback when no match exists. Current bundled coverage is 578 PNG drawable icons, 590 source SVG icons, and 1,908 lookup mappings.
+- Default mode is `VOID.SYS Native`: bundled map/art first, generated AXIOM category or monogram fallback for generic targets and misses; installed VOID.SYS resources are a secondary lookup. The current map has 1,908 keys and 547 unique drawable targets, of which 453 are classified as generic fallback targets. This repository contains PNG resources but no source SVG files.
 - `AXIOM Fallback` uses generated matte symbolic fallback icons for every app.
 - `System Icons` is the only mode that uses colorful installed app launcher icons.
 - If standalone VOID.SYS is installed, AXIOM reports the standalone package as installed.

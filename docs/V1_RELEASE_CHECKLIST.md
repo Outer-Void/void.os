@@ -37,7 +37,7 @@
 - [ ] Weather module — shows SETUP REQUIRED, setup button opens correct settings
 - [ ] Calendar module — shows SETUP REQUIRED, button opens calendar permission request
 - [ ] Metrics module — shows SETUP REQUIRED, opens Usage Access settings
-- [ ] AXIOM Shooter — long press wordmark or Settings → AXIOM Shooter launches game
+- [ ] AXIOM Shooter Easter egg — only Home wordmark long-press launches; Settings and dock Settings expose no launch route
 - [ ] Shooter: Start screen shows CAMPAIGN / SURVIVAL / TRAINING / SETTINGS / EXIT TO AXIOM
 - [ ] Shooter Campaign: 3 missions visible, M-01 playable, completion unlocks M-02
 - [ ] Shooter Survival: endless mode starts

@@ -67,16 +67,17 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 ## 2. VOID.SYS
 
 - Confirm AXIOM native icons exist without standalone VOID.SYS installed.
-- Confirm the APK contains the expanded native VOID.SYS icon map and matte drawable assets, including 590 bundled source icons / 578 unique drawable icons synced into AXIOM.
+- Confirm the APK contains the VOID.SYS map and drawable resources. Current source inventory: 1,908 map keys, 547 unique mapped drawable names, 453 generic fallback targets, and 94 direct-art targets; do not infer distinct artwork from the file count.
 - Confirm Settings shows `Native: Included`.
 - Optionally install standalone VOID.SYS and confirm Settings shows the standalone package as installed.
 - Uninstall standalone VOID.SYS and confirm AXIOM native icons remain available.
 
 ## 3. VOID.GAME
 
-- Confirm Settings > Modules shows AXIOM SHOOTER `Included` and subtitle `Hidden arcade Easter egg`.
-- Tap Settings > Modules > AXIOM SHOOTER and confirm the bundled game opens.
+- Confirm Settings has no AXIOM SHOOTER row or mention, including under Modules and About.
+- Tap the AXIOM wordmark on Home and confirm no transition or game launch occurs.
 - Long-press the AXIOM wordmark/logo on the Home screen.
+- Confirm a normal dock tap opens Settings and a long-press on Settings never launches Shooter (release may still perform its ordinary Settings click).
 - Confirm amber pulse transition overlay.
 - Confirm `AXIOM SHOOTER` / `SYSTEM ONLINE.` text during transition.
 - Confirm bundled Axiom Shooter opens (no external package install required).
@@ -92,7 +93,7 @@ The VOID.GAME debug APK is development-only. Do not include it in the AXIOM rele
 - Confirm dock shows 7 buttons: Phone, Left Folder, Settings (power-dial icon), App Drawer (grid dots, focal dot below), System (ring indicator), Right Folder, Messages (chat bubble).
 - Tap Phone and confirm dialer opens.
 - Tap Messages and confirm messaging app opens (messaging category / `smsto:` URI / known package fallback).
-- Long-press Settings and confirm Axiom Shooter transition launches.
+- Long-press Settings and confirm Shooter does not launch; verify the Settings button's ordinary click behavior after release.
 - Tap System and confirm the AXIOM System Panel opens when enabled, or `SYSTEM PANEL DISABLED` appears when disabled.
 - Long-press System and confirm Android Phone Settings opens.
 - Tap Left Folder and Right Folder and confirm custom folder panels open.
