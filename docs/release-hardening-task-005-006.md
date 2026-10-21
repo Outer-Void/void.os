@@ -36,4 +36,4 @@ The broad `QUERY_ALL_PACKAGES` permission was replaced with a launcher intent qu
 - `:app:testDebugUnitTest`: passed; 26 tests, zero failures or errors.
 - `:app:lintDebug`: passed; zero errors and 573 warnings. The warnings are mainly 485 dynamically resolved or unused bundled drawables, 71 duplicate icon assets, dependency update suggestions, and portrait-orientation recommendations. The icon resources referenced dynamically by the bundled map have explicit shrinker keep rules.
 - The API 36 / AGP 8.10.0 / Gradle 8.11.1 build was attempted but Gradle stopped because the API 36 platform license is not accepted in this local SDK. API 36 has not been validated by this run.
-- No Android device or usable `adb` was available, so instrumentation and visual checks were not run.
+- Existing `androidTest` Kotlin sources compiled successfully under the API 34 validation setup. No Android device or usable `adb` was available, so instrumentation execution and visual checks were not run.
