@@ -23,6 +23,13 @@ class IconCategoryTest {
     }
 
     @Test
+    fun technicalSuffixDoesNotEraseAppIdentity() {
+        assertEquals("SI", iconMonogramFor("org.signal.mobile"))
+        assertEquals("TE", iconMonogramFor("org.telegram.beta"))
+        assertEquals("MA", iconMonogramFor("com.example.my_app"))
+    }
+
+    @Test
     fun mappedAppsReceiveStableIdentityMonograms() {
         assertEquals("GM", iconMonogramFor("google_messages"))
         assertEquals("AA", iconMonogramFor("adobe_acrobat"))

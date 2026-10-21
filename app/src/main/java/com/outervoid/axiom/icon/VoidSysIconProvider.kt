@@ -15,6 +15,12 @@ class VoidSysIconProvider(
     private val voidSysContext: Context? by lazy { loadVoidSysContext() }
     private val iconMap: Map<String, String> by lazy { loadIconMap(voidSysContext) }
 
+    private val drawableIds by lazy {
+        IconResourceIds { name ->
+            voidSysContext?.resources?.getIdentifier(name, "drawable", IconPackOptions.VoidSysPackage) ?: 0
+        }
+    }
+
     override fun iconFor(packageName: String, activityName: String?, fallback: Drawable): Drawable {
         return findIcon(packageName, activityName) ?: fallbackProvider.iconFor(packageName, activityName, fallback)
     }
@@ -73,11 +79,7 @@ class VoidSysIconProvider(
     }
 
     private fun loadDrawable(remoteContext: Context, drawableName: String): Drawable? {
-        val drawableId = remoteContext.resources.getIdentifier(
-            drawableName,
-            "drawable",
-            IconPackOptions.VoidSysPackage
-        )
+        val drawableId = drawableIds.resolve(drawableName)
         if (drawableId == 0) return null
         return runCatching {
             remoteContext.resources.getDrawable(drawableId, remoteContext.theme)

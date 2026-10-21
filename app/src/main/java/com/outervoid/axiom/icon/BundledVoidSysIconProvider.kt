@@ -13,6 +13,9 @@ class BundledVoidSysIconProvider(
     private val fallbackProvider: IconProvider = AxiomFallbackIconProvider(context),
     private val systemProvider: IconProvider = SystemIconProvider()
 ) : IconProvider {
+    private val drawableIds = IconResourceIds { name ->
+        context.resources.getIdentifier(name, "drawable", context.packageName)
+    }
     private val iconMap: Map<String, String> by lazy { loadIconMap() }
     private val genericDrawableNames: Set<String> by lazy { loadGenericDrawableNames() }
 
@@ -41,7 +44,7 @@ class BundledVoidSysIconProvider(
                 ?: fallbackProvider.iconFor(packageName, activityName, fallback)
         }
 
-        val drawableId = context.resources.getIdentifier(drawableName, "drawable", context.packageName)
+        val drawableId = drawableIds.resolve(drawableName)
         if (drawableId == 0) return null
         return runCatching {
             context.resources.getDrawable(drawableId, context.theme)

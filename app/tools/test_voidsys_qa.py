@@ -34,3 +34,29 @@ class PngMetricsTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class ResourceAuditTest(unittest.TestCase):
+    def test_detects_broken_map_reference_and_resource_collision(self):
+        import contextlib
+        import io
+        import json
+        from unittest.mock import patch
+        import voidsys_qa
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            main = root / 'app/src/main'
+            (main / 'assets').mkdir(parents=True)
+            (main / 'res/raw').mkdir(parents=True)
+            (main / 'res/drawable').mkdir()
+            (main / 'assets/voidsys_icon_map.json').write_text(json.dumps({'bad/package/extra': 'missing'}))
+            (main / 'assets/voidsys_generic_drawables.json').write_text('[]')
+            (main / 'res/raw/voidsys_keep.xml').write_text('<resources/>')
+            (main / 'res/drawable/collision.xml').write_text('<selector><item drawable="@drawable/absent"/></selector>')
+            (main / 'res/drawable/collision.webp').write_bytes(b'fixture')
+            with patch.object(voidsys_qa, 'ROOT', root), patch.object(voidsys_qa, 'MAIN', main), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(1, voidsys_qa.audit(root / 'out'))
+            report = json.loads((root / 'out/voidsys-inventory.json').read_text())
+            self.assertEqual(['missing'], report['missing_mapped_drawables'])
+            self.assertEqual(['drawable/collision'], report['duplicate_resource_variants'])
+            self.assertEqual(['bad/package/extra'], report['invalid_component_mappings'])
+            self.assertEqual('absent', report['broken_drawable_references'][0]['drawable'])

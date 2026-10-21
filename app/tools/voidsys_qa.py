@@ -103,6 +103,23 @@ def audit(output, resource_dump=None):
     targets = set(mappings.values())
     keep = ET.parse(MAIN / 'res/raw/voidsys_keep.xml').getroot().attrib.get('{http://schemas.android.com/tools}keep', '')
     kept = set(re.findall(r'@drawable/([a-z0-9_]+)', keep))
+    duplicate_resources = []
+    broken_references = []
+    invalid_components = []
+    for name, paths in resources.items():
+        variants = Counter(p.parent.name for p in paths)
+        duplicate_resources.extend(f'{folder}/{name}' for folder, count in variants.items() if count > 1)
+    for path in (MAIN / 'res').rglob('*.xml'):
+        for ref in re.findall(r'@drawable/([a-zA-Z0-9_]+)', path.read_text()):
+            if ref not in resources:
+                broken_references.append({'file': str(path.relative_to(ROOT)), 'drawable': ref})
+    for key in mappings:
+        component = key.removeprefix('ComponentInfo{').removesuffix('}')
+        parts = component.split('/')
+        if (len(parts) > 2 or not re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z0-9_]+)+', parts[0])
+                or (len(parts) == 2 and not re.fullmatch(r'\.?[a-zA-Z_$][a-zA-Z0-9_.$]*', parts[1]))):
+            invalid_components.append(key)
+    pixel_hashes = defaultdict(list)
     hashes = defaultdict(list)
     metrics = {}
     metric_cache = {}
@@ -127,6 +144,11 @@ def audit(output, resource_dump=None):
             if digest not in metric_cache:
                 metric_cache[digest] = pixel_metrics(preferred)
             metrics[name] = metric_cache[digest]
+            # Pixel identity catches files re-encoded with different PNG metadata/compression.
+            width, height, pixels = png_pixels(preferred)
+            if pixels is not None:
+                pixel_digest = hashlib.sha256(struct.pack('>II', width, height) + bytes(c for pixel in pixels for c in pixel)).hexdigest()
+                pixel_hashes[pixel_digest].append(name)
     source = '\n'.join(p.read_text() for p in MAIN.rglob('*.kt'))
     xml = '\n'.join(p.read_text() for p in (MAIN / 'res').rglob('*.xml'))
     unused = sorted(name for name in resources if name not in targets and
@@ -144,6 +166,10 @@ def audit(output, resource_dump=None):
         shrunk_missing = sorted(name for name in targets - generic
                                 if not re.search(r'drawable/' + re.escape(name) + r'\b', dumped_resources))
     report = {
+        'duplicate_resource_variants': sorted(duplicate_resources),
+        'broken_drawable_references': broken_references,
+        'invalid_component_mappings': sorted(invalid_components),
+        'identical_pixel_groups': [v for v in pixel_hashes.values() if len(v) > 1],
         'missing_shrunk_direct_targets': shrunk_missing,
         'map_entries': len(mappings), 'mapped_drawables': len(targets), 'resource_names': len(resources),
         'duplicate_json_keys': duplicates,
@@ -192,7 +218,16 @@ def audit(output, resource_dump=None):
     (output / 'voidsys-contact-sheet.html').write_text('''<!doctype html><meta charset="utf-8"><title>VOID.SYS source art review</title>
 <style>body{background:#0b0b0b;color:#d8d8d8;font:13px sans-serif}main{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}figure{margin:0;padding:16px;background:#191919;overflow-wrap:anywhere}img{margin:6px;image-rendering:auto}figcaption{margin-top:8px}</style>
 <h1>VOID.SYS source artwork: 48 / 60 CSS pixels</h1><p>Source assets, not device screenshots. Generic PNGs are replaced by runtime category/monogram glyphs; review them on-device separately.</p><main>''' + '\n'.join(tiles) + '</main>\n')
-    fatal = any(report[k] for k in ['duplicate_json_keys', 'invalid_resource_names', 'missing_mapped_drawables', 'unkept_direct_targets', 'conflicting_component_aliases', 'missing_shrunk_direct_targets'])
+    fatal = any(report[k] for k in ['duplicate_resource_variants', 'broken_drawable_references', 'invalid_component_mappings', 'duplicate_json_keys', 'invalid_resource_names', 'missing_mapped_drawables', 'unkept_direct_targets', 'conflicting_component_aliases', 'missing_shrunk_direct_targets'])
+    summary = ['# VOID.SYS automated resource audit', '',
+               f"Mappings: {len(mappings)}; dedicated targets: {len(targets - generic)}; generated targets: {len(targets & generic)}.",
+               '', f"Result: {'FAIL' if fatal else 'PASS'} (source invariants).", '',
+               'Duplicate artwork is a review finding; density variants with the same name are valid.',
+               'Contact sheets are source previews; no runtime/device visual approval is implied.', '']
+    for key, value in report.items():
+        if key not in ('pixel_metrics', 'limits'):
+            summary.append(f'- {key}: {len(value) if isinstance(value, (list, dict)) else value}')
+    (output / 'voidsys-summary.md').write_text('\n'.join(summary) + '\n')
     print(json.dumps({k: (len(v) if isinstance(v, (dict, list)) else v) for k, v in report.items() if k != 'pixel_metrics'}, indent=2))
     return 1 if fatal else 0
 

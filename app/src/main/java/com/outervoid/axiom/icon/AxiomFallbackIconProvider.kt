@@ -28,10 +28,10 @@ class AxiomFallbackIconProvider(private val context: Context) : IconProvider {
         identity: String?
     ): Drawable {
         val category = classifyIcon("$packageName $identity", activityName)
-        val monogram = identity?.let(::monogramFor)
-            ?: if (category == IconCategory.Generic) monogramFor(packageName) else ""
-        val key = "${category.name}:$monogram:${identity != null}"
-        val bitmap = iconCache.get(key) ?: renderIcon(category, monogram, identity != null).also { iconCache.put(key, it) }
+        val monogram = monogramFor(identity ?: packageName)
+        val hasCategory = category != IconCategory.Generic
+        val key = "${category.name}:$monogram:$hasCategory"
+        val bitmap = iconCache.get(key) ?: renderIcon(category, monogram, hasCategory).also { iconCache.put(key, it) }
         return BitmapDrawable(context.resources, bitmap)
     }
 
@@ -80,7 +80,7 @@ class AxiomFallbackIconProvider(private val context: Context) : IconProvider {
 
     private fun drawGlyph(canvas: Canvas, paint: Paint, category: IconCategory, monogram: String) {
         paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 3.2f
+        paint.strokeWidth = VoidSysDesignTokens.GlyphStroke
         paint.color = COLOR_WHITE
         when (category) {
             IconCategory.Ai -> drawAi(canvas, paint)
@@ -258,10 +258,16 @@ class AxiomFallbackIconProvider(private val context: Context) : IconProvider {
     }
 
     private fun accentLine(canvas: Canvas, paint: Paint, x1: Float, y1: Float, x2: Float, y2: Float) {
+        val previousColor = paint.color
+        val previousStyle = paint.style
+        val previousWidth = paint.strokeWidth
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 2.2f
         paint.color = COLOR_AMBER
         canvas.drawLine(x1, y1, x2, y2, paint)
+        paint.color = previousColor
+        paint.style = previousStyle
+        paint.strokeWidth = previousWidth
     }
 
     private fun monogramFor(packageName: String): String {
@@ -269,14 +275,14 @@ class AxiomFallbackIconProvider(private val context: Context) : IconProvider {
     }
 
     companion object {
-        private const val SIZE = 108
-        private const val COLOR_BLACK = 0xFF0B0B0B.toInt()
-        private const val COLOR_SURFACE = 0xFF111111.toInt()
-        private const val COLOR_FRAME = 0xFF303030.toInt()
-        private const val COLOR_RECESS = 0xFF1B1B1B.toInt()
-        private const val COLOR_HIGHLIGHT = 0xFF535353.toInt()
-        private const val COLOR_WHITE = 0xFFD8D8D8.toInt()
-        private const val COLOR_AMBER = 0xFFFFD000.toInt()
+        private const val SIZE = VoidSysDesignTokens.CanvasSize
+        private const val COLOR_BLACK = VoidSysDesignTokens.Black
+        private const val COLOR_SURFACE = VoidSysDesignTokens.Surface
+        private const val COLOR_FRAME = VoidSysDesignTokens.Frame
+        private const val COLOR_RECESS = VoidSysDesignTokens.Recess
+        private const val COLOR_HIGHLIGHT = VoidSysDesignTokens.Highlight
+        private const val COLOR_WHITE = VoidSysDesignTokens.Silver
+        private const val COLOR_AMBER = VoidSysDesignTokens.Gold
         private val iconCache = object : LruCache<String, Bitmap>(2 * 1024) {
             override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount / 1024
         }
@@ -284,10 +290,14 @@ class AxiomFallbackIconProvider(private val context: Context) : IconProvider {
 }
 
 internal fun iconMonogramFor(identity: String): String {
-    val source = identity.lowercase(Locale.US).substringAfterLast('.')
+    val source = identity.lowercase(Locale.US).split('.')
+        .lastOrNull { it.isNotBlank() && it !in technicalIdentitySegments }
+        .orEmpty()
     val tokens = source.split(Regex("[^a-z0-9]+"))
         .filter { it.isNotBlank() }
     val letters = if (tokens.size > 1) tokens.mapNotNull { it.firstOrNull() }.take(2).joinToString("")
     else tokens.lastOrNull().orEmpty().filter { it.isLetterOrDigit() }.take(2)
     return letters.uppercase(Locale.US).ifBlank { "A" }
 }
+
+private val technicalIdentitySegments = setOf("android", "app", "apps", "mobile", "client", "release", "beta", "pro", "free")
