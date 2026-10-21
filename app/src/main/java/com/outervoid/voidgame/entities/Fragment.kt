@@ -81,19 +81,24 @@ class Fragment(
     }
 
     private fun drawShard(renderer: ShapeRenderer) {
-        renderer.color = GameConfig.COLOR_GRAY
-        renderer.line(x - 14f, y - 9f, x, y + 13f)
-        renderer.line(x + 14f, y - 9f, x, y + 13f)
-        renderer.line(x - 14f, y - 9f, x + 14f, y - 9f)
+        renderer.color = hullColor()
+        renderer.line(x - 15f, y - 8f, x - 7f, y + 8f)
+        renderer.line(x - 7f, y + 8f, x, y + 13f)
+        renderer.line(x, y + 13f, x + 7f, y + 8f)
+        renderer.line(x + 7f, y + 8f, x + 15f, y - 8f)
+        renderer.line(x + 15f, y - 8f, x - 15f, y - 8f)
+        renderer.line(x - 7f, y + 5f, x - 14f, y + 1f)
+        renderer.line(x + 7f, y + 5f, x + 14f, y + 1f)
         renderer.color = GameConfig.COLOR_DIM
-        renderer.line(x - 8f, y - 3f, x + 8f, y - 3f)
-        renderer.color = GameConfig.COLOR_ORANGE
-        renderer.circle(x, y - 1f, 2f, 10)
+        renderer.line(x - 6f, y - 4f, x, y + 5f)
+        renderer.line(x + 6f, y - 4f, x, y + 5f)
+        renderer.color = GameConfig.COLOR_AMBER
+        renderer.circle(x, y - 3f, 2f, 10)
     }
 
     private fun drawPulse(renderer: ShapeRenderer, elapsed: Float) {
-        renderer.color = GameConfig.COLOR_GRAY
-        val r = 13f
+        renderer.color = hullColor()
+        val r = 14f
         var lastX = x + r
         var lastY = y
         for (i in 1..6) {
@@ -104,32 +109,46 @@ class Fragment(
             lastX = nx
             lastY = ny
         }
-        renderer.color = GameConfig.COLOR_AMBER
-        renderer.circle(x, y, 2f + (MathUtils.sin(elapsed * 6f) + 1f) * 0.9f, 12)
+        renderer.line(x - 8f, y - 9f, x, y - 15f)
+        renderer.line(x, y - 15f, x + 8f, y - 9f)
+        renderer.color = if (pulseTimer < 0.6f) GameConfig.COLOR_DANGER else GameConfig.COLOR_AMBER
+        renderer.circle(x, y, 2.5f + (MathUtils.sin(elapsed * 6f) + 1f) * 0.9f, 12)
+        if (pulseTimer < 0.6f) {
+            renderer.line(x, y - 17f, x, y - 27f)
+            renderer.line(x - 4f, y - 22f, x + 4f, y - 22f)
+        }
         renderer.color = GameConfig.COLOR_DIM
         renderer.line(x - 17f, y, x - 9f, y)
         renderer.line(x + 9f, y, x + 17f, y)
     }
 
     private fun drawGlitch(renderer: ShapeRenderer, elapsed: Float) {
-        renderer.color = GameConfig.COLOR_DIM
+        renderer.color = hullColor()
         val flicker = if ((elapsed * 10f).toInt() % 2 == 0) 2f else -2f
         renderer.rect(x - 12f + flicker, y - 8f, 24f, 16f)
         renderer.line(x - 16f + flicker, y + 10f, x - 6f + flicker, y + 10f)
         renderer.line(x + 6f + flicker, y - 10f, x + 16f + flicker, y - 10f)
+        renderer.line(x - 8f + flicker, y - 5f, x + 3f + flicker, y + 5f)
+        renderer.line(x + 4f + flicker, y - 5f, x + 9f + flicker, y)
         renderer.color = GameConfig.COLOR_DANGER
         renderer.circle(x + flicker, y, 2f, 8)
     }
 
     private fun drawCluster(renderer: ShapeRenderer) {
-        renderer.color = GameConfig.COLOR_GRAY
-        renderer.line(x - 16f, y - 5f, x + 16f, y - 5f)
-        renderer.line(x, y + 12f, x - 16f, y - 5f)
-        renderer.line(x, y + 12f, x + 16f, y - 5f)
-        renderer.circle(x - 10f, y - 4f, 5f, 12)
-        renderer.circle(x + 10f, y - 4f, 5f, 12)
+        renderer.color = hullColor()
+        renderer.line(x - 16f, y - 7f, x + 16f, y - 7f)
+        renderer.line(x - 16f, y - 7f, x - 8f, y + 10f)
+        renderer.line(x + 16f, y - 7f, x + 8f, y + 10f)
+        renderer.line(x - 8f, y + 10f, x + 8f, y + 10f)
+        renderer.circle(x - 11f, y - 5f, 5f, 12)
+        renderer.circle(x + 11f, y - 5f, 5f, 12)
         renderer.circle(x, y + 8f, 5f, 12)
+        renderer.color = GameConfig.COLOR_DIM
+        renderer.line(x - 11f, y - 11f, x - 11f, y + 1f)
+        renderer.line(x + 11f, y - 11f, x + 11f, y + 1f)
         renderer.color = GameConfig.COLOR_AMBER
         renderer.circle(x, y, 2.5f, 10)
     }
+
+    private fun hullColor() = if (hp < type.maxHp) GameConfig.COLOR_DANGER else GameConfig.COLOR_GRAY
 }

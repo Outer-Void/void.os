@@ -27,7 +27,11 @@ class Bullet {
 
     fun draw(renderer: ShapeRenderer) {
         if (!active) return
+        renderer.color = GameConfig.COLOR_ORANGE
+        renderer.rectLine(x, y - 3f, x, y + height + 5f, 5f)
         renderer.color = GameConfig.COLOR_AMBER
-        renderer.rectLine(x, y, x, y + height, width)
+        renderer.rectLine(x, y, x, y + height, 2.8f)
+        renderer.color = GameConfig.COLOR_GRAY
+        renderer.line(x, y + 3f, x, y + height + 2f)
     }
 }

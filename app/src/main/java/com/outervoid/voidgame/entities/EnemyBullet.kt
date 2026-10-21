@@ -30,7 +30,11 @@ class EnemyBullet {
 
     fun draw(renderer: ShapeRenderer) {
         if (!active) return
-        renderer.color = GameConfig.COLOR_DIM
-        renderer.rectLine(x, y, x, y + height, width)
+        renderer.color = GameConfig.COLOR_DANGER
+        renderer.rectLine(x, y - 2f, x, y + height + 3f, 4f)
+        renderer.color = GameConfig.COLOR_ORANGE
+        renderer.rectLine(x, y, x, y + height, 2f)
+        renderer.line(x - 3f, y + height - 3f, x, y + height + 4f)
+        renderer.line(x + 3f, y + height - 3f, x, y + height + 4f)
     }
 }

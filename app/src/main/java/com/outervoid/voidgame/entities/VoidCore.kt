@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.outervoid.voidgame.GameConfig
+import com.outervoid.voidgame.ShooterVisuals
 
 class VoidCore {
     var x = GameConfig.WORLD_WIDTH * 0.5f
@@ -41,7 +42,7 @@ class VoidCore {
 
     fun draw(renderer: ShapeRenderer) {
         if (!active) return
-        renderer.color = GameConfig.COLOR_DIM.cpy().also { it.a = 0.42f }
+        ShooterVisuals.setAlphaColor(renderer, GameConfig.COLOR_DIM, 0.42f)
         renderer.line(x - 40f, y - 12f, x - 18f, y + 18f)
         renderer.line(x + 40f, y - 12f, x + 18f, y + 18f)
         renderer.line(x - 40f, y - 12f, x + 40f, y - 12f)
