@@ -2,9 +2,14 @@ package com.outervoid.axiom
 
 import android.os.Bundle
 import android.os.Parcel
-import android.test.AndroidTestCase
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Assert.assertEquals
+import org.junit.Test
+import org.junit.runner.RunWith
 
-class MainActivitySavedStateTest : AndroidTestCase() {
+@RunWith(AndroidJUnit4::class)
+class MainActivitySavedStateTest {
+    @Test
     fun testPendingWidgetOperationSurvivesBundleRoundTrip() {
         val pendingOperation = 2 to 413
         val savedState = Bundle().apply {
