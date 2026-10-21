@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.outervoid.voidgame.GameConfig
+import com.outervoid.voidgame.ShooterVisuals
 import com.outervoid.voidgame.VoidGame
 
 class CampaignScreen(private val game: VoidGame) : Screen {
@@ -82,7 +83,8 @@ class CampaignScreen(private val game: VoidGame) : Screen {
         shapeRenderer.line(28f, h - 72f, w - 28f, h - 72f)
         missions.forEachIndexed { index, mission ->
             val unlocked = index <= missionsComplete
-            shapeRenderer.color = if (unlocked) GameConfig.COLOR_SURFACE else GameConfig.COLOR_SURFACE.cpy().also { it.a = 0.4f }
+            if (unlocked) shapeRenderer.color = GameConfig.COLOR_SURFACE
+            else ShooterVisuals.setAlphaColor(shapeRenderer, GameConfig.COLOR_SURFACE, 0.4f)
             shapeRenderer.rect(mission.bounds.x, mission.bounds.y, mission.bounds.width, mission.bounds.height)
             if (index < missions.lastIndex) {
                 val mid = w * 0.5f

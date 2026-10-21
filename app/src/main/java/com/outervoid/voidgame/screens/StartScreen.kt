@@ -104,7 +104,7 @@ class StartScreen(private val game: VoidGame) : Screen {
         shapeRenderer.end()
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
         val pulse = (MathUtils.sin(elapsed * 2.8f) + 1f) * 0.5f
-        shapeRenderer.color = GameConfig.COLOR_AMBER.cpy().also { it.a = 0.04f + pulse * 0.04f }
+        ShooterVisuals.setAlphaColor(shapeRenderer, GameConfig.COLOR_AMBER, 0.04f + pulse * 0.04f)
         shapeRenderer.rect(menuItems.first().bounds.x, menuItems.first().bounds.y, menuItems.first().bounds.width, menuItems.first().bounds.height)
         shapeRenderer.end()
     }

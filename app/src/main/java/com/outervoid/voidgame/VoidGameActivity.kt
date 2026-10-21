@@ -2,8 +2,11 @@ package com.outervoid.voidgame
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Build
 import android.util.Log
 import android.view.WindowManager
+import android.window.OnBackInvokedCallback
+import android.window.OnBackInvokedDispatcher
 import com.outervoid.axiom.BuildConfig
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
@@ -11,6 +14,8 @@ import com.outervoid.axiom.MainActivity
 import com.outervoid.voidgame.security.LaunchStatus
 
 class VoidGameActivity : AndroidApplication() {
+    private var backInvokedCallback: OnBackInvokedCallback? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(Tag, "VoidGameActivity created")
@@ -21,6 +26,26 @@ class VoidGameActivity : AndroidApplication() {
             useCompass = false
         }
         initialize(VoidGame(launchStatus(), onOpenAxiom = { openAxiomLauncher() }), config)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val callback = OnBackInvokedCallback { onBackPressed() }
+            backInvokedCallback = callback
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                callback
+            )
+        }
+    }
+
+    override fun onStop() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            backInvokedCallback?.let(onBackInvokedDispatcher::unregisterOnBackInvokedCallback)
+            backInvokedCallback = null
+        }
+        super.onStop()
     }
 
     private fun launchStatus(): LaunchStatus {

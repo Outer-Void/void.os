@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.outervoid.voidgame.GameConfig
+import com.outervoid.voidgame.ShooterVisuals
 import com.outervoid.voidgame.VoidGame
 import com.outervoid.voidgame.entities.Carrier
 
@@ -87,7 +88,7 @@ class ShipScreen(private val game: VoidGame) : Screen {
         stats.forEachIndexed { index, (_, statValue) ->
             val y = 350f - index * 44f
             val pulse = if (index == 0) (MathUtils.sin(elapsed * 1.8f) + 1f) * 0.5f else 0f
-            shapeRenderer.color = GameConfig.COLOR_AMBER.cpy().also { it.a = 0.7f + pulse * 0.3f }
+            ShooterVisuals.setAlphaColor(shapeRenderer, GameConfig.COLOR_AMBER, 0.7f + pulse * 0.3f)
             shapeRenderer.rect(36f, y, 288f * statValue, 20f)
         }
         shapeRenderer.end()
@@ -115,7 +116,7 @@ class ShipScreen(private val game: VoidGame) : Screen {
         shapeRenderer.line(cx + 10f * scale, cy + 2f * scale, cx + 5f * scale, cy)
         shapeRenderer.line(cx - 5f * scale, cy, cx + 5f * scale, cy)
         val thrustAlpha = 0.5f + (MathUtils.sin(carrier.thrusterTimer * 18f) + 1f) * 0.25f
-        shapeRenderer.color = GameConfig.COLOR_AMBER.cpy().also { it.a = thrustAlpha }
+        ShooterVisuals.setAlphaColor(shapeRenderer, GameConfig.COLOR_AMBER, thrustAlpha)
         shapeRenderer.line(cx - 4f * scale, cy, cx - 2f * scale, cy - 7f * scale)
         shapeRenderer.line(cx + 4f * scale, cy, cx + 2f * scale, cy - 7f * scale)
         shapeRenderer.end()

@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.outervoid.voidgame.GameConfig
+import com.outervoid.voidgame.ShooterRules
 import com.outervoid.voidgame.VoidGame
 
 class ScoreScreen(
@@ -41,7 +42,7 @@ class ScoreScreen(
         val existing = loadScores().toMutableList()
         if (finalSignal > 0L) {
             existing += finalSignal
-            val sorted = existing.sortedDescending().take(5)
+            val sorted = ShooterRules.topScores(existing, finalSignal)
             newRank = sorted.indexOfFirst { it == finalSignal }
             scores = sorted
             saveScores(sorted)
