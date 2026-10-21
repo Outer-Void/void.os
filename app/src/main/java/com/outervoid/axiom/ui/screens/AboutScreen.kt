@@ -44,7 +44,6 @@ fun AboutScreen(
         SettingsRow("Version", value = BuildConfig.VERSION_NAME)
         SettingsRow("Product", subtitle = "Proprietary paid Android launcher by Outer-Void | Justadudeinspace")
         SettingsRow("VOID.SYS", subtitle = "Native icon system — bundled, no separate install required")
-        SettingsRow("Axiom Shooter", subtitle = "Hidden arcade Easter egg — long press AXIOM to launch")
         SettingsRow("License", value = "Proprietary", subtitle = "All rights reserved. Redistribution or reuse requires permission from Outer-Void.")
         SettingsRow("Outer-Void GitHub", value = "OPEN", onClick = onOpenOuterVoid)
         SettingsRow("Justadudeinspace GitHub", value = "OPEN", onClick = onOpenJustadude)

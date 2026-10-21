@@ -68,7 +68,6 @@ fun SettingsScreen(
     onFolderIconStyleSelected: (String) -> Unit,
     onChooseDefaultLauncher: () -> Unit,
     onOpenPhoneSettings: () -> Unit,
-    onLaunchShooter: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenContact: () -> Unit,
     onOpenPermissions: () -> Unit,
@@ -292,12 +291,6 @@ fun SettingsScreen(
             }
 
             SettingsSection("Modules") {
-                SettingsRow(
-                    title = "AXIOM SHOOTER",
-                    value = "LAUNCH",
-                    subtitle = "Included arcade module",
-                    onClick = { haptic(); onLaunchShooter() }
-                )
                 SettingsRow(
                     title = "VOID.SYS",
                     value = "Native: Included",

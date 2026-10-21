@@ -19,6 +19,7 @@ fun AxiomWordmark(
 ) {
     Row(
         modifier = modifier.combinedClickable(
+            onLongClickLabel = "Open hidden AXIOM Shooter",
             onClick = {},
             onLongClick = onLongPress
         ),

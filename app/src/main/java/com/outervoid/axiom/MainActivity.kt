@@ -76,6 +76,7 @@ import com.outervoid.axiom.ui.screens.WidgetPickerScreen
 import com.outervoid.axiom.ui.state.LauncherNavigationPolicy
 import com.outervoid.axiom.ui.state.LauncherSearchPolicy
 import com.outervoid.axiom.ui.state.LauncherState
+import com.outervoid.axiom.ui.state.ShooterAccessPolicy
 import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.AxiomTheme
 import com.outervoid.axiom.ui.theme.Background
@@ -358,7 +359,7 @@ class MainActivity : ComponentActivity() {
                         onOpenLeftFolder = { state = LauncherState.LeftFolder },
                         onOpenRightFolder = { state = LauncherState.RightFolder },
                         onLaunchShooter = {
-                            state = LauncherState.AxiomShooterTransition
+                            ShooterAccessPolicy.hiddenEntryTarget(state)?.let { state = it }
                         },
                         onLaunchApp = { app -> vm.launchApp(this@MainActivity, app) },
                         onOpenAppInfo = { app -> vm.openAppInfo(this@MainActivity, app) },
@@ -549,7 +550,6 @@ class MainActivity : ComponentActivity() {
                         onFolderIconStyleSelected = vm::setFolderIconStyle,
                         onChooseDefaultLauncher = ::openDefaultLauncherSettings,
                         onOpenPhoneSettings = { SystemSettingsNavigator.openPhoneSettings(this@MainActivity) },
-                        onLaunchShooter = { state = LauncherState.AxiomShooterTransition },
                         onOpenAbout = { state = LauncherState.About },
                         onOpenContact = { state = LauncherState.Contact },
                         onOpenPermissions = { state = LauncherState.PermissionSetup },

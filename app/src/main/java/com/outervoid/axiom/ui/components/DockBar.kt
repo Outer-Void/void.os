@@ -37,7 +37,6 @@ fun DockBar(
     onPhone: () -> Unit,
     onLeftFolder: () -> Unit,
     onSettings: () -> Unit,
-    onLongClickSettings: () -> Unit = {},
     onAppDrawer: () -> Unit,
     onSystem: () -> Unit = {},
     onLongClickSystem: () -> Unit = {},
@@ -67,7 +66,6 @@ fun DockBar(
             }
             DockButton(
                 onClick = onSettings,
-                onLongClick = onLongClickSettings,
                 contentDescription = "Settings",
                 size = buttonSize,
                 accentColor = accentColor

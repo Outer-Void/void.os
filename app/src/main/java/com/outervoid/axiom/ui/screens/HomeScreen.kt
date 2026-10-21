@@ -247,7 +247,6 @@ fun HomeScreen(
                 onPhone = { haptic(); onPhone() },
                 onLeftFolder = { haptic(); onOpenLeftFolder() },
                 onSettings = { haptic(); onOpenSettings() },
-                onLongClickSettings = { haptic(); onLaunchShooter() },
                 onAppDrawer = { haptic(); onOpenAppDrawer() },
                 onSystem = { haptic(); onOpenSystemPanel() },
                 onLongClickSystem = { haptic(); onOpenPhoneSettings() },
