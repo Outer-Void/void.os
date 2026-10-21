@@ -83,7 +83,7 @@ def pixel_metrics(path):
     return result
 
 
-def audit(output):
+def audit(output, resource_dump=None):
     output.mkdir(parents=True, exist_ok=True)
     duplicates = []
     def pairs(items):
@@ -101,7 +101,7 @@ def audit(output):
         if path.suffix in ('.png', '.xml', '.webp', '.jpg'):
             resources[path.stem].append(path)
     targets = set(mappings.values())
-    keep = ET.parse(MAIN / 'res/values/voidsys_keep.xml').getroot().attrib.get('{http://schemas.android.com/tools}keep', '')
+    keep = ET.parse(MAIN / 'res/raw/voidsys_keep.xml').getroot().attrib.get('{http://schemas.android.com/tools}keep', '')
     kept = set(re.findall(r'@drawable/([a-z0-9_]+)', keep))
     hashes = defaultdict(list)
     metrics = {}
@@ -138,7 +138,13 @@ def audit(output):
         if '/' in key:
             pkg, activity = key.split('/', 1)
             components[pkg + '/' + (pkg + activity if activity.startswith('.') else activity)].add(value)
+    shrunk_missing = None
+    if resource_dump is not None:
+        dumped_resources = resource_dump.read_text()
+        shrunk_missing = sorted(name for name in targets - generic
+                                if not re.search(r'drawable/' + re.escape(name) + r'\b', dumped_resources))
     report = {
+        'missing_shrunk_direct_targets': shrunk_missing,
         'map_entries': len(mappings), 'mapped_drawables': len(targets), 'resource_names': len(resources),
         'duplicate_json_keys': duplicates,
         'invalid_resource_names': sorted(n for n in targets | set(resources) if not re.fullmatch('[a-z][a-z0-9_]*', n)),
@@ -186,12 +192,14 @@ def audit(output):
     (output / 'voidsys-contact-sheet.html').write_text('''<!doctype html><meta charset="utf-8"><title>VOID.SYS source art review</title>
 <style>body{background:#0b0b0b;color:#d8d8d8;font:13px sans-serif}main{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}figure{margin:0;padding:16px;background:#191919;overflow-wrap:anywhere}img{margin:6px;image-rendering:auto}figcaption{margin-top:8px}</style>
 <h1>VOID.SYS source artwork: 48 / 60 CSS pixels</h1><p>Source assets, not device screenshots. Generic PNGs are replaced by runtime category/monogram glyphs; review them on-device separately.</p><main>''' + '\n'.join(tiles) + '</main>\n')
-    fatal = any(report[k] for k in ['duplicate_json_keys', 'invalid_resource_names', 'missing_mapped_drawables', 'unkept_direct_targets', 'conflicting_component_aliases'])
+    fatal = any(report[k] for k in ['duplicate_json_keys', 'invalid_resource_names', 'missing_mapped_drawables', 'unkept_direct_targets', 'conflicting_component_aliases', 'missing_shrunk_direct_targets'])
     print(json.dumps({k: (len(v) if isinstance(v, (dict, list)) else v) for k, v in report.items() if k != 'pixel_metrics'}, indent=2))
     return 1 if fatal else 0
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--resource-dump', type=Path, help='aapt2 dump resources from the actual shrunk release APK')
     parser.add_argument('--output', type=Path, default=ROOT / 'docs/audits/artifacts')
-    raise SystemExit(audit(parser.parse_args().output))
+    args = parser.parse_args()
+    raise SystemExit(audit(args.output, args.resource_dump))

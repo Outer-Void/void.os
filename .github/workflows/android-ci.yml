@@ -42,6 +42,12 @@ jobs:
       - name: Build, test, and lint
         run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :app:compileDebugAndroidTestKotlin --stacktrace
 
+      - name: Verify shrunk VOID.SYS resources
+        run: |
+          ./gradlew :app:assembleRelease --stacktrace
+          "$ANDROID_HOME/build-tools/36.0.0/aapt2" dump resources app/build/outputs/apk/release/app-release-unsigned.apk > "$RUNNER_TEMP/release-resources.txt"
+          python3 app/tools/voidsys_qa.py --resource-dump "$RUNNER_TEMP/release-resources.txt" --output "$RUNNER_TEMP/voidsys-release-qa"
+
       - name: Upload debug APK
         if: success()
         uses: actions/upload-artifact@v4
