@@ -32,7 +32,13 @@ class SystemActionController(private val context: Context) {
             SystemAction.Bluetooth -> open(Settings.ACTION_BLUETOOTH_SETTINGS)
             SystemAction.Battery -> open(Settings.ACTION_BATTERY_SAVER_SETTINGS)
             SystemAction.MobileNetwork -> open(Settings.ACTION_NETWORK_OPERATOR_SETTINGS)
-            SystemAction.DataUsage -> open(Settings.ACTION_DATA_USAGE_SETTINGS)
+            SystemAction.DataUsage -> open(
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                    Settings.ACTION_DATA_USAGE_SETTINGS
+                } else {
+                    Settings.ACTION_APPLICATION_SETTINGS
+                }
+            )
             SystemAction.Hotspot -> open(Settings.ACTION_WIRELESS_SETTINGS)
             SystemAction.Nfc -> open(Settings.ACTION_NFC_SETTINGS)
             SystemAction.Airplane -> open(Settings.ACTION_AIRPLANE_MODE_SETTINGS)

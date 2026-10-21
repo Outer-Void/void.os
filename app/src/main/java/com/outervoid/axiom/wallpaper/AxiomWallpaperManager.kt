@@ -18,10 +18,6 @@ import java.io.FileOutputStream
 
 class AxiomWallpaperManager(private val context: Context) {
     fun setLockScreenWallpaper(): Result {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Log.w(TAG, "Lock-screen wallpaper API unavailable before Android N")
-            return Result.Restricted
-        }
         return try {
             WallpaperManager.getInstance(context).setBitmap(
                 createWallpaper(),
@@ -43,12 +39,7 @@ class AxiomWallpaperManager(private val context: Context) {
     fun setHomeScreenWallpaper(): Result {
         return try {
             val manager = WallpaperManager.getInstance(context)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                manager.setBitmap(createWallpaper(), null, true, WallpaperManager.FLAG_SYSTEM)
-            } else {
-                @Suppress("DEPRECATION")
-                manager.setBitmap(createWallpaper())
-            }
+            manager.setBitmap(createWallpaper(), null, true, WallpaperManager.FLAG_SYSTEM)
             Log.i(TAG, "AXIOM home-screen wallpaper applied")
             Result.Applied
         } catch (error: SecurityException) {
@@ -61,9 +52,6 @@ class AxiomWallpaperManager(private val context: Context) {
     }
 
     fun setBothWallpapers(): Result {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return setHomeScreenWallpaper()
-        }
         return try {
             WallpaperManager.getInstance(context).setBitmap(
                 createWallpaper(),

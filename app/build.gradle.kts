@@ -5,12 +5,13 @@ plugins {
 
 android {
     namespace = "com.outervoid.axiom"
-    compileSdk = 34
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "com.outervoid.axiom"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 20
         versionName = "2.0.0-dev"
 

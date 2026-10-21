@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.Axiom" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Theme.Axiom.Game" parent="@style/Theme.Axiom">
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

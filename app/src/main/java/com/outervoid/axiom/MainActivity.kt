@@ -21,6 +21,13 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -71,6 +78,7 @@ import com.outervoid.axiom.ui.state.LauncherSearchPolicy
 import com.outervoid.axiom.ui.state.LauncherState
 import com.outervoid.axiom.ui.theme.Amber
 import com.outervoid.axiom.ui.theme.AxiomTheme
+import com.outervoid.axiom.ui.theme.Background
 import com.outervoid.axiom.ui.theme.Surface
 import com.outervoid.axiom.ui.theme.TextPrimary
 import com.outervoid.axiom.ui.theme.TextSecondary
@@ -90,7 +98,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Background)
+                    .windowInsetsPadding(WindowInsets.safeDrawing)
+            ) {
             val entitlementManager = remember { EntitlementManager(applicationContext).also { it.initialize() } }
             val signatureGate = remember { SignatureGate(applicationContext) }
             val gameLaunchManager = remember { SignedGameLaunchManager(this@MainActivity) }
@@ -242,7 +257,6 @@ class MainActivity : ComponentActivity() {
 
             DisposableEffect(settings.hideStatusBar, settings.hideNavigationBar) {
                 val controller = WindowCompat.getInsetsController(window, window.decorView)
-                WindowCompat.setDecorFitsSystemWindows(window, true)
                 if (settings.hideStatusBar) {
                     controller.hide(WindowInsetsCompat.Type.statusBars())
                 } else {
@@ -697,6 +711,7 @@ class MainActivity : ComponentActivity() {
                         onDismiss = { systemPanelDisabledVisible = false }
                     )
                 }
+            }
             }
         }
     }
