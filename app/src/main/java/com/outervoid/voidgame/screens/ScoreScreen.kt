@@ -23,7 +23,8 @@ class ScoreScreen(
     private val cyclesReached: Int = 0,
     private val survival: Boolean = true,
     private val campaignMission: Int = 0,
-    private val campaignWaves: Int = 0
+    private val campaignWaves: Int = 0,
+    private val missionComplete: Boolean = false
 ) : Screen {
     private val camera = OrthographicCamera()
     private val viewport = FitViewport(GameConfig.WORLD_WIDTH, GameConfig.WORLD_HEIGHT, camera)
@@ -90,9 +91,9 @@ class ScoreScreen(
 
     private fun drawText() {
         batch.begin()
-        font.data.setScale(2.0f)
+        font.data.setScale(if (missionComplete) 1.6f else 2.0f)
         font.color = GameConfig.COLOR_AMBER
-        drawCentered("SCORE", 500f)
+        drawCentered(if (missionComplete) "MISSION CLEAR" else "RUN ENDED", 500f)
         font.data.setScale(1.0f)
         font.color = GameConfig.COLOR_GRAY
         drawCentered("SIGNAL: $finalSignal", 456f)
@@ -122,7 +123,7 @@ class ScoreScreen(
         font.data.setScale(1.05f)
         drawCentered("START AGAIN", 116f)
         font.color = GameConfig.COLOR_GRAY
-        drawCentered("EXIT", 64f)
+        drawCentered("EXIT TO AXIOM", 64f)
         batch.end()
     }
 

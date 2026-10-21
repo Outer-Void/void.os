@@ -82,7 +82,9 @@ class TrainingScreen(private val game: VoidGame) : Screen {
         shapeRenderer.end()
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled)
-        bullets.filter { it.active }.forEach { b ->
+        carrier.drawHull(shapeRenderer)
+        bullets.forEach { b ->
+            if (!b.active) return@forEach
             shapeRenderer.color = GameConfig.COLOR_AMBER
             shapeRenderer.rect(b.x - 1.5f, b.y, 3f, 12f)
         }

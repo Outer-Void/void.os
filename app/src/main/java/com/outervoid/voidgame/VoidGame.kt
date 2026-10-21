@@ -72,6 +72,6 @@ class VoidGame(
     }
 
     fun exit() {
-        Gdx.app.exit()
+        openAxiom()
     }
 }

@@ -27,3 +27,31 @@ internal class ShooterClock {
     fun reset() { accumulator = 0f }
     companion object { const val STEP = 1f / 60f }
 }
+
+/** Pointer IDs own one role until release. Pause quarantines held touches until lifted. */
+internal class ShooterControlState {
+    private val roles = Array(20) { ShooterTouchRole.None }
+    var movementPointer = -1
+        private set
+    val pointerCount: Int get() = roles.size
+    fun isPressed(role: ShooterTouchRole): Boolean = roles.any { it == role }
+
+    fun update(pointer: Int, down: Boolean, x: Float, y: Float): ShooterTouchRole {
+        if (!down) {
+            roles[pointer] = ShooterTouchRole.None
+            if (movementPointer == pointer) movementPointer = -1
+            return ShooterTouchRole.None
+        }
+        val fresh = roles[pointer] == ShooterTouchRole.None
+        if (fresh) roles[pointer] = shooterTouchRole(x, y).let {
+            if (it == ShooterTouchRole.None) ShooterTouchRole.Ignored else it
+        }
+        if (roles[pointer] == ShooterTouchRole.Move && movementPointer == -1) movementPointer = pointer
+        return if (fresh) roles[pointer] else ShooterTouchRole.None
+    }
+
+    fun quarantine() {
+        roles.fill(ShooterTouchRole.Ignored)
+        movementPointer = -1
+    }
+}

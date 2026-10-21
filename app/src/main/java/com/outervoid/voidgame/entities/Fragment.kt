@@ -34,7 +34,7 @@ class Fragment(
         var fired = false
         val descend = GameConfig.ENEMY_DESCEND_SPEED_BASE + cycle * GameConfig.ENEMY_DESCEND_SPEED_SCALE
 
-        if (!diving && MathUtils.random() < GameConfig.DIVE_CHANCE * cycle.coerceAtMost(8)) {
+        if (!diving && y > carrierY + size && y < GameConfig.WORLD_HEIGHT - 70f && MathUtils.random() < GameConfig.DIVE_CHANCE * cycle.coerceAtMost(8)) {
             diving = true
             diveTargetX = carrierX
             diveTargetY = carrierY

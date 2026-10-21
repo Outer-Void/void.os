@@ -40,6 +40,20 @@ class Carrier {
         damageTimer = 0.65f
     }
 
+    /** Filled pass gives the interceptor a readable silhouette against tactical linework. */
+    fun drawHull(renderer: ShapeRenderer) {
+        if (!active) return
+        val cx = x + width * 0.5f
+        renderer.setColor(0.16f, 0.18f, 0.21f, 1f)
+        renderer.triangle(cx, y + height + 5f, x + 3f, y + 7f, cx, y + 14f)
+        renderer.triangle(cx, y + height + 5f, x + width - 3f, y + 7f, cx, y + 14f)
+        renderer.setColor(0.34f, 0.39f, 0.44f, 1f)
+        renderer.triangle(cx, y + 31f, cx - 4f, y + 23f, cx + 4f, y + 23f)
+        renderer.setColor(0.77f, 0.65f, 0.42f, 1f)
+        renderer.triangle(cx - 7f, y + 5f, cx - 10f, y - 6f, cx - 4f, y + 5f)
+        renderer.triangle(cx + 7f, y + 5f, cx + 10f, y - 6f, cx + 4f, y + 5f)
+    }
+
     fun draw(renderer: ShapeRenderer) {
         if (!active) return
         val cx = x + width * 0.5f
