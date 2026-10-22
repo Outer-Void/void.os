@@ -1,0 +1,29 @@
+{
+  "tool": "GNU readelf 2.44",
+  "libraries": [
+    {
+      "path": "app/build/generated/gdxNatives/arm64-v8a/libgdx.so",
+      "minimum_api_note": 21,
+      "ndk_note": "r25c",
+      "readelf_notes": "\nDisplaying notes found in: .note.android.ident\n  Owner                Data size \tDescription\n  Android              0x00000084\tNT_VERSION (version)\n   description data: 15 00 00 00 72 32 35 63 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 35 31 39 36 35 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \n\nDisplaying notes found in: .note.gnu.build-id\n  Owner                Data size \tDescription\n  GNU                  0x00000014\tNT_GNU_BUILD_ID (unique build ID bitstring)\n    Build ID: 76154d49217306e7ed36e9a1ae003dc20998a928\n"
+    },
+    {
+      "path": "app/build/generated/gdxNatives/armeabi-v7a/libgdx.so",
+      "minimum_api_note": 19,
+      "ndk_note": "r25c",
+      "readelf_notes": "\nDisplaying notes found in: .note.android.ident\n  Owner                Data size \tDescription\n  Android              0x00000084\tNT_VERSION (version)\n   description data: 13 00 00 00 72 32 35 63 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 35 31 39 36 35 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \n\nDisplaying notes found in: .note.gnu.build-id\n  Owner                Data size \tDescription\n  GNU                  0x00000014\tNT_GNU_BUILD_ID (unique build ID bitstring)\n    Build ID: 41a4943860fe84c74386504ad4150db2c47ce955\n"
+    },
+    {
+      "path": "app/build/generated/gdxNatives/x86/libgdx.so",
+      "minimum_api_note": 19,
+      "ndk_note": "r25c",
+      "readelf_notes": "\nDisplaying notes found in: .note.android.ident\n  Owner                Data size \tDescription\n  Android              0x00000084\tNT_VERSION (version)\n   description data: 13 00 00 00 72 32 35 63 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 35 31 39 36 35 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \n\nDisplaying notes found in: .note.gnu.build-id\n  Owner                Data size \tDescription\n  GNU                  0x00000014\tNT_GNU_BUILD_ID (unique build ID bitstring)\n    Build ID: 3d0597887dd90f2943b43492c1119231c0d95887\n"
+    },
+    {
+      "path": "app/build/generated/gdxNatives/x86_64/libgdx.so",
+      "minimum_api_note": 21,
+      "ndk_note": "r25c",
+      "readelf_notes": "\nDisplaying notes found in: .note.android.ident\n  Owner                Data size \tDescription\n  Android              0x00000084\tNT_VERSION (version)\n   description data: 15 00 00 00 72 32 35 63 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 39 35 31 39 36 35 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \n\nDisplaying notes found in: .note.gnu.build-id\n  Owner                Data size \tDescription\n  GNU                  0x00000014\tNT_GNU_BUILD_ID (unique build ID bitstring)\n    Build ID: 86400674595e2db83b3ff515d3832183e45c3e94\n"
+    }
+  ]
+}

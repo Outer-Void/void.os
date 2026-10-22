@@ -3,7 +3,6 @@ package com.outervoid.axiom
 import android.Manifest
 import android.app.Activity
 import android.app.AlarmManager
-import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -86,7 +85,7 @@ import com.outervoid.axiom.ui.theme.TextSecondary
 import com.outervoid.axiom.vm.LauncherViewModel
 import com.outervoid.axiom.wallpaper.AxiomWallpaperManager
 import com.outervoid.axiom.widgets.AxiomWidgetHost
-import com.outervoid.axiom.widgets.WidgetOperationPolicy
+import com.outervoid.axiom.widgets.WidgetSetupEffect
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.Dispatchers
@@ -134,122 +133,10 @@ class MainActivity : ComponentActivity() {
             var widgetDialog by remember { mutableStateOf<AxiomDialogState?>(null) }
 
             var widgetPickerPanelIndex by rememberSaveable { mutableIntStateOf(0) }
-            var pendingWidgetBind by rememberSaveable { mutableStateOf<Pair<Int, Int>?>(null) }
-            var pendingWidgetConfigure by rememberSaveable { mutableStateOf<Pair<Int, Int>?>(null) }
             val widgetHost = remember { AxiomWidgetHost(applicationContext) }
-            val appWidgetManager = remember { AppWidgetManager.getInstance(applicationContext) }
-
-            DisposableEffect(Unit) {
-                widgetHost.startListening()
-                onDispose { widgetHost.stopListening() }
-            }
-
-            fun saveWidgetForPanel(panelIndex: Int, widgetId: Int) {
-                settings.widgetForPanel(panelIndex)
-                    ?.takeIf { it != widgetId }
-                    ?.let { oldWidgetId -> runCatching { widgetHost.deleteAppWidgetId(oldWidgetId) } }
-                vm.setWidgetForPanel(panelIndex, widgetId)
-            }
-
-            val widgetConfigLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) { result ->
-                val pending = pendingWidgetConfigure
-                if (pending != null) {
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        saveWidgetForPanel(pending.first, pending.second)
-                    }
-                    WidgetOperationPolicy.abandonedWidgetId(
-                        pending.second,
-                        operationAccepted = result.resultCode == Activity.RESULT_OK
-                    )?.let { widgetId -> runCatching { widgetHost.deleteAppWidgetId(widgetId) } }
-                    pendingWidgetConfigure = null
-                }
-            }
-
-            val bindWidgetLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) { result ->
-                val pending = pendingWidgetBind
-                if (pending != null) {
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        val provider = runCatching { appWidgetManager.getAppWidgetInfo(pending.second) }.getOrNull()
-                        if (provider?.configure != null) {
-                            pendingWidgetConfigure = pending
-                            val configureIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE).apply {
-                                component = provider.configure
-                                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, pending.second)
-                            }
-                            runCatching { widgetConfigLauncher.launch(configureIntent) }
-                                .onFailure {
-                                    runCatching { widgetHost.deleteAppWidgetId(pending.second) }
-                                    pendingWidgetConfigure = null
-                                    widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "The provider could not open widget setup.")
-                                }
-                        } else if (provider != null) {
-                            saveWidgetForPanel(pending.first, pending.second)
-                        } else {
-                            runCatching { widgetHost.deleteAppWidgetId(pending.second) }
-                            widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "The widget provider is no longer available.")
-                        }
-                    } else {
-                        WidgetOperationPolicy.abandonedWidgetId(pending.second, operationAccepted = false)
-                            ?.let { widgetId -> runCatching { widgetHost.deleteAppWidgetId(widgetId) } }
-                        widgetDialog = AxiomDialogState(
-                            "WIDGET PERMISSION REQUIRED",
-                            "AXIOM needs permission to host widgets on home panels."
-                        )
-                    }
-                    pendingWidgetBind = null
-                }
-            }
 
             fun handleWidgetSelect(panelIndex: Int, provider: AppWidgetProviderInfo) {
-                val widgetId = runCatching { widgetHost.allocateAppWidgetId() }.getOrElse {
-                    widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "This device could not allocate a widget.")
-                    return
-                }
-                val bound = runCatching { appWidgetManager.bindAppWidgetIdIfAllowed(widgetId, provider.provider) }.getOrElse {
-                    runCatching { widgetHost.deleteAppWidgetId(widgetId) }
-                    widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "The widget provider could not be bound.")
-                    return
-                }
-                if (bound) {
-                    if (provider.configure != null) {
-                        pendingWidgetConfigure = panelIndex to widgetId
-                        val configureIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE).apply {
-                            component = provider.configure
-                            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-                        }
-                        runCatching { widgetConfigLauncher.launch(configureIntent) }
-                            .onFailure {
-                                runCatching { widgetHost.deleteAppWidgetId(widgetId) }
-                                pendingWidgetConfigure = null
-                                widgetDialog = AxiomDialogState("WIDGET UNAVAILABLE", "The provider could not open widget setup.")
-                            }
-                    } else {
-                        saveWidgetForPanel(panelIndex, widgetId)
-                    }
-                } else {
-                    pendingWidgetBind = panelIndex to widgetId
-                    val bindIntent = Intent(AppWidgetManager.ACTION_APPWIDGET_BIND).apply {
-                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider.provider)
-                    }
-                    widgetDialog = AxiomDialogState(
-                        "WIDGET PERMISSION REQUIRED",
-                        "AXIOM needs permission to host widgets on home panels."
-                    )
-                    runCatching { bindWidgetLauncher.launch(bindIntent) }
-                        .onFailure {
-                            pendingWidgetBind = null
-                            runCatching { widgetHost.deleteAppWidgetId(widgetId) }
-                            widgetDialog = AxiomDialogState(
-                                "WIDGET UNAVAILABLE",
-                                "This device does not allow AXIOM to request widget binding directly."
-                            )
-                        }
-                }
+                vm.widgetAction { vm.widgetTransactions.begin(panelIndex, provider.provider.flattenToString()) }
             }
 
             DisposableEffect(moduleStatusManager) {
@@ -334,6 +221,7 @@ class MainActivity : ComponentActivity() {
                     return@AxiomTheme
                 }
 
+                WidgetSetupEffect(this@MainActivity, vm, widgetHost)
                 BackHandler {
                     pickingFavorite = false
                     LauncherNavigationPolicy.backTarget(state)?.let { state = it }
@@ -647,6 +535,8 @@ class MainActivity : ComponentActivity() {
                     LauncherState.WidgetPicker -> WidgetPickerScreen(
                         settings = settings,
                         panelIndex = widgetPickerPanelIndex,
+                        onRemoveWidget = { vm.widgetAction { vm.widgetTransactions.remove(widgetPickerPanelIndex) } },
+                        onResetWidgets = vm::resetWidgets,
                         onSelectProvider = { provider ->
                             handleWidgetSelect(widgetPickerPanelIndex, provider)
                             state = LauncherState.Home

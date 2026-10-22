@@ -11,11 +11,21 @@ import com.outervoid.axiom.ui.iconshape.IconShape
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import com.outervoid.axiom.widgets.PreferencesWidgetStore
+import com.outervoid.axiom.widgets.WidgetStore
+import com.outervoid.axiom.widgets.WidgetSnapshot
+import com.outervoid.axiom.widgets.PendingWidgetKey
+import com.outervoid.axiom.widgets.WidgetGarbageKey
+import com.outervoid.axiom.widgets.widgetSnapshot
 import java.io.IOException
 
 private val Context.axiomSettingsStore: DataStore<Preferences> by preferencesDataStore("axiom_settings")
 
 class SettingsRepository(private val context: Context) {
+    val widgetStore: WidgetStore = PreferencesWidgetStore(context.axiomSettingsStore)
+
+    val widgetSnapshots: Flow<WidgetSnapshot> = context.axiomSettingsStore.data.map(::widgetSnapshot)
+
     val settings: Flow<AxiomSettings> = context.axiomSettingsStore.data
         .catch { error ->
             if (error is IOException) emit(androidx.datastore.preferences.core.emptyPreferences()) else throw error
@@ -31,7 +41,19 @@ class SettingsRepository(private val context: Context) {
     suspend fun updateFavoritesCount(count: Int) = update { it[SettingsKeys.FavoritesCount] = count.coerceIn(5, 25) }
     suspend fun updateAccentColor(key: String) = update { it[SettingsKeys.AccentColorKey] = key }
     suspend fun updateFavoritesLocked(locked: Boolean) = update { it[SettingsKeys.FavoritesLocked] = locked }
-    suspend fun updateHomePanelCount(count: Int) = update { it[SettingsKeys.HomePanelCount] = count.coerceIn(1, 5) }
+    suspend fun updateHomePanelCount(count: Int) {
+        val limit = count.coerceIn(1, 5)
+        context.axiomSettingsStore.edit { prefs ->
+            val state = widgetSnapshot(prefs)
+            check(!state.malformed) { "Reset damaged widget records before changing panels." }
+            val removed = state.panels.filterKeys { it >= limit }.values.toSet()
+            val pending = state.pending?.takeIf { it.panel >= limit }
+            prefs[SettingsKeys.HomePanelCount] = limit
+            prefs[SettingsKeys.PanelWidgets] = state.panels.filterKeys { it < limit }.map { "${it.key}:${it.value}" }.toSet()
+            if (pending != null) prefs.remove(PendingWidgetKey)
+            prefs[WidgetGarbageKey] = (state.garbage + removed + listOfNotNull(pending?.candidate)).map(Int::toString).toSet()
+        }
+    }
     suspend fun updateHiddenApps(keys: Set<String>) = update { it[SettingsKeys.HiddenApps] = keys }
     suspend fun updateClockFormat(format: ClockFormat) = update { it[SettingsKeys.ClockFormat] = format.name }
     suspend fun updateLockScreenWallpaperEnabled(enabled: Boolean) =
@@ -75,12 +97,11 @@ class SettingsRepository(private val context: Context) {
     suspend fun updateHapticFeedback(enabled: Boolean) =
         update { it[SettingsKeys.HapticFeedbackEnabled] = enabled }
 
-    suspend fun updatePanelWidget(panelIndex: Int, widgetId: Int?) {
+    suspend fun resetWidgets() {
         context.axiomSettingsStore.edit { prefs ->
-            val current = (prefs[SettingsKeys.PanelWidgets] ?: emptySet()).toMutableSet()
-            current.removeAll { it.startsWith("$panelIndex:") }
-            if (widgetId != null) current.add("$panelIndex:$widgetId")
-            prefs[SettingsKeys.PanelWidgets] = current
+            prefs.remove(SettingsKeys.PanelWidgets)
+            prefs.remove(PendingWidgetKey)
+            prefs.remove(WidgetGarbageKey)
         }
     }
 

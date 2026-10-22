@@ -23,6 +23,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import com.outervoid.axiom.widgets.AxiomWidgetHost
+import com.outervoid.axiom.widgets.WidgetTransactions
+import com.outervoid.axiom.widgets.AndroidWidgetIds
+import com.outervoid.axiom.widgets.WidgetSnapshot
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -33,6 +39,42 @@ import kotlinx.coroutines.launch
 
 class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     private val settingsRepository = SettingsRepository(app)
+    val widgetTransactions = WidgetTransactions(
+        settingsRepository.widgetStore, AndroidWidgetIds(app, AxiomWidgetHost(app))
+    )
+    private val _widgetError = MutableStateFlow<String?>(null)
+    val widgetError: StateFlow<String?> = _widgetError.asStateFlow()
+    private val widgetReadVersion = MutableStateFlow(0)
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val widgetSnapshots = widgetReadVersion.flatMapLatest { settingsRepository.widgetSnapshots.catch { failure ->
+        if (failure is java.io.IOException) {
+            _widgetError.value = "Widget storage is unavailable: ${failure.message}. No widget IDs were released."
+            emit(WidgetSnapshot(malformed = true))
+        } else throw failure
+    } }
+
+
+    fun dismissWidgetError() { _widgetError.value = null }
+    fun retryWidgetStorage() {
+        dismissWidgetError()
+        widgetReadVersion.value++
+        widgetAction { widgetTransactions.recover() }
+    }
+    fun widgetAction(action: suspend () -> Unit) = viewModelScope.launch {
+        try { action() }
+        catch (e: kotlinx.coroutines.CancellationException) { throw e }
+        catch (e: java.io.IOException) { _widgetError.value = "Widget storage failed: ${e.message}. The previous assignment is preserved until commit; reopen setup to retry." }
+        catch (e: IllegalStateException) { _widgetError.value = e.message ?: "Widget setup state changed. Reopen setup to retry." }
+        catch (e: IllegalArgumentException) { _widgetError.value = e.message ?: "Invalid widget setup." }
+        catch (e: SecurityException) { _widgetError.value = "Widget access denied: ${e.message}" }
+        finally {
+            // A previous read may have completed with an IO error. Every explicit action
+            // resubscribes, so closing an error cannot hide a subsequently persisted setup.
+            widgetReadVersion.value++
+        }
+    }
+    fun resetWidgets() = widgetAction { settingsRepository.resetWidgets(); widgetTransactions.recover(); widgetReadVersion.value++ }
+
 
     private val _apps = MutableStateFlow<List<AppInfo>>(emptyList())
     val apps: StateFlow<List<AppInfo>> = _apps.asStateFlow()
@@ -170,7 +212,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun setFavoritesCount(count: Int) = viewModelScope.launch { settingsRepository.updateFavoritesCount(count) }
     fun setAccentColor(key: String) = viewModelScope.launch { settingsRepository.updateAccentColor(key) }
     fun setFavoritesLocked(locked: Boolean) = viewModelScope.launch { settingsRepository.updateFavoritesLocked(locked) }
-    fun setHomePanelCount(count: Int) = viewModelScope.launch { settingsRepository.updateHomePanelCount(count) }
+    fun setHomePanelCount(count: Int) = widgetAction { settingsRepository.updateHomePanelCount(count); widgetTransactions.recover() }
     fun setHiddenApps(keys: Set<String>) = viewModelScope.launch { settingsRepository.updateHiddenApps(keys) }
     fun setClockFormat(format: ClockFormat) = viewModelScope.launch { settingsRepository.updateClockFormat(format) }
     fun setLockScreenWallpaperEnabled(enabled: Boolean) =
@@ -194,7 +236,7 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
     fun setSystemPanel(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateSystemPanel(enabled) }
     fun setTerminalPanel(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateTerminalPanel(enabled) }
     fun setHapticFeedback(enabled: Boolean) = viewModelScope.launch { settingsRepository.updateHapticFeedback(enabled) }
-    fun resetSettings() = viewModelScope.launch { settingsRepository.reset() }
+    fun resetSettings() = widgetAction { settingsRepository.reset(); widgetTransactions.recover() }
 
     fun launchApp(context: Context, app: AppInfo) {
         val intent = Intent(Intent.ACTION_MAIN).apply {
@@ -213,8 +255,6 @@ class LauncherViewModel(app: Application) : AndroidViewModel(app) {
         safeLaunch { context.startActivity(intent) }
     }
 
-    fun setWidgetForPanel(panelIndex: Int, widgetId: Int?) =
-        viewModelScope.launch { settingsRepository.updatePanelWidget(panelIndex, widgetId) }
 
     fun openDialer(context: Context) {
         val intent = Intent(Intent.ACTION_DIAL).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

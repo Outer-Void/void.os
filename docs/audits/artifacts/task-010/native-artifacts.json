@@ -1,0 +1,26 @@
+{
+  "origin": "Maven Central",
+  "version": "1.14.2",
+  "archives": [
+    {
+      "coordinate": "com.badlogicgames.gdx:gdx-platform:1.14.2:natives-x86",
+      "file": "gdx-platform-1.14.2-natives-x86.jar",
+      "sha256": "a27caade390082ab17a6917741c8bb003f53845ff2184608deb12179d434b086"
+    },
+    {
+      "coordinate": "com.badlogicgames.gdx:gdx-platform:1.14.2:natives-x86_64",
+      "file": "gdx-platform-1.14.2-natives-x86_64.jar",
+      "sha256": "d8a573ef6350008ac44e1231d0499b848d64cf3b468f663189ad94f0d51fc3fe"
+    },
+    {
+      "coordinate": "com.badlogicgames.gdx:gdx-platform:1.14.2:natives-arm64-v8a",
+      "file": "gdx-platform-1.14.2-natives-arm64-v8a.jar",
+      "sha256": "222cabc63ba717d1f8937c4e2236eea48a6b5b66d98a40487f2065aea398dc5a"
+    },
+    {
+      "coordinate": "com.badlogicgames.gdx:gdx-platform:1.14.2:natives-armeabi-v7a",
+      "file": "gdx-platform-1.14.2-natives-armeabi-v7a.jar",
+      "sha256": "df92a05c766bb5c0e811ae13f440969f3f635f1341962c332ad903f6ec467416"
+    }
+  ]
+}

@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -64,8 +67,11 @@ internal fun shouldPublishWidgetProviders(queryVersion: Int, currentVersion: Int
 fun WidgetPickerScreen(
     settings: AxiomSettings,
     panelIndex: Int,
+    onRemoveWidget: () -> Unit,
+    onResetWidgets: () -> Unit,
     onSelectProvider: (AppWidgetProviderInfo) -> Unit
 ) {
+    var resetConfirmation by remember { mutableStateOf(false) }
     val context = LocalContext.current.applicationContext
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val accent = settings.accentColor()
@@ -113,6 +119,12 @@ fun WidgetPickerScreen(
         }
     }.value
 
+    if (resetConfirmation) {
+        AlertDialog(onDismissRequest = { resetConfirmation = false }, title = { Text("RESET WIDGETS?") },
+            text = { Text("Remove all AXIOM widget assignments and unfinished setups? Other settings stay unchanged.") },
+            confirmButton = { TextButton(onClick = { resetConfirmation = false; onResetWidgets() }) { Text("RESET") } },
+            dismissButton = { TextButton(onClick = { resetConfirmation = false }) { Text("CANCEL") } })
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -133,6 +145,10 @@ fun WidgetPickerScreen(
             color = TextSecondary,
             style = MaterialTheme.typography.bodySmall
         )
+        if (settings.widgetForPanel(panelIndex) != null) {
+            TextButton(onClick = onRemoveWidget) { Text("REMOVE WIDGET", color = accent) }
+        }
+        TextButton(onClick = { resetConfirmation = true }) { Text("RESET WIDGETS", color = TextSecondary) }
         Spacer(Modifier.height(12.dp))
         when {
             pickerState.loading && pickerState.providers.isEmpty() ->

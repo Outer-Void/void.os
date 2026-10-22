@@ -35,7 +35,7 @@ internal fun decodeAxiomSettings(preferences: Preferences): AxiomSettings {
         systemPanelEnabled = preferences.read(SettingsKeys.SystemPanelEnabled) ?: false,
         terminalPanelEnabled = preferences.read(SettingsKeys.TerminalPanelEnabled) ?: false,
         hapticFeedbackEnabled = preferences.read(SettingsKeys.HapticFeedbackEnabled) ?: true,
-        panelWidgets = preferences.read(SettingsKeys.PanelWidgets) ?: emptySet()
+        panelWidgets = com.outervoid.axiom.widgets.widgetSnapshot(preferences).panels.map { "${it.key}:${it.value}" }.toSet()
     )
 }
 
