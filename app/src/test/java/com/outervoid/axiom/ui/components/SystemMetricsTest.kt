@@ -5,6 +5,24 @@ import org.junit.Test
 
 class SystemMetricsTest {
     @Test
+    fun systemRamUsesAvailableMemoryAndHandlesLargeDevices() {
+        assertEquals(75, usedMemoryPercent(8L * 1024 * 1024 * 1024, 2L * 1024 * 1024 * 1024))
+        assertEquals(0, usedMemoryPercent(Long.MAX_VALUE, Long.MAX_VALUE))
+        assertEquals(100, usedMemoryPercent(Long.MAX_VALUE, 0))
+    }
+
+    @Test
+    fun malformedRamSamplesRemainUnavailable() {
+        assertEquals(null, usedMemoryPercent(0, 0))
+        assertEquals(null, usedMemoryPercent(100, -1))
+        assertEquals(null, usedMemoryPercent(100, 101))
+    }
+
+    @Test
+    fun largeBatteryScaleDoesNotOverflow() {
+        assertEquals(100, batteryPercent(Int.MAX_VALUE, Int.MAX_VALUE))
+    }
+    @Test
     fun batteryUpdatesAreConvertedAndBounded() {
         assertEquals(50, batteryPercent(level = 1, scale = 2))
         assertEquals(100, batteryPercent(level = 110, scale = 100))

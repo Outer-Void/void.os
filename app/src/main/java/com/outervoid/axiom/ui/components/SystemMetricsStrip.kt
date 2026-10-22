@@ -1,5 +1,6 @@
 package com.outervoid.axiom.ui.components
 
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -45,7 +46,12 @@ internal data class SystemMetrics(
 )
 
 internal fun batteryPercent(level: Int, scale: Int): Int? =
-    if (level < 0 || scale <= 0) null else ((level * 100) / scale).coerceIn(0, 100)
+    if (level < 0 || scale <= 0) null else ((level.toLong() * 100) / scale).toInt().coerceIn(0, 100)
+
+/** Android reports reclaimable memory as available; this is system use, not app heap use. */
+internal fun usedMemoryPercent(totalBytes: Long, availableBytes: Long): Int? =
+    if (totalBytes <= 0 || availableBytes < 0 || availableBytes > totalBytes) null
+    else ((1.0 - availableBytes.toDouble() / totalBytes) * 100).toInt().coerceIn(0, 100)
 
 internal fun formatMetricPercent(value: Int?): String = value?.let { "$it%" } ?: "--"
 
@@ -81,7 +87,7 @@ internal fun SystemMetricsStrip(
                 sticky?.let { receiver.onReceive(context, it) }
 
                 while (true) {
-                    val storageAndRam = withContext(Dispatchers.IO) { readStorageAndRam() }
+                    val storageAndRam = withContext(Dispatchers.IO) { readStorageAndRam(context) }
                     value = value.copy(
                         storagePercent = storageAndRam.storagePercent,
                         ramPercent = storageAndRam.ramPercent
@@ -128,7 +134,7 @@ internal fun SystemMetricsStrip(
     }
 }
 
-private fun readStorageAndRam(): SystemMetrics {
+private fun readStorageAndRam(context: Context): SystemMetrics {
     val storage = runCatching {
         val stat = StatFs(Environment.getDataDirectory().path)
         val total = stat.blockCountLong * stat.blockSizeLong
@@ -137,14 +143,9 @@ private fun readStorageAndRam(): SystemMetrics {
     }.getOrNull()
 
     val ram = runCatching {
-        val runtime = Runtime.getRuntime()
-        val maxMb = runtime.maxMemory() / (1024 * 1024)
-        if (maxMb > 0) {
-            val usedMb = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)
-            ((usedMb * 100) / maxMb).toInt().coerceIn(0, 100)
-        } else {
-            null
-        }
+        val info = ActivityManager.MemoryInfo()
+        context.getSystemService(ActivityManager::class.java).getMemoryInfo(info)
+        usedMemoryPercent(info.totalMem, info.availMem)
     }.getOrNull()
 
     return SystemMetrics(storagePercent = storage, ramPercent = ram)

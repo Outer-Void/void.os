@@ -23,7 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.outervoid.axiom.settings.AxiomSettings
 import com.outervoid.axiom.settings.accentColor
 import com.outervoid.axiom.system.SystemAction
@@ -56,10 +59,13 @@ fun SystemPanelScreen(
         if (settings.hapticFeedbackEnabled) haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
     }
 
-    LaunchedEffect(controller) {
-        while (true) {
-            controller.refreshActiveStates()
-            delay(1_000)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(controller, lifecycle) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                controller.refreshActiveStates()
+                delay(1_000)
+            }
         }
     }
 
