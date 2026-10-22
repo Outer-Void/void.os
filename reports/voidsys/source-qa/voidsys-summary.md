@@ -1,0 +1,28 @@
+# VOID.SYS automated resource audit
+
+Mappings: 1908; dedicated targets: 101; generated targets: 446.
+
+Result: PASS (source invariants).
+
+Duplicate artwork is a review finding; density variants with the same name are valid.
+Contact sheets are source previews; no runtime/device visual approval is implied.
+
+- duplicate_resource_variants: 0
+- broken_drawable_references: 0
+- invalid_component_mappings: 0
+- identical_pixel_groups: 15
+- missing_shrunk_direct_targets: None
+- map_entries: 1908
+- mapped_drawables: 547
+- resource_names: 589
+- duplicate_json_keys: 0
+- invalid_resource_names: 0
+- missing_mapped_drawables: 0
+- unkept_direct_targets: 0
+- conflicting_component_aliases: 0
+- identical_artwork_groups: 15
+- direct_artwork_collisions: 0
+- generic_targets: 446
+- unused_candidates: 39
+- generic_list_only: 22
+- density_inconsistencies: 0

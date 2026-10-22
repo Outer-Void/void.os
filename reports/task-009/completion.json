@@ -1,0 +1,434 @@
+{
+  "features": [
+    {
+      "identifier": "Ambient",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "Home",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [
+        "system RAM from ActivityManager",
+        "battery arithmetic safety"
+      ],
+      "tests_performed": [
+        "SystemMetricsTest: 5 JVM tests passed"
+      ],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "partial"
+    },
+    {
+      "identifier": "AxiomFeed",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "AppDrawer",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "Settings",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "FeedConfiguration",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "FeedModuleLibrary",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "SystemPanel",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [
+        "refresh scoped to STARTED lifecycle"
+      ],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "background/foreground device validation"
+      ],
+      "completion_status": "partial"
+    },
+    {
+      "identifier": "LeftFolder",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "RightFolder",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "HiddenApps",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "About",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "Contact",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "WidgetPicker",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "LeftFolderApps",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "RightFolderApps",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "AxiomShooterTransition",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "PermissionSetup",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "TerminalPanel",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [
+        "IO shell ownership",
+        "generation-guarded cleanup",
+        "atomic bounded output"
+      ],
+      "tests_performed": [
+        "TerminalSessionTest: 3 host JVM tests passed"
+      ],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Android/OEM teardown, descendants and interactive shell behavior require device checks"
+      ],
+      "completion_status": "partial"
+    },
+    {
+      "identifier": "CampaignScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "GameScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "LockedModuleScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "PauseScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "ScoreScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "ShipScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "ShooterSettingsScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "StartScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "TrainingScreen",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "VOID.SYS",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [
+        "2903 variant metadata/disposition records"
+      ],
+      "tests_performed": [
+        "source mapping QA passed",
+        "4 Python QA fixtures passed",
+        "minified APK: 101/101 direct icon names retained; zero missing"
+      ],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "partial"
+    },
+    {
+      "identifier": "Widgets",
+      "existing_condition": "partial: old widget ID deleted before async persistence",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "T009-06 transactional replacement and orphan-ID recovery",
+        "full device flow qualification"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "PackageInventory",
+      "existing_condition": "implemented but unverified",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "unverified"
+    },
+    {
+      "identifier": "ReleaseAuthorization",
+      "existing_condition": "partial; production verification missing; fail closed",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "blocked"
+    },
+    {
+      "identifier": "Native16KB",
+      "existing_condition": "broken: source 64-bit ELF LOAD alignment 4096 (Task 008)",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [
+        "Task 009 source and packaged native audits exit 1; 4096-byte LOAD alignment"
+      ],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "blocked"
+    },
+    {
+      "identifier": "Audio",
+      "existing_condition": "not implemented; no game audio asset/system found",
+      "required_improvement": "source review and relevant automated/device acceptance",
+      "changes_made": [],
+      "tests_performed": [],
+      "visual_review_status": "pending",
+      "remaining_problems": [
+        "Task 009 acceptance not established"
+      ],
+      "completion_status": "missing"
+    }
+  ]
+}

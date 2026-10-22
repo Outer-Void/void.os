@@ -1,0 +1,46 @@
+{
+  "baseline": "e78e28f",
+  "implementation_commit": "79c759f6f78d8cc2f16ac708177e4e7f3afa6046",
+  "debug_build": "passed: 7m 21s; four requested tasks",
+  "final_devops_build": "passed: 6m 25s; four debug tasks plus assembleRelease",
+  "jvm": {
+    "tests": 54,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "python": {
+    "tests": 4,
+    "failures": 0,
+    "new_tests": 2
+  },
+  "lint": {
+    "Warning": 585
+  },
+  "instrumentation": "compiled only; not executed",
+  "source_icon_qa_exit": 0,
+  "release_icon_qa_exit": 0,
+  "native_qa_exit": 1,
+  "device_validation": "unavailable: native adb absent; SDK adb x86-64",
+  "performance": "not measured",
+  "icons": {
+    "variants": 2903,
+    "direct_targets": 101,
+    "generated_targets": 446,
+    "mapping_entries": 1908,
+    "newly_visually_upgraded": 0,
+    "newly_visually_verified": 0,
+    "pending_variant_review": 2903
+  },
+  "apks": {
+    "app-debug.apk": {
+      "bytes": 58605601,
+      "sha256": "9b75a3ccb3762e6b04650405e64ec28cf39f3c55f6fcad53e693484f259c2d39"
+    },
+    "app-release-unsigned.apk": {
+      "bytes": 36810026,
+      "sha256": "4e2f23bf88ed843feb2732711ec5954c57cf0e03b4485d96089377d59f9a9ba5"
+    }
+  },
+  "shrunk_direct_targets_missing": []
+}

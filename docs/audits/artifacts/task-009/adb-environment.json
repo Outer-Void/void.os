@@ -1,0 +1,13 @@
+[
+  {
+    "path": "/data/data/com.termux/files/usr/bin/adb",
+    "unavailable": "[Errno 2] No such file or directory: '/data/data/com.termux/files/usr/bin/adb'",
+    "path_exists": false
+  },
+  {
+    "path": "/data/data/com.termux/files/home/android-sdk/platform-tools/adb",
+    "unavailable": "[Errno 2] No such file or directory: '/data/data/com.termux/files/home/android-sdk/platform-tools/adb'",
+    "path_exists": true,
+    "diagnosis": "SDK adb is an x86-64 ELF with /lib64/ld-linux-x86-64.so.2 interpreter; host aarch64"
+  }
+]

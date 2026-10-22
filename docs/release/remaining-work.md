@@ -53,3 +53,13 @@ Final qualification addition: the combined five-task build (including `:app:asse
 - Preserve fail-closed entitlement/signature/Integrity behavior. No signing credentials or authorization bypasses were introduced.
 
 Task 008 final evidence supersedes the baseline counts: four requested debug tasks pass; 48 JVM tests, zero failures/errors/skips; lint zero errors/585 warnings; instrumentation compiled only. Unsigned minified release passes, with 101/101 dedicated icon resource names retained. Source and packaged 16 KB native audits still fail. See the Task 008 results and machine summary for APK sizes/checksums and exact limits.
+
+## Task 009 first increment — continuation
+
+Baseline `e78e28f` preserved. See `task-009-validation.md` and `../audits/task-009-complete-inventory.md` for new evidence. Task 009 fixes Terminal ownership/output/cleanup, the misleading Home RAM metric and stopped-Activity System polling. This does not close the prior commercial blockers or any device gates.
+
+Next session prompt:
+
+> Continue Task 009 from current main and its recorded commits. Read AGENTS.md, task-009-validation.md, task-009-complete-inventory.md, bug ledger, reports/task-009/completion.json and this file; do not repeat discovery or discard prior fixes. Keep at most two running background commands and two Gradle workers. First establish executable native adb and a real API 36/16 KB test environment, then qualify Terminal teardown/restart, system memory, stopped/resumed polling and widget bind/config/cancel/process-death recovery. Implement transactional widget orphan-ID fixes only after reviewing MainActivity/AxiomWidgetHost state. Keep API 36/min 26 and fail-closed authorization. Next, incrementally address per-icon artwork using the 2,903-variant inventory; record actual before/after reviews. Complete the remaining Shooter and screen matrix without calling source indexing visual acceptance. Run the four requested debug tasks, meaningful regressions, minified release/icon/native audits, record device evidence honestly, and commit focused changes. Do not publish or rewrite remote history.
+
+Remaining stages: finish full Stage 1 behavioral classification (index exists), Stage 2 broad lifecycle/widget/profile review, Stage 3 actual shared token adoption/contrast/accessibility, Stage 4 every required individual icon upgrade/review, Stage 5 device runtime cache/drawer QA, Stage 6 all gameplay modes/controls/device acceptance, Stage 7 reviewed Shooter visual transformation, Stage 8 every screen walkthrough, Stage 9 measured performance and broad regression/device tests, Stage 10 actual production authorization/signing/legal/distribution qualification. No commercial completion claim.
