@@ -1,0 +1,37 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following NEW packages will be installed:
+  android-tools
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 2375 kB of archives.
+After this operation, 17.1 MB of additional disk space will be used.
+Get:1 https://packages-cf.termux.dev/apt/termux-main stable/main aarch64 android-tools aarch64 37.0.0p1-3 [2375 kB]
+Fetched 2375 kB in 1s (2050 kB/s)
+Selecting previously unselected package android-tools.
+(Reading database ...
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 31726 files and directories currently installed.)
+Preparing to unpack .../android-tools_37.0.0p1-3_aarch64.deb ...
+Unpacking android-tools (37.0.0p1-3) ...
+Setting up android-tools (37.0.0p1-3) ...
+cannot connect to daemon at tcp:5037: Connection refused

@@ -1,0 +1,103 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+
+> Configure project :app
+WARNING: The option setting 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' is experimental.
+Observed package id 'platforms;android-36' in inconsistent location '/data/data/com.termux/files/home/android-sdk/platforms/android-36-2' (Expected '/data/data/com.termux/files/home/android-sdk/platforms/android-36')
+[=========                              ] 25%
+[=========                              ] 25% Fetch remote repository...
+[=======================================] 100% Fetch remote repository...
+Configuration 'gdxNatives' was resolved during configuration time.
+This is a build performance and scalability issue.
+See https://github.com/gradle/gradle/issues/2298
+Run with --info for a stacktrace.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:mergeExtDexDebug
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:extractGdxNatives
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libgdx.so. Run with --info option to learn more.
+
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:processDebugAndroidTestManifest UP-TO-DATE
+> Task :app:generateDebugAndroidTestBuildConfig UP-TO-DATE
+> Task :app:checkDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :app:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :app:mapDebugAndroidTestSourceSetPaths
+> Task :app:generateDebugAndroidTestResources UP-TO-DATE
+> Task :app:mergeDebugAndroidTestResources
+> Task :app:processDebugAndroidTestResources
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:processDebugResources
+> Task :app:compileDebugKotlin
+w: file:///home/jadis/ov/void.os/app/src/main/java/com/outervoid/axiom/security/PermissionManager.kt:30:21 'unsafeCheckOpNoThrow(String, Int, String): Int' is deprecated. Deprecated in Java
+w: file:///home/jadis/ov/void.os/app/src/main/java/com/outervoid/axiom/ui/screens/LauncherSwipePolicy.kt:52:80 Unnecessary non-null assertion (!!) on a non-null receiver of type SwipeAxis
+w: file:///home/jadis/ov/void.os/app/src/main/java/com/outervoid/axiom/ui/screens/LauncherSwipePolicy.kt:55:37 Unnecessary non-null assertion (!!) on a non-null receiver of type SwipeAxis
+w: file:///home/jadis/ov/void.os/app/src/main/java/com/outervoid/axiom/widgets/WidgetSetupEffect.kt:101:79 Unnecessary safe call on a non-null receiver of type AppWidgetProviderInfo!
+
+> Task :app:compileDebugJavaWithJavac
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :app:processDebugJavaRes
+> Task :app:mergeDebugJavaResource
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:generateDebugLintReportModel
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugAndroidTestKotlin
+w: file:///home/jadis/ov/void.os/app/src/androidTest/java/com/outervoid/axiom/MainActivitySavedStateTest.kt:26:53 'getSerializable(String?): Serializable?' is deprecated. Deprecated in Java
+w: file:///home/jadis/ov/void.os/app/src/androidTest/java/com/outervoid/axiom/MainActivitySavedStateTest.kt:27:58 'getSerializable(String?): Serializable?' is deprecated. Deprecated in Java
+
+> Task :app:generateDebugAndroidTestLintModel
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:testDebugUnitTest
+> Task :app:lintAnalyzeDebug
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintAnalyzeDebugUnitTest
+
+> Task :app:lintReportDebug
+Wrote HTML report to file:///home/jadis/ov/void.os/app/build/reports/lint-results-debug.html
+
+> Task :app:lintDebug
+
+BUILD SUCCESSFUL in 12m 19s
+63 actionable tasks: 37 executed, 26 up-to-date

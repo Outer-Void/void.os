@@ -46,12 +46,12 @@ internal data class SystemMetrics(
 )
 
 internal fun batteryPercent(level: Int, scale: Int): Int? =
-    if (level < 0 || scale <= 0) null else ((level.toLong() * 100) / scale).toInt().coerceIn(0, 100)
+    if (level < 0 || scale <= 0) null else ((level.toLong() * 100) / scale).coerceIn(0L, 100L).toInt()
 
 /** Android reports reclaimable memory as available; this is system use, not app heap use. */
 internal fun usedMemoryPercent(totalBytes: Long, availableBytes: Long): Int? =
     if (totalBytes <= 0 || availableBytes < 0 || availableBytes > totalBytes) null
-    else ((1.0 - availableBytes.toDouble() / totalBytes) * 100).toInt().coerceIn(0, 100)
+    else ((totalBytes - availableBytes).toDouble() / totalBytes * 100).toInt().coerceIn(0, 100)
 
 internal fun formatMetricPercent(value: Int?): String = value?.let { "$it%" } ?: "--"
 

@@ -3,6 +3,30 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+val gdxVersion = "1.14.2"
+val gdxNatives = configurations.create("gdxNatives") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+val extractGdxNatives by tasks.registering {
+    val output = layout.buildDirectory.dir("generated/gdxNatives")
+    inputs.files(gdxNatives)
+    outputs.dir(output)
+    doLast {
+        project.sync {
+            into(output)
+            gdxNatives.resolvedConfiguration.resolvedArtifacts.forEach { artifact ->
+                val abi = requireNotNull(artifact.classifier).removePrefix("natives-")
+                from(zipTree(artifact.file)) { include("*.so"); into(abi) }
+            }
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name.startsWith("merge") && name.endsWith("JniLibFolders")) dependsOn(extractGdxNatives)
+}
+
 android {
     namespace = "com.outervoid.axiom"
     compileSdk = 36
@@ -20,6 +44,8 @@ android {
             useSupportLibrary = true
         }
     }
+
+    sourceSets.getByName("main").jniLibs.srcDir(layout.buildDirectory.dir("generated/gdxNatives"))
 
     buildTypes {
         release {
@@ -69,11 +95,11 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     testImplementation("junit:junit:4.13.2")
-    implementation("com.badlogicgames.gdx:gdx:1.12.1")
-    implementation("com.badlogicgames.gdx:gdx-backend-android:1.12.1")
-    implementation("com.badlogicgames.gdx:gdx-platform:1.12.1:natives-armeabi-v7a")
-    implementation("com.badlogicgames.gdx:gdx-platform:1.12.1:natives-arm64-v8a")
-    implementation("com.badlogicgames.gdx:gdx-platform:1.12.1:natives-x86")
-    implementation("com.badlogicgames.gdx:gdx-platform:1.12.1:natives-x86_64")
+    implementation("com.badlogicgames.gdx:gdx:$gdxVersion")
+    implementation("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
+    add(gdxNatives.name, "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
+    add(gdxNatives.name, "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
+    add(gdxNatives.name, "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
+    add(gdxNatives.name, "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

@@ -40,13 +40,18 @@ jobs:
           python3 app/tools/voidsys_qa.py --output "$RUNNER_TEMP/voidsys-qa"
 
       - name: Build, test, and lint
-        run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :app:compileDebugAndroidTestKotlin --stacktrace
+        run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug :app:compileDebugAndroidTestKotlin --no-daemon --max-workers=2 --console=plain --stacktrace
 
       - name: Verify shrunk VOID.SYS resources
         run: |
-          ./gradlew :app:assembleRelease --stacktrace
+          ./gradlew :app:assembleRelease --no-daemon --max-workers=2 --console=plain --stacktrace
           "$ANDROID_HOME/build-tools/36.0.0/aapt2" dump resources app/build/outputs/apk/release/app-release-unsigned.apk > "$RUNNER_TEMP/release-resources.txt"
           python3 app/tools/voidsys_qa.py --resource-dump "$RUNNER_TEMP/release-resources.txt" --output "$RUNNER_TEMP/voidsys-release-qa"
+
+      - name: Verify native page alignment
+        run: |
+          python3 app/tools/release_native_qa.py --apk app/build/outputs/apk/debug/app-debug.apk
+          python3 app/tools/release_native_qa.py --apk app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Upload debug APK
         if: success()

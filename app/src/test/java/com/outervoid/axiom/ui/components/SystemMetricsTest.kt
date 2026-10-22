@@ -7,6 +7,7 @@ class SystemMetricsTest {
     @Test
     fun systemRamUsesAvailableMemoryAndHandlesLargeDevices() {
         assertEquals(75, usedMemoryPercent(8L * 1024 * 1024 * 1024, 2L * 1024 * 1024 * 1024))
+        assertEquals(20, usedMemoryPercent(100, 80))
         assertEquals(0, usedMemoryPercent(Long.MAX_VALUE, Long.MAX_VALUE))
         assertEquals(100, usedMemoryPercent(Long.MAX_VALUE, 0))
     }
@@ -21,6 +22,7 @@ class SystemMetricsTest {
     @Test
     fun largeBatteryScaleDoesNotOverflow() {
         assertEquals(100, batteryPercent(Int.MAX_VALUE, Int.MAX_VALUE))
+        assertEquals(100, batteryPercent(Int.MAX_VALUE, 1))
     }
     @Test
     fun batteryUpdatesAreConvertedAndBounded() {

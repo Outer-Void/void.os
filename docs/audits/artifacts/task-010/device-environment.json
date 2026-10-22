@@ -1,0 +1,13 @@
+{
+  "recorded_utc": "2026-10-22T14:51:01.838250+00:00",
+  "adb_version": "Android Debug Bridge version 1.0.41\nVersion 37.0.0p1-android-tools\nInstalled as /data/data/com.termux/files/usr/bin/adb\nRunning on Linux 6.17.0-PRoot-Distro (aarch64)\n",
+  "initial_devices": [],
+  "mdns": "unsupported by this adb build",
+  "properties": {
+    "service.adb.tls.port": "",
+    "persist.adb.tls_server.enable": "",
+    "init.svc.adbd": "stopped"
+  },
+  "device_tests": "BLOCKED: enable and pair wireless debugging manually",
+  "security_settings_changed": false
+}
